@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 import numpy as np
 
-from PID_controller.finesub_protocol import (
+from finesub_protocol import (
     COMMAND_STATUS_ACCEPTED,
     COMMAND_STATUS_REJECTED,
     FineSUBHardwareAdapter,
@@ -11,10 +11,10 @@ from PID_controller.finesub_protocol import (
     pack_telemetry,
     unpack_command_frame,
 )
-from PID_controller.finesub_transport import DryRunTransport, FineSUBConnection, UdpTransport
-from PID_controller.hardware_session import PIDHardwareSession, build_runtime_hardware_session
-from PID_controller.live_integration_example import build_tracker
-from PID_controller.vision_gate import PIDVisionGate, VisionGateConfig
+from finesub_transport import DryRunTransport, FineSUBConnection, UdpTransport
+from hardware_session import PIDHardwareSession, build_runtime_hardware_session
+from live_integration_example import build_tracker
+from vision_gate import PIDVisionGate, VisionGateConfig
 
 
 def telemetry_for(

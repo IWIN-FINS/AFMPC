@@ -1,24 +1,33 @@
-# FinsROV 实机代码整理
+# FinsROV 实机代码
 
-本目录整理了 FinsROV 实机实验使用的代码和参数。
+本仓库归类保存实际实验使用的原始代码。控制、视觉和下位机文件均从实验机现有工作目录原样复制，没有改写代码、参数或路径。
 
 ## 目录
 
 - `control/`：融合 MPC、旋转 MPC、固定模型 MPC、PID、SMC、通信协议和实机入口。
 - `vision/`：双目相机采集、鱼检测、立体深度、跟踪、滤波和标定工具。
 - `firmware/`：V4Pro1 下位机固件。
-- `parameters/`：从实际运行配置导出的参数快照。
+- `parameters/`：实机参数索引；实际运行参数以 `control/` 中的原始 JSON 为准。
 - `docs/`：参数、结构、数据接口和实机安全说明。
 
-不包含仿真代码和池顶相机代码。模型权重、录像和实验数据不放在本目录中。
+不包含 Unity/仿真代码和池顶相机代码。模型权重、录像、运行日志和实验数据不提交到仓库。
 
 ## 控制代码
 
+融合 MPC、旋转 MPC、固定模型、SMC 和实机通信代码位于 `control/`。原始实机入口为：
+
 ```bash
 cd control
-uv sync --dev
-uv run pytest -q
-uv run finsrov-auto-preflight
+uv sync --project MPC_dual_model
+uv run --project MPC_dual_model python finesub_experimental_auto.py --help
+uv run --project MPC_dual_model python finesub_smc_control.py --help
+```
+
+PID 使用自己的原始环境：
+
+```bash
+cd control
+uv sync --project PID_controller
 ```
 
 ## 双目视觉
@@ -30,16 +39,6 @@ uv run pytest -q
 uv run depth-demo-video --help
 ```
 
-模型路径配置在 `vision/src/depth_estimation/config.yaml`，需要单独放置模型权重。
+模型和标定路径保持实验时的原始配置，见 `vision/src/depth_estimation/config.yaml`。模型权重仍放在实验机原位置。
 
-## 参数
-
-参数总览见 [`docs/PARAMETERS.md`](docs/PARAMETERS.md)。修改实际运行参数后，可重新导出参数快照：
-
-```bash
-cd control
-uv run python ../tools/export_parameters.py
-```
-
-实机运行必须明确使用 `--execute`，运行前检查推进器、急停、通信、视觉和标定状态。
-
+参数总览见 `docs/PARAMETERS.md`，原始一键运行记录见 `control/START_VISION_TRACKING.md`。实机运行必须明确使用 `--execute`。

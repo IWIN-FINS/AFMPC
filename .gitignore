@@ -12,6 +12,24 @@ calibration_logs/
 *.jsonl
 *.csv
 
+# 实机预检引用的冻结标定证据；其他实验日志仍保持忽略。
+!control/calibration_logs/
+control/calibration_logs/*
+!control/calibration_logs/onboard_rigid_target_front_20260812_13.jsonl
+!control/calibration_logs/onboard_rigid_target_extrinsic_20260813.analysis.json
+!control/calibration_logs/onboard_overhead_vision_calibration_20260812.analysis.json
+!control/calibration_logs/onboard_vision_three_runs_20260812.jsonl
+!control/calibration_logs/heave_positive_joint_p005_p0075_postflash_20260813.analysis.json
+!control/calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json
+
+# 双目标定配置属于代码配套配置，运行输出仍保持忽略。
+!vision/runtime/
+vision/runtime/*
+!vision/runtime/left_camera_info.yaml
+!vision/runtime/right_camera_info.yaml
+!vision/runtime/stereo_camera_config.yaml
+!vision/runtime/stereo_camera_info.json
+
 # Model weights are distributed separately
 models/
 *.pt
@@ -34,4 +52,3 @@ firmware/**/*.map
 .idea/
 .vscode/
 .DS_Store
-

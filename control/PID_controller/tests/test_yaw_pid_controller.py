@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from PID_controller.live_integration_example import build_tracker, one_control_update
-from PID_controller.yaw_pid_controller import YawPIDConfig, YawPIDController, wrap_angle
+from live_integration_example import build_tracker, one_control_update
+from yaw_pid_controller import YawPIDConfig, YawPIDController, wrap_angle
 
 
 def test_angle_wrap_uses_shortest_turn() -> None:

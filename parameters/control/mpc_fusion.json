@@ -2,7 +2,7 @@
   "schema_version": 1,
   "profile": "mpc_fusion.json",
   "authoritative_source": "control/MPC_dual_model/finesub_v4pro1_mpc.json",
-  "source_sha256": "b61176d189206b1ac4bf0b3da54c9a4c8dff1dcf2f6e32aca233bfeb5d33ae43",
+  "source_sha256": "f559647c7064b7bb7bcd5514bbfc7307b2c87aec6aad3e5f5179ebc600ef29c9",
   "reference_position_body_frd_m": [
     0.857634,
     -0.055545,
@@ -69,41 +69,41 @@
       "effective_mass_matrix_kg": [
         [
           24.82,
-          0,
-          0
+          0.0,
+          0.0
         ],
         [
-          0,
+          0.0,
           26.26,
-          0
+          0.0
         ],
         [
-          0,
-          0,
+          0.0,
+          0.0,
           26.257826
         ]
       ],
       "linear_damping_matrix_n_s_per_m": [
         [
           9.589,
-          0,
-          0
+          0.0,
+          0.0
         ],
         [
-          0,
+          0.0,
           14.964789,
-          0
+          0.0
         ],
         [
-          0,
-          0,
+          0.0,
+          0.0,
           11.290874
         ]
       ],
       "sample_period_s": 0.1,
       "restoring_force_frd_n": [
-        0,
-        0,
+        0.0,
+        0.0,
         0.80729
       ]
     },
@@ -137,25 +137,25 @@
         -0.120815
       ],
       "position_weights": [
-        1200,
-        350,
-        900
+        1200.0,
+        350.0,
+        900.0
       ],
       "velocity_weights": [
-        150,
-        150,
-        200
+        150.0,
+        150.0,
+        200.0
       ],
-      "terminal_weight_scale": 2,
+      "terminal_weight_scale": 2.0,
       "force_weights": [
         0.6,
         0.5,
         0.8
       ],
       "delta_force_weights": [
-        5,
+        5.0,
         0.5,
-        3
+        3.0
       ],
       "actuator_model_enabled": true,
       "actuator_pure_delay_s": 0.08,
@@ -173,31 +173,31 @@
       "delta_force_min": [
         -1.2,
         -0.8,
-        -1
+        -1.0
       ],
       "delta_force_max": [
         1.2,
         0.8,
-        1
+        1.0
       ],
       "thruster_command_matrix": [
         [
-          1,
-          0,
-          0
+          1.0,
+          0.0,
+          0.0
         ],
         [
-          0,
-          1,
-          0
+          0.0,
+          1.0,
+          0.0
         ],
         [
-          0,
-          0,
-          1
+          0.0,
+          0.0,
+          1.0
         ]
       ],
-      "thruster_command_limit": 4,
+      "thruster_command_limit": 4.0,
       "thruster_command_min": [
         -5.05068,
         -4.783308,
@@ -210,27 +210,27 @@
       ],
       "forward_distance_min": 0.2,
       "forward_distance_max": 1.5,
-      "horizontal_half_fov_deg": 42,
-      "vertical_half_fov_deg": 30,
-      "fov_margin_deg": 7,
-      "slack_quadratic_weight": 50000,
-      "slack_linear_weight": 100,
-      "slack_max": 5,
+      "horizontal_half_fov_deg": 42.0,
+      "vertical_half_fov_deg": 30.0,
+      "fov_margin_deg": 7.0,
+      "slack_quadratic_weight": 50000.0,
+      "slack_linear_weight": 100.0,
+      "slack_max": 5.0,
       "forward_axis": 0,
       "horizontal_axis": 1,
       "vertical_axis": 2,
       "solver_settings": {
         "backend": "osqp",
-        "rho": 10,
+        "rho": 10.0,
         "sigma": 1e-08,
         "max_iterations": 1500,
         "absolute_tolerance": 2e-05,
         "relative_tolerance": 0.0003,
         "adaptive_rho": true,
         "adaptive_interval": 25,
-        "adaptive_tolerance": 5,
+        "adaptive_tolerance": 5.0,
         "rho_min": 0.0001,
-        "rho_max": 100000,
+        "rho_max": 100000.0,
         "time_limit_seconds": 0.035,
         "check_termination_interval": 10
       }
@@ -248,11 +248,11 @@
         1e-07
       ],
       "prediction_horizon_weights": [
-        1,
-        1,
-        1,
-        1,
-        1
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
       ],
       "staircase_horizon_caps": [
         5,
@@ -265,9 +265,9 @@
         1
       ],
       "initial_model1_weight": [
-        0,
-        0,
-        0
+        0.0,
+        0.0,
+        0.0
       ],
       "fixed_model1_weight": null,
       "minimum_weight": 0.01,
@@ -284,7 +284,7 @@
     "dynamics": {
       "effective_inertia_kg_m2": 0.33453415,
       "linear_damping_n_m_per_rad_s": 0.32251723,
-      "quadratic_damping_n_m_per_rad_s2": 0
+      "quadratic_damping_n_m_per_rad_s2": 0.0
     },
     "controller": {
       "alpha_on": 0.10471975511965978,
@@ -296,12 +296,12 @@
       "yaw_tolerance": 0.03490658503988659,
       "omega_tolerance": 0.03490658503988659,
       "outer_kp": 1.5,
-      "outer_ki": 0,
+      "outer_ki": 0.0,
       "outer_kd": 0.2,
       "outer_integral_limit": 0.5235987755982988,
       "inner_kp": 0.6,
       "inner_ki": 0.02,
-      "inner_kd": 0,
+      "inner_kd": 0.0,
       "inner_integral_limit": 1.0471975511965976,
       "omega_command_max": 0.5235987755982988,
       "omega_command_acceleration_max": 1.0471975511965976,
@@ -328,8 +328,8 @@
       1.4
     ],
     "jump_margin_m": 0.2,
-    "max_depth_nis": 25,
-    "max_inter_sample_gap_s": 1,
+    "max_depth_nis": 25.0,
+    "max_inter_sample_gap_s": 1.0,
     "max_step_m": 0.3,
     "startup_confirmation_samples": 1,
     "reacquire_confirmation_samples": 1

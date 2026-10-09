@@ -5,15 +5,18 @@ build-backend = "hatchling.build"
 [project]
 name = "depth-estimation-dev"
 version = "0.1.0"
-description = "Real-device stereo fish detection, depth estimation, and tracking for FinsROV"
+description = "Fish 3D position estimation using YOLOv8 detection + FoundationStereo depth + multi-object tracking"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
 dependencies = [
+    # --- Core inference ---
     "torch>=2.0.0",
     "torchvision",
     "numpy",
     "scipy",
+    # --- YOLOv8 detection ---
     "ultralytics>=8.0.0",
+    # --- FoundationStereo / image processing ---
     "opencv-contrib-python>=4.8,<5",
     "pyyaml",
     "omegaconf",
@@ -22,31 +25,37 @@ dependencies = [
     "einops",
     "imageio",
     "open3d",
+    "trimesh",
+    "imgaug",
+    "ninja",
+    "albumentations",
+    "scikit-learn",
+    "joblib",
     "xformers",
+    "huggingface-hub",
+    "socksio>=1.0.0",
+    # --- gRPC server (Unity camera streaming) ---
+    "grpcio",
+    "protobuf",
+    "seaborn>=0.13.2",
+    "gitpython>=3.1.53",
 ]
 
 [project.scripts]
+depth-estimation = "depth_estimation.main:main"
+depth-demo-image = "depth_estimation.demo_image:main"
 depth-demo-video = "depth_estimation.demo_video:main"
-stereo-capture-calibration = "depth_estimation.calibration_tools.capture_stereo_chessboard_images:main"
-stereo-calibrate = "depth_estimation.calibration_tools.calibrate_stereo_chessboard:main"
-stereo-preview-udp = "depth_estimation.calibration_tools.preview_stereo_udp:main"
-
-[dependency-groups]
-dev = [
-    "pytest>=8.0",
-]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = [
-    "-p", "no:ament_xmllint",
-    "-p", "no:ament_lint",
-    "-p", "no:ament_copyright",
-    "-p", "no:launch_ros",
-    "-p", "no:ament_pep257",
-    "-p", "no:ament_flake8",
-    "-p", "no:launch_testing",
-]
+depth-demo-sim-video = "depth_estimation.demo_sim_video:main"
+depth-debug-replay = "depth_estimation.depth_debug.replay_depth_debug:main"
+depth-grpc-server = "depth_estimation.grpc_camera_server:main"
+depth-sim-replay = "depth_estimation.sim_dataset_replay:main"
+depth-build-yolo-rotation-dataset = "depth_estimation.build_yolo_rotation_dataset:main"
+depth-train-ultralytics-yolo = "depth_estimation.train_ultralytics_yolo:main"
+depth-eval-yolo-sim = "depth_estimation.eval_yolo_sim_sequences:main"
+depth-build-refiner-dataset = "depth_estimation.refiner.build_refiner_dataset:main"
+depth-build-post-refiner-dataset = "depth_estimation.refiner.build_post_refiner_dataset:main"
+depth-train-temporal-bbox-refiner = "depth_estimation.refiner.train_temporal_bbox_refiner:main"
+depth-train-temporal-bbox-corrector-smoother = "depth_estimation.corrector_smoother.train_temporal_bbox_corrector_smoother:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/depth_estimation"]

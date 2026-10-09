@@ -1,6 +1,6 @@
 models:
   yolo_backend: ultralytics
-  yolo_path: models/yolo/best.pt
+  yolo_path: /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/runs/detect/runs/ultralytics/real_missed_only_reviewed_20260802a/weights/best.pt
   yolov5_repo: megafish/yolov5_repo
   stereo_backend: fast_foundationstereo
   stereo_ckpt: third_party/Fast-FoundationStereo/weights/model_best_bp2_serialize.pth
@@ -162,7 +162,7 @@ output_bbox_filter:
 refiner:
   enabled: false
   device: cuda
-  checkpoint_path: models/refiner/best.pt
+  checkpoint_path: /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/runs/refiner/post_tracker_refiner_seq8holdout_gtalpha_20260729a_e8/best.pt
   buffer_size: 5
   roi_size: 128
   crop_expand_ratio: 1.8
@@ -177,7 +177,7 @@ refiner:
 corrector_smoother:
   enabled: true
   device: cuda
-  checkpoint_path: models/corrector_smoother/best.pt
+  checkpoint_path: /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/runs/corrector_smoother/temporal_bbox_corrector_smoother_v3_smooth_20260730c_e6/best.pt
   buffer_size: 5
   roi_size: 128
   crop_expand_ratio: 1.8

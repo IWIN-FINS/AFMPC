@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from PID_controller.finesub_protocol import (
+from finesub_protocol import (
     COMMAND_FRAME_SIZE,
     COMMAND_STATUS_ACCEPTED,
     TELEMETRY_FRAME_SIZE,
@@ -18,7 +18,7 @@ from PID_controller.finesub_protocol import (
     unpack_command_frame,
     unpack_telemetry,
 )
-from PID_controller.device_adapter import FineSUBThrusterAllocator
+from device_adapter import FineSUBThrusterAllocator
 
 
 def make_telemetry(**overrides) -> FineSUBTelemetry:
