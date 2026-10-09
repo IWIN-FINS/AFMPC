@@ -1,7 +1,5 @@
 # FinsROV 实机控制代码
 
-本目录中的控制文件来自 `/home/fins/Zhouyuheng_workspace/MPC/`，复制时未修改文件内容。
-
 ## 目录
 
 - `MPC_dual_model/`：双模型融合平移 MPC、SMC、滤波、通信和实机运行代码。
