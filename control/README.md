@@ -3,7 +3,7 @@
 ## 目录
 
 - `MPC_dual_model/`：双模型融合平移 MPC、滤波、通信和实机运行代码。
-- [`SMC_controller/`](SMC_controller/README.md)：SMC 控制器、参数、实机入口、实时误差图和测试。
+- `SMC_controller/`：SMC 控制器、参数、实机入口、实时误差图和测试。
 - `MPC_dual_model_yaw/`：加入 yaw 控制的旋转 MPC。
 - `MPC_model1/`：固定模型 1 MPC。
 - `MPC_model2/`：固定模型 2 MPC。
