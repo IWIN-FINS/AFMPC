@@ -12,7 +12,6 @@
 - `SMC_controller/finesub_smc_control.py`：SMC 实机入口。
 - `finesub_auto_control.py`：正式 AUTO 预检入口。
 
-主要运行配置：`MPC_dual_model/finesub_v4pro1_mpc.json`。
 
 ## 安装与测试
 
