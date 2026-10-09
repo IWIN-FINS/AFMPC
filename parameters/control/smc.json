@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "authoritative_source": "control/MPC_dual_model/finesub_v4pro1_smc.json",
-  "source_sha256": "c6aaf3a30f4a70cf7ad86819c154475020d3aa4769d830bf977b2a812e705e30",
-  "base_config": "finesub_v4pro1_mpc.json",
+  "authoritative_source": "control/SMC_controller/finesub_v4pro1_smc.json",
+  "source_sha256": "7bd0cc451f5265363fbc707c0a9066160b47ecbf69e9811753d38ee7e6f0068e",
+  "base_config": "../MPC_dual_model/finesub_v4pro1_mpc.json",
   "formal_source": "auto_runtime",
   "experimental_source": "experimental_auto",
   "smc_parameters": {

@@ -19,7 +19,7 @@ from MPC_dual_model_yaw.auto_tracker import (
 )
 from .finesub_protocol import PROTOCOL_VERSION, build_runtime_hardware_adapter
 from .finesub_transport import load_runtime_config
-from .smc_controller import build_smc_tracker
+from SMC_controller.smc_controller import build_smc_tracker
 from .vision_measurement import VisionGateConfig
 
 

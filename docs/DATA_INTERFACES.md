@@ -1,28 +1,27 @@
-# Data interfaces
+# 数据接口
 
-## Vision JSONL
+## 视觉 JSONL
 
-`vision/src/depth_estimation/demo_video.py` can write:
+`vision/src/depth_estimation/demo_video.py` 可写出：
 
-- `--result-jsonl`: processed detections and 3D positions with timestamps;
-- `--frame-jsonl`: one timestamp record for every captured stereo frame;
-- `--record-raw`: unmodified side-by-side frames;
-- `--record-monitor`: annotated monitoring video.
+- `--result-jsonl`：带时间戳的检测结果和三维坐标；
+- `--frame-jsonl`：每一帧双目图像对应的一条时间戳记录；
+- `--record-raw`：未经修改的左右目拼接原始帧；
+- `--record-monitor`：带标注的监控视频。
 
-The controller tails the result JSONL and rejects stale or implausible samples.
-Every downstream dataset should retain both capture and processing timestamps.
+控制器持续读取结果 JSONL，并拒绝过期或不合理的测量值。后续生成的每套数据都应
+同时保留采集时间戳和处理时间戳。
 
-## Coordinate conventions
+## 坐标约定
 
-- Camera: `[X right, Y down, Z forward]`, metres.
-- Vehicle body: `[forward, right, down]`, metres.
-- Yaw: positive nose-right rotation about the body down axis, radians.
-- Force: `[forward, right, down]`, newtons.
-- Yaw moment: newton-metres.
+- 相机：`[X 右, Y 下, Z 前]`，单位为米；
+- 潜器机体：`[前, 右, 下]`，单位为米；
+- yaw：绕机体向下轴、艇首向右旋转为正，单位为弧度；
+- 力：`[前, 右, 下]`，单位为牛顿；
+- yaw 力矩：单位为牛顿米。
 
-## Firmware protocol
+## 下位机协议
 
-The current host and firmware use protocol version 5. The Python protocol
-implementation and firmware structs must change together. Protocol tests in
-both trees should be run before flashing or operating hardware.
+当前上位机和下位机使用第 5 版协议。Python 协议实现与下位机结构体必须同步修改。
+烧录或操作实机前，应分别运行上位机和下位机目录中的协议测试。
 

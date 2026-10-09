@@ -55,21 +55,21 @@ tau = tau_h - D v_rel - M a_rel
 
 ## 预检与执行
 
-在 `MPC/` 目录执行：
+在 `control/` 目录执行。SMC 使用 `MPC_dual_model` 中与 MPC 共用的通信、安全和动力学依赖，但控制器、参数和入口均保存在独立的 `SMC_controller/` 目录：
 
 ```bash
 # 正式候选预检；当前未批准参数会 fail-closed
-uv run --project MPC_dual_model python finesub_smc_control.py
+uv run --project MPC_dual_model python -m SMC_controller.finesub_smc_control
 
 # 实验候选预检；不打开硬件
-uv run --project MPC_dual_model python finesub_smc_control.py --experimental
+uv run --project MPC_dual_model python -m SMC_controller.finesub_smc_control --experimental
 
 # 只有明确加 --execute 才会连接实机，建议始终限定运行时间
-uv run --project MPC_dual_model python finesub_smc_control.py \
+uv run --project MPC_dual_model python -m SMC_controller.finesub_smc_control \
   --experimental --execute --max-runtime-sec 30
 
 # 如果视觉进程使用了新的输出文件，显式指定当前正在写入的 JSONL
-uv run --project MPC_dual_model python finesub_smc_control.py \
+uv run --project MPC_dual_model python -m SMC_controller.finesub_smc_control \
   --experimental --vision-jsonl /absolute/path/to/pipeline_results.jsonl \
   --execute --max-runtime-sec 30
 ```

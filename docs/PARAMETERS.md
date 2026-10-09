@@ -1,100 +1,99 @@
-# Active parameter summary
+# 当前参数总览
 
-This page is a human-readable index. Machine-readable values and source
-hashes are under `parameters/`; runtime files remain authoritative.
+本页是便于阅读的参数索引。机器可读的参数值及源文件哈希位于 `parameters/`；
+实际运行仍以控制代码中的配置文件为准。
 
-## Shared experiment frame and limits
+## 共用实验坐标系与限幅
 
-| Item | Value |
+| 项目 | 数值 |
 |---|---|
-| Body frame | forward, right, down (FRD) |
-| Camera frame | right, down, forward (OpenCV) |
-| Calibrated target in body frame | `[0.857634, -0.055545, -0.120815] m` |
-| Control period | `0.05 s` |
-| Expected stereo update period | `0.10 s` |
-| Translation channel limit | `±0.20` |
-| Positive force envelope | `[4.730162, 4.997534, 7.063140] N` |
-| Negative force envelope | `[5.050680, 4.783308, 6.867140] N` |
-| Positive/negative yaw envelope | `+1.807854 / -2.041126 N·m` |
-| Per-update force slew | `±[1.20, 0.80, 1.00] N` |
+| 机体坐标系 | 前、右、下（FRD） |
+| 相机坐标系 | 右、下、前（OpenCV） |
+| 机体坐标系中的标定目标点 | `[0.857634, -0.055545, -0.120815] m` |
+| 控制周期 | `0.05 s` |
+| 预期双目更新周期 | `0.10 s` |
+| 平移通道限幅 | `±0.20` |
+| 正方向力包络 | `[4.730162, 4.997534, 7.063140] N` |
+| 负方向力包络 | `[5.050680, 4.783308, 6.867140] N` |
+| 正/负 yaw 力矩包络 | `+1.807854 / -2.041126 N·m` |
+| 单次更新力变化限幅 | `±[1.20, 0.80, 1.00] N` |
 
 代码中保存的通信地址是示例值，不属于控制器实验参数。
 
-## Fusion MPC
+## 融合 MPC
 
-| Group | Value |
+| 参数组 | 数值 |
 |---|---|
-| Effective mass diagonal | `[24.82, 26.26, 26.257826] kg` |
-| Linear damping diagonal | `[9.589, 14.964789, 11.290874] N·s/m` |
-| Restoring force | `[0, 0, 0.80729] N` |
-| Horizon | `15` at `0.10 s` model sample time |
-| Position weights | `[1200, 350, 900]` |
-| Velocity weights | `[150, 150, 200]` |
-| Force weights | `[0.6, 0.5, 0.8]` |
-| Delta-force weights | `[5.0, 0.5, 3.0]` |
-| Terminal scale | `2.0` |
-| Actuator delay/time constant | `0.08 / 0.15 s` |
-| Fusion window/prediction horizon | `8 / 5` |
-| Forgetting factor | `0.8` |
-| Weight update rate | `0.1` |
-| Initial model-1 weight | `[0, 0, 0]` |
+| 等效质量矩阵对角线 | `[24.82, 26.26, 26.257826] kg` |
+| 线性阻尼矩阵对角线 | `[9.589, 14.964789, 11.290874] N·s/m` |
+| 恢复力 | `[0, 0, 0.80729] N` |
+| 预测时域 | `15`，模型采样时间为 `0.10 s` |
+| 位置权重 | `[1200, 350, 900]` |
+| 速度权重 | `[150, 150, 200]` |
+| 力权重 | `[0.6, 0.5, 0.8]` |
+| 力增量权重 | `[5.0, 0.5, 3.0]` |
+| 终端权重倍率 | `2.0` |
+| 执行器延迟/时间常数 | `0.08 / 0.15 s` |
+| 融合窗口/预测步数 | `8 / 5` |
+| 遗忘因子 | `0.8` |
+| 权重更新率 | `0.1` |
+| 模型 1 初始权重 | `[0, 0, 0]` |
 
-The complete solver, Kalman, FOV, fusion, actuator, and camera-transform
-settings are in `parameters/control/mpc_fusion.json`.
+完整的求解器、Kalman、视场、融合、执行器和相机变换设置见
+`parameters/control/mpc_fusion.json`。
 
-## Rotation-aware MPC
+## 带旋转控制的 MPC
 
-| Item | Value |
+| 项目 | 数值 |
 |---|---|
-| Effective yaw inertia | `0.33453415 kg·m²` |
-| Linear yaw damping | `0.32251723 N·m/(rad/s)` |
-| Rotation on/off/emergency | `6.0° / 1.2° / 8.0°` |
-| Trigger/settle frames | `3 / 5` |
-| Outer PID `Kp, Ki, Kd` | `1.5, 0, 0.2` |
-| Inner PID `Kp, Ki, Kd` | `0.6, 0.02, 0` |
-| Yaw moment slew | `±0.5 N·m` per update |
-| Thruster force-limit scale | `0.20` |
+| 等效 yaw 转动惯量 | `0.33453415 kg·m²` |
+| yaw 线性阻尼 | `0.32251723 N·m/(rad/s)` |
+| 旋转开启/关闭/紧急阈值 | `6.0° / 1.2° / 8.0°` |
+| 触发/稳定帧数 | `3 / 5` |
+| 外环 PID `Kp, Ki, Kd` | `1.5, 0, 0.2` |
+| 内环 PID `Kp, Ki, Kd` | `0.6, 0.02, 0` |
+| yaw 力矩单次变化限幅 | 每次更新 `±0.5 N·m` |
+| 推进器力限幅倍率 | `0.20` |
 
 ## PID
 
-| Axis order | forward, right, down |
+| 轴顺序 | 前、右、下 |
 |---|---|
 | `Kp` | `[28, 35, 42]` |
 | `Ki` | `[0.10, 0.15, 0]` |
 | `Kd` | `[0, 0, 0]` |
-| Derivative filter time constant | `0.35 s` |
-| Integral limits | `[2.0, 1.5, 1.2]` |
-| Yaw `Kp, Ki, Kd` | `1.8, 0.12, 0.55` |
+| 微分滤波时间常数 | `0.35 s` |
+| 积分限幅 | `[2.0, 1.5, 1.2]` |
+| yaw `Kp, Ki, Kd` | `1.8, 0.12, 0.55` |
 
-PID uses the same force and per-update slew envelope as MPC. The generated
-snapshot includes the complete eight-thruster constraint matrix.
+PID 与 MPC 使用相同的力包络和单次更新力变化限幅。生成的参数快照还包含完整的
+八推进器约束矩阵。
 
 ## SMC
 
-| Item | Value |
+| 项目 | 数值 |
 |---|---|
-| Target/approach/hard-min distance | `0.60 / 0.80 / 0.30 m` |
-| Maximum approach force | `3.20 N` |
-| Minimum retreat force | `0.75 N` |
-| Startup/reacquire confirmations | `3 / 5` |
-| Maximum depth NIS | `25` |
-| Yaw authority | lower-controller local hold |
+| 目标/开始接近/硬下限距离 | `0.60 / 0.80 / 0.30 m` |
+| 最大接近力 | `3.20 N` |
+| 最小退离力 | `0.75 N` |
+| 启动/重新捕获确认帧数 | `3 / 5` |
+| 最大深度 NIS | `25` |
+| yaw 控制权 | 下位机本地保持 |
 
-Per-axis sliding-mode gains, boundary layers, rate filters, and input limits
-are in `parameters/control/smc.json`.
+各轴滑模增益、边界层、速率滤波和输入限幅见 `parameters/control/smc.json`。
 
-## Stereo vision
+## 双目视觉
 
-| Item | Value |
+| 项目 | 数值 |
 |---|---|
-| Calibrated resolution | `640 × 480` |
-| Rectified focal length | `715.130774 px` |
-| Principal point | `(319.177116, 256.594992) px` |
-| Stereo baseline | `0.059459063 m` |
-| Detector confidence | `0.30` |
-| Detector input size | `960 px` |
-| Stereo image scale / iterations | `0.20 / 4` |
-| Temporal depth filter | sequence confidence Kalman |
+| 标定分辨率 | `640 × 480` |
+| 校正后焦距 | `715.130774 px` |
+| 主点 | `(319.177116, 256.594992) px` |
+| 双目基线 | `0.059459063 m` |
+| 检测置信度 | `0.30` |
+| 检测器输入尺寸 | `960 px` |
+| 双目图像缩放/迭代次数 | `0.20 / 4` |
+| 时序深度滤波 | 序列置信度 Kalman |
 
-The full camera matrices, distortion, tracker, detection, temporal filter,
-and output settings are in `parameters/vision/stereo_pipeline.yaml`.
+完整的相机矩阵、畸变、跟踪器、检测器、时序滤波和输出设置见
+`parameters/vision/stereo_pipeline.yaml`。

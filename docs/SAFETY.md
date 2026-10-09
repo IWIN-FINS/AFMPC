@@ -1,25 +1,24 @@
-# Hardware safety
+# 实机安全
 
-This repository can command physical thrusters. Treat every hardware run as a
-hazardous operation.
+本仓库能够向实体推进器发送命令。每次实机运行都应按危险操作对待。
 
-Before enabling output:
+启用输出前：
 
-1. Confirm the vehicle and firmware revision match the configuration.
-2. Verify the command/telemetry protocol in disarmed mode.
-3. Verify thruster order, signs, force limits, camera transform, and IMU signs.
-4. Keep people, cables, and loose objects away from every propeller.
-5. Use a working physical emergency stop and a separate operator.
-6. Start with propellers removed or the vehicle mechanically secured.
-7. Review preflight blockers; do not bypass missing calibration evidence.
+1. 确认潜器及下位机固件版本与配置一致；
+2. 在未解锁状态验证命令与遥测协议；
+3. 核对推进器顺序、方向、力限幅、相机变换和 IMU 符号；
+4. 确保所有螺旋桨周围没有人员、线缆和松散物体；
+5. 准备可用的物理急停，并安排一名独立操作人员；
+6. 首次检查时拆下螺旋桨，或将潜器可靠固定；
+7. 检查预检阻断项，不得绕过缺失的标定依据。
 
-Runtime invariants:
+运行期间必须满足：
 
-- startup sends a disarmed zero command;
-- hardware execution requires an explicit `--execute` flag;
-- stale telemetry, rejected commands, failsafe state, or invalid vision causes
-  a zero/disarmed transition according to the guarded runtime;
-- shutdown sends disarmed zero;
-- direct calibration and autonomous command envelopes are distinct.
+- 启动时先发送未解锁的零命令；
+- 只有显式添加 `--execute` 才允许连接并控制实机；
+- 遥测过期、命令被拒绝、进入失效保护或视觉无效后，受保护运行流程必须切换到
+  零输出或未解锁状态；
+- 退出时发送未解锁的零命令；
+- 直接标定与自主控制使用不同的命令限幅。
 
 配置文件中的通信目标是示例地址。实机连接前应根据当前设备填写并重新检查。

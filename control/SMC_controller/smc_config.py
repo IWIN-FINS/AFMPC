@@ -11,8 +11,8 @@ import copy
 from pathlib import Path
 from typing import Any
 
-from .experimental_auto import build_experimental_runtime_config
-from .finesub_transport import load_runtime_config
+from MPC_dual_model.experimental_auto import build_experimental_runtime_config
+from MPC_dual_model.finesub_transport import load_runtime_config
 
 
 DEFAULT_SMC_PROFILE_PATH = Path(__file__).with_name("finesub_v4pro1_smc.json")

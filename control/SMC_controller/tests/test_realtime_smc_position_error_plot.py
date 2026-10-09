@@ -9,10 +9,11 @@ from MPC_dual_model.realtime_position_error_plot import (
     JsonlTraceFollower,
     extract_position_error_sample,
 )
-from MPC_dual_model.realtime_smc_position_error_plot import (
+from SMC_controller.realtime_smc_position_error_plot import (
     LiveSMCPositionErrorPlot,
     load_smc_reference,
 )
+from SMC_controller.smc_config import DEFAULT_SMC_PROFILE_PATH
 
 
 def test_extracts_smc_diagnostics() -> None:
@@ -43,7 +44,7 @@ def test_extracts_smc_diagnostics() -> None:
 
 
 def test_loads_reference_from_smc_profile() -> None:
-    reference = load_smc_reference("finesub_v4pro1_smc.json")
+    reference = load_smc_reference(DEFAULT_SMC_PROFILE_PATH)
     np.testing.assert_allclose(reference, [0.857634, -0.055545, -0.120815])
 
 
