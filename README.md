@@ -1,7 +1,4 @@
 # FinsROV 实机代码
-
-本仓库归类保存实际实验使用的原始代码。控制、视觉和下位机文件均从实验机现有工作目录原样复制，没有改写代码、参数或路径。
-
 ## 目录
 
 - `control/`：融合 MPC、旋转 MPC、固定模型 MPC、PID、SMC、通信协议和实机入口。
@@ -39,6 +36,8 @@ uv run pytest -q
 uv run depth-demo-video --help
 ```
 
-模型和标定路径保持实验时的原始配置，见 `vision/src/depth_estimation/config.yaml`。模型权重仍放在实验机原位置。
+模型和标定路径见 `vision/src/depth_estimation/config.yaml`。
 
-参数总览见 `docs/PARAMETERS.md`，原始一键运行记录见 `control/START_VISION_TRACKING.md`。实机运行必须明确使用 `--execute`。
+参数总览见 `docs/PARAMETERS.md`，一键运行记录见 `control/START_VISION_TRACKING.md`。实机运行必须明确使用 `--execute`。
+
+实机时应使用`firmware/`中的下位机代码。
