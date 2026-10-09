@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from camera_transform import camera_to_body_position
-from live_integration_example import build_tracker, one_control_update
+from PID_controller.camera_transform import camera_to_body_position
+from PID_controller.live_integration_example import build_tracker, one_control_update
 
 
 def test_camera_coordinate_order() -> None:
@@ -35,10 +35,10 @@ def test_default_tracker_uses_conservative_experiment_envelope() -> None:
     tracker = build_tracker()
     config = tracker.controller.config
     np.testing.assert_allclose(config.force_max, (4.730162, 4.997534, 7.06314))
-    np.testing.assert_allclose(config.delta_force_max, (0.4, 0.4, 0.5))
+    np.testing.assert_allclose(config.delta_force_max, (1.2, 0.8, 1.0))
     np.testing.assert_allclose(
         tracker.thruster_allocator.translation_channel_limits,
-        (0.10, 0.10, 0.10),
+        (0.20, 0.20, 0.20),
     )
 
 

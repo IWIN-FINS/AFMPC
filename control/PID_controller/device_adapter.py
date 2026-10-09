@@ -147,7 +147,9 @@ class FineSUBThrusterAllocator:
     """Match the FineSUB firmware mixer and motor order."""
 
     positive_force_at_limit: object
-    translation_channel_limits: object = (0.35, 0.35, 0.50)
+    # Active MPC experimental translation authority.  Firmware still accepts
+    # the wider 0.35/0.50 hard envelope; PID deliberately emits only 0.20.
+    translation_channel_limits: object = (0.20, 0.20, 0.20)
     attitude_channel_limits: object = (0.20, 0.20, 0.20)
     deadband: float = 0.01
     enable_depth: bool = True
@@ -168,8 +170,8 @@ class FineSUBThrusterAllocator:
             raise ValueError("deadband must be nonnegative")
         # Current matrices and motor groups in V4pro1_MPC/V5_SUB.hpp.
         self.upper_matrix = np.array(
-            [[-1.0, -1.0, 1.0], [1.0, -1.0, -1.0],
-             [1.0, 1.0, 1.0], [1.0, -1.0, 1.0]]
+            [[-1.0, 1.0, 1.0], [1.0, 1.0, -1.0],
+             [1.0, -1.0, 1.0], [1.0, 1.0, 1.0]]
         )
         self.lower_matrix = np.array(
             [[-1.0, -1.0, -1.0], [-1.0, -1.0, 1.0],

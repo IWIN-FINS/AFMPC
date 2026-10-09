@@ -1,0 +1,26 @@
+{
+  "version": 6,
+  "configurePresets": [
+    {
+      "name": "linux-gcc-robomaster-a",
+      "displayName": "Linux GCC - Robomaster_A",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/linux-gcc-robomaster-a",
+      "toolchainFile": "${sourceDir}/cmake/arm-none-eabi-gcc.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "FINEMOTE_BOARD": "Robomaster_A",
+        "DISABLEFLOAT16": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-gcc-robomaster-a",
+      "configurePreset": "linux-gcc-robomaster-a",
+      "targets": [
+        "Robomaster_A"
+      ]
+    }
+  ]
+}

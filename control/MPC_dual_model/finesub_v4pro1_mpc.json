@@ -1,15 +1,15 @@
 {
   "transport": {
     "type": "udp",
-    "host": "192.168.138.2",
+    "host": "127.0.0.1",
     "port": 5000,
     "timeout_sec": 0.2,
-    "reconnect_interval_sec": 1.0,
+    "reconnect_interval_sec": 1,
     "serial_port": "/dev/ttyUSB0",
     "baudrate": 115200,
-    "bind_host": "192.168.0.10",
+    "bind_host": "0.0.0.0",
     "bind_port": 54321,
-    "remote_host": "192.168.0.2",
+    "remote_host": "192.0.2.2",
     "remote_port": 58766,
     "command_datagram_size": 0,
     "telemetry_source_port": 0
@@ -17,10 +17,10 @@
   "auto_runtime": {
     "mode": "AUTO_ONLY",
     "enabled": false,
-    "required_model": "dual-yaw",
+    "required_model": "dual",
     "require_execute_flag": true,
     "legacy_joystick_csrt_entry_allowed_for_auto": false,
-    "vision_jsonl": "/data/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/finesub_mpc_q1200_20260816_151258/pipeline_results.jsonl",
+    "vision_jsonl": "runtime/vision/pipeline_results.jsonl",
     "vision_source_access": "read_only_tail; MPC must not modify the tracking_depth repository or output",
     "arming_sequence": [
       "accepted disarmed zero establishes a new random command session",
@@ -76,13 +76,19 @@
     "accept_any_finite_track_output": false,
     "vision_quality_gate_enabled": true,
     "vision_gate_overrides": {
-      "accepted_depth_filter_modes": ["update", "weak_update"],
+      "accepted_depth_filter_modes": [
+        "update",
+        "weak_update"
+      ],
       "clamp_implausible_steps": false,
-      "forward_range_m": [0.30, 1.40],
-      "jump_margin_m": 0.20,
-      "max_depth_nis": 25.0,
-      "max_inter_sample_gap_s": 1.00,
-      "max_step_m": 0.30,
+      "forward_range_m": [
+        0.3,
+        1.4
+      ],
+      "jump_margin_m": 0.2,
+      "max_depth_nis": 25,
+      "max_inter_sample_gap_s": 1,
+      "max_step_m": 0.3,
       "startup_confirmation_samples": 1,
       "reacquire_confirmation_samples": 1
     },
@@ -90,42 +96,46 @@
     "lock_reference_to_first_valid_position": false,
     "operator_acceptance_date": "2026-08-13",
     "purpose": "Real-device MPC experiment tracking the red fish with the current best camera/body and three-axis dynamic candidates; detector confidence remains disabled, while the existing depth-quality, innovation, range and motion gates are enabled after the 2026-08-13 outlier-driven control test.",
-    "vision_jsonl": "/data/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/finesub_mpc_q1200_20260816_151258/pipeline_results.jsonl",
+    "vision_jsonl": "runtime/vision/pipeline_results.jsonl",
     "vision_source_access": "read_only_tail; MPC must not modify or operate the tracking_depth repository",
-    "max_channel_abs": 0.20,
-    "expected_vision_update_period_s": 0.10,
-    "validated_limit_basis": "The physical mapping evidence ends at absolute channel 0.10. After the 0.35 translation experiment remained too fast to brake, the operator requested lower authority and faster relative braking on 2026-08-13. The active experimental forward/right/down envelope is 0.20, direct-yaw remains 0.20 and the firmware final-motor envelope remains 0.50; the range above 0.10 is an uncalibrated experimental extension, not a validated force range.",
-    "default_max_runtime_s": 0.0,
-    "reference_position_body_frd_m": [0.857634, -0.055545, -0.120815],
+    "max_channel_abs": 0.2,
+    "expected_vision_update_period_s": 0.1,
+    "validated_limit_basis": "The physical mapping evidence ends at absolute channel 0.10. After the 0.35 translation experiment remained too fast to brake, the operator requested lower authority and faster relative braking on 2026-08-13. The active experimental forward/right/down envelope is 0.20 and the firmware final-motor envelope remains 0.50; the range above 0.10 is an uncalibrated experimental extension, not a validated force range. Direct yaw is not used by the selected translation model.",
+    "default_max_runtime_s": 0,
+    "reference_position_body_frd_m": [
+      0.857634,
+      -0.055545,
+      -0.120815
+    ],
     "arming_sequence": [
       "accepted disarmed zero establishes a new random command session",
       "fresh telemetry, execution feedback and confirmed vision are required",
       "armed zero must be positively acknowledged before the first MPC command"
     ],
-    "latched_stop_policy": "Only a visual coordinate accepted by the configured depth-quality, innovation, range and motion gates updates MPC; detector confidence itself remains disabled. During an empty, rejected or stale visual interval, translation is rate-limited toward the fixed Fossen balance force tau_h, direct yaw is rate-limited toward its armed-zero baseline, and the lower controller continues local roll/pitch stabilization; AUTO remains active. Telemetry/failsafe, command rejection/stale confirmation, transport failure or MPC fallback still sends disarmed zero and stops.",
+    "latched_stop_policy": "Only a visual coordinate accepted by the configured depth-quality, innovation, range and motion gates updates MPC; detector confidence itself remains disabled. During an empty, rejected or stale visual interval, translation is rate-limited toward the fixed Fossen balance force tau_h; yaw stays in lower-controller local hold and the lower controller continues local roll/pitch stabilization; AUTO remains active. Telemetry/failsafe, command rejection/stale confirmation, transport failure or MPC fallback still sends disarmed zero and stops.",
     "known_risks": [
       "The 20260812 dynamic and 20260813 rigid camera/body rotations differ by 7.036 deg; the dynamic candidate is selected for this experiment because it has 632 inliers and lower 0.02698 m combined RMSE.",
       "The CAD camera origin is used; the approximate tag-height rigid fit differs from it by 0.0724 m.",
       "Sway is not window-invariant under the current tethered test; the older multi-amplitude mass candidate and the corrected-pose forced-window damping candidate are combined as an engineering experimental model.",
       "Heave uses positive down pulses plus natural upward coast; negative-thrust asymmetry and individual vertical load-cell curves were not measured.",
       "The operator-authorized controller can saturate any translation axis at 0.20 and any final motor at 0.50, while physical RPM/force mapping has only been measured through 0.10; translation force conversion above 0.10 uses a linear 2-times envelope approximation.",
-      "The yaw inertia/damping and host cascaded-PID gains are experimental candidates. The planar shared-actuator constraint uses real M1..M8 force directions and yaw arms about the CAD origin; unknown roll/pitch PID demand is not predicted."
+      "Optional direct-yaw inertia/damping and host cascaded-PID gains remain experimental candidates, but direct yaw is not used by the selected translation model. Unknown roll/pitch PID demand is not predicted."
     ],
     "candidate_evidence": [
       {
-        "path": "../../raw_data/calibration_logs/onboard_overhead_vision_calibration_20260812.analysis.json",
+        "path": "calibration_logs/onboard_overhead_vision_calibration_20260812.analysis.json",
         "sha256": "eca953024a9f50f4c7f25142f274f500bafab5ed33d379d658a23f64fc0590ee"
       },
       {
-        "path": "../../raw_data/calibration_logs/onboard_vision_three_runs_20260812.jsonl",
+        "path": "calibration_logs/onboard_vision_three_runs_20260812.jsonl",
         "sha256": "d69d4d78f6a9ce64fe4f1b7e4d9904d18c06dc966e8e3c6024a92e5c2a8935bb"
       },
       {
-        "path": "../../raw_data/calibration_logs/heave_positive_joint_p005_p0075_postflash_20260813.analysis.json",
+        "path": "calibration_logs/heave_positive_joint_p005_p0075_postflash_20260813.analysis.json",
         "sha256": "b468bf0f5f980078027367f1b9771f343a2673a387f6b9c1e9727e3d8ed8cee3"
       },
       {
-        "path": "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json",
+        "path": "calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json",
         "sha256": "f99cc67a58614bbbf28530c098dbb511df22b6ced03be0b58e96d9329d8ea796"
       }
     ],
@@ -134,11 +144,27 @@
       "enabled_for_control": false,
       "selection": "20260812 three-run dynamic candidate plus CAD camera origin",
       "rotation_body_from_camera": [
-        [0.105484, -0.006125, 0.994402],
-        [0.994329, -0.012919, -0.105555],
-        [0.013493, 0.999898, 0.004727]
+        [
+          0.105484,
+          -0.006125,
+          0.994402
+        ],
+        [
+          0.994329,
+          -0.012919,
+          -0.105555
+        ],
+        [
+          0.013493,
+          0.999898,
+          0.004727
+        ]
       ],
-      "camera_origin_in_body_frd_m": [0.260993, 0.007788, -0.123651]
+      "camera_origin_in_body_frd_m": [
+        0.260993,
+        0.007788,
+        -0.123651
+      ]
     },
     "active_mpc_parameters": {
       "enabled_for_experiment": true,
@@ -147,85 +173,193 @@
       "baseline_adaptation": {
         "enabled": true,
         "update_mode": "gated_ema",
-        "axis_enabled": [true, true, true],
+        "axis_enabled": [
+          true,
+          true,
+          true
+        ],
         "adaptation_rate": 0.02,
         "transient_adaptation_rate": 0.08,
         "steady_position_error_tolerance": 0.03,
         "steady_velocity_tolerance": 0.02,
-        "position_error_tolerance": 0.20,
-        "velocity_tolerance": 0.20,
-        "matched_motion_axis_enabled": [false, false, false],
+        "position_error_tolerance": 0.2,
+        "velocity_tolerance": 0.2,
+        "matched_motion_axis_enabled": [
+          false,
+          false,
+          false
+        ],
         "matched_motion_min_velocity": 0.05,
-        "matched_motion_max_velocity": 0.20,
-        "matched_motion_acceleration_tolerance": 0.20,
+        "matched_motion_max_velocity": 0.2,
+        "matched_motion_acceleration_tolerance": 0.2,
         "matched_motion_confirmation_updates": 3
       },
       "model": {
         "effective_mass_matrix_kg": [
-          [24.82, 0.0, 0.0],
-          [0.0, 26.26, 0.0],
-          [0.0, 0.0, 26.257826]
+          [
+            24.82,
+            0,
+            0
+          ],
+          [
+            0,
+            26.26,
+            0
+          ],
+          [
+            0,
+            0,
+            26.257826
+          ]
         ],
         "linear_damping_matrix_n_s_per_m": [
-          [9.589, 0.0, 0.0],
-          [0.0, 14.964789, 0.0],
-          [0.0, 0.0, 11.290874]
+          [
+            9.589,
+            0,
+            0
+          ],
+          [
+            0,
+            14.964789,
+            0
+          ],
+          [
+            0,
+            0,
+            11.290874
+          ]
         ],
-        "sample_period_s": 0.10,
-        "restoring_force_frd_n": [0.0, 0.0, 0.807290]
+        "sample_period_s": 0.1,
+        "restoring_force_frd_n": [
+          0,
+          0,
+          0.80729
+        ]
       },
       "kalman": {
-        "position_std": [0.03, 0.03, 0.05],
-        "acceleration_std": [0.35, 0.40, 0.50],
-        "initial_position_std": [0.05, 0.05, 0.08],
-        "initial_velocity_std": [0.30, 0.35, 0.45]
+        "position_std": [
+          0.03,
+          0.03,
+          0.05
+        ],
+        "acceleration_std": [
+          0.35,
+          0.4,
+          0.5
+        ],
+        "initial_position_std": [
+          0.05,
+          0.05,
+          0.08
+        ],
+        "initial_velocity_std": [
+          0.3,
+          0.35,
+          0.45
+        ]
       },
       "controller": {
         "horizon": 15,
-        "reference_position": [0.857634, -0.055545, -0.120815],
-        "position_weights": [1200.0, 350.0, 900.0],
-        "velocity_weights": [150.0, 150.0, 200.0],
-        "terminal_weight_scale": 2.0,
-        "force_weights": [0.60, 0.50, 0.80],
-        "delta_force_weights": [5.0, 0.5, 3.0],
+        "reference_position": [
+          0.857634,
+          -0.055545,
+          -0.120815
+        ],
+        "position_weights": [
+          1200,
+          350,
+          900
+        ],
+        "velocity_weights": [
+          150,
+          150,
+          200
+        ],
+        "terminal_weight_scale": 2,
+        "force_weights": [
+          0.6,
+          0.5,
+          0.8
+        ],
+        "delta_force_weights": [
+          5,
+          0.5,
+          3
+        ],
         "actuator_model_enabled": true,
         "actuator_pure_delay_s": 0.08,
         "actuator_time_constant_s": 0.15,
-        "force_min": [-5.050680, -4.783308, -6.867140],
-        "force_max": [4.730162, 4.997534, 7.063140],
-        "delta_force_min": [-1.20, -0.80, -1.00],
-        "delta_force_max": [1.20, 0.80, 1.00],
-        "thruster_command_matrix": [
-          [1.0, 0.0, 0.0],
-          [0.0, 1.0, 0.0],
-          [0.0, 0.0, 1.0]
+        "force_min": [
+          -5.05068,
+          -4.783308,
+          -6.86714
         ],
-        "thruster_command_limit": 4.0,
-        "thruster_command_min": [-5.050680, -4.783308, -6.867140],
-        "thruster_command_max": [4.730162, 4.997534, 7.063140],
-        "forward_distance_min": 0.20,
-        "forward_distance_max": 1.50,
-        "horizontal_half_fov_deg": 42.0,
-        "vertical_half_fov_deg": 30.0,
-        "fov_margin_deg": 7.0,
-        "slack_quadratic_weight": 50000.0,
-        "slack_linear_weight": 100.0,
-        "slack_max": 5.0,
+        "force_max": [
+          4.730162,
+          4.997534,
+          7.06314
+        ],
+        "delta_force_min": [
+          -1.2,
+          -0.8,
+          -1
+        ],
+        "delta_force_max": [
+          1.2,
+          0.8,
+          1
+        ],
+        "thruster_command_matrix": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "thruster_command_limit": 4,
+        "thruster_command_min": [
+          -5.05068,
+          -4.783308,
+          -6.86714
+        ],
+        "thruster_command_max": [
+          4.730162,
+          4.997534,
+          7.06314
+        ],
+        "forward_distance_min": 0.2,
+        "forward_distance_max": 1.5,
+        "horizontal_half_fov_deg": 42,
+        "vertical_half_fov_deg": 30,
+        "fov_margin_deg": 7,
+        "slack_quadratic_weight": 50000,
+        "slack_linear_weight": 100,
+        "slack_max": 5,
         "forward_axis": 0,
         "horizontal_axis": 1,
         "vertical_axis": 2,
         "solver_settings": {
           "backend": "osqp",
-          "rho": 10.0,
-          "sigma": 1e-8,
+          "rho": 10,
+          "sigma": 1e-08,
           "max_iterations": 1500,
-          "absolute_tolerance": 2e-5,
-          "relative_tolerance": 3e-4,
+          "absolute_tolerance": 2e-05,
+          "relative_tolerance": 0.0003,
           "adaptive_rho": true,
           "adaptive_interval": 25,
-          "adaptive_tolerance": 5.0,
-          "rho_min": 1e-4,
-          "rho_max": 100000.0,
+          "adaptive_tolerance": 5,
+          "rho_min": 0.0001,
+          "rho_max": 100000,
           "time_limit_seconds": 0.035,
           "check_termination_interval": 10
         }
@@ -235,15 +369,42 @@
         "prediction_horizon": 5,
         "forgetting_factor": 0.8,
         "horizon_weight_decay": 0.95,
-        "weight_update_rate": 0.10,
+        "weight_update_rate": 0.1,
         "epsilon": 1e-10,
-        "indistinguishable_score_threshold": [1e-7, 1e-7, 1e-7],
-        "prediction_horizon_weights": [1.0, 1.0, 1.0, 1.0, 1.0],
-        "staircase_horizon_caps": [5, 5, 5, 5, 5, 4, 3, 1],
-        "initial_model1_weight": [0.0, 0.0, 0.0],
+        "indistinguishable_score_threshold": [
+          1e-07,
+          1e-07,
+          1e-07
+        ],
+        "prediction_horizon_weights": [
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "staircase_horizon_caps": [
+          5,
+          5,
+          5,
+          5,
+          5,
+          4,
+          3,
+          1
+        ],
+        "initial_model1_weight": [
+          0,
+          0,
+          0
+        ],
         "fixed_model1_weight": null,
         "minimum_weight": 0.01,
-        "position_error_clip": [0.50, 0.50, 0.50]
+        "position_error_clip": [
+          0.5,
+          0.5,
+          0.5
+        ]
       }
     },
     "active_yaw_parameters": {
@@ -252,10 +413,10 @@
       "dynamics": {
         "effective_inertia_kg_m2": 0.33453415,
         "linear_damping_n_m_per_rad_s": 0.32251723,
-        "quadratic_damping_n_m_per_rad_s2": 0.0
+        "quadratic_damping_n_m_per_rad_s2": 0
       },
       "controller": {
-        "alpha_on": 0.05235987755982989,
+        "alpha_on": 0.10471975511965978,
         "alpha_off": 0.020943951023931952,
         "alpha_emergency": 0.13962634015954636,
         "trigger_frames": 3,
@@ -264,12 +425,12 @@
         "yaw_tolerance": 0.03490658503988659,
         "omega_tolerance": 0.03490658503988659,
         "outer_kp": 1.5,
-        "outer_ki": 0.0,
+        "outer_ki": 0,
         "outer_kd": 0.2,
         "outer_integral_limit": 0.5235987755982988,
         "inner_kp": 0.6,
         "inner_ki": 0.02,
-        "inner_kd": 0.0,
+        "inner_kd": 0,
         "inner_integral_limit": 1.0471975511965976,
         "omega_command_max": 0.5235987755982988,
         "omega_command_acceleration_max": 1.0471975511965976,
@@ -291,18 +452,30 @@
     "period_sec": 0.05,
     "telemetry_max_age_sec": 0.25,
     "confirmation_max_age_sec": 0.25,
-    "calibration_max_channel_abs": 0.10,
+    "calibration_max_channel_abs": 0.1,
     "calibration_default_channel_abs": 0.05,
-    "mpc_final_motor_throttle_max_abs": 0.50,
+    "mpc_final_motor_throttle_max_abs": 0.5,
     "mpc_final_motor_limit_method": "operator-authorized 50-percent final mixed-motor envelope: uniformly scale all eight mixed outputs only above 0.50 to preserve the combined wrench direction, followed by an independent per-motor hard clamp; direct calibration remains limited to 0.10",
     "mpc_attitude_feedback_frame": "body FRD; measured raw IMU roll/pitch/yaw and gyro x/y/z signs are all negated before the local attitude controller",
     "local_pitch_mixer_sign": "reversed from the pre-20260813 matrix using the second water test: positive reconstructed pitch correction drove FRD pitch from approximately -1.2 deg to -10 deg instead of restoring it",
     "local_roll_attitude_outer_gain": 2.5,
-    "local_roll_rate_pid": {"kp": 0.10, "ki_per_1khz_cycle": 0.0001, "kd": 0.0},
+    "local_roll_rate_pid": {
+      "kp": 0.1,
+      "ki_per_1khz_cycle": 0.0001,
+      "kd": 0
+    },
     "local_pitch_attitude_outer_gain": 2.5,
-    "local_pitch_rate_pid": {"kp": 0.10, "ki_per_1khz_cycle": 0.0001, "kd": 0.0},
+    "local_pitch_rate_pid": {
+      "kp": 0.1,
+      "ki_per_1khz_cycle": 0.0001,
+      "kd": 0
+    },
     "local_yaw_attitude_outer_gain": 2.5,
-    "local_yaw_rate_pid": {"kp": 0.12, "ki_per_1khz_cycle": 0.00005, "kd": 0.0},
+    "local_yaw_rate_pid": {
+      "kp": 0.12,
+      "ki_per_1khz_cycle": 5e-05,
+      "kd": 0
+    },
     "local_attitude_gain_validation": "Roll, pitch and yaw were isolated with firmware single-axis modes, then re-checked together in water. With all three low-gain loops active, no motor reached the 10% limit; horizontal yaw motor output fell from old-gain P95 5.06% / max 7.75% to P95 0% / max 1.01%.",
     "local_attitude_state_initialization": "All Matrixf controller states are explicitly initialized with matrixf::zeros. Matrixf's default constructor does not clear its backing array; leaving targetAttitude roll/pitch uninitialized caused reset-dependent positive feedback.",
     "imu_stale_behavior": "keep AUTO and MPC armed state unchanged; suppress and reset only the local roll/pitch/yaw feedback controllers until fresh IMU packets resume; translation commands continue",
@@ -312,26 +485,42 @@
     "calibration_channel_step_disabled_reason": "",
     "calibration_channel_step_enable_basis": "Corrected M1/M2/M6/M7 horizontal and M3/M4/M5/M8 vertical mixer firmware, FRD attitude-feedback signs, pressure-sensor-0 selection, and final MPC motor limiter flashed and verified; post-flash disarmed zero-output log passed.",
     "calibration_firmware_hex_sha256": "30024fddc507f66b1c6dae7d8fa50000cda8163bc3403d5d789b2bce5b678b82",
-    "postflash_zero_output_csv": "../../raw_data/calibration_logs/postflash_matrix_zero_init_20260813_203001.csv",
+    "postflash_zero_output_csv": "calibration_logs/postflash_matrix_zero_init_20260813_203001.csv",
     "postflash_zero_output_csv_sha256": "6666759d4574becd5226598f2de44dd574b2cdefa7d835fc12ff5ecaf71fb945",
     "postflash_zero_output_summary": {
       "rows": 60,
       "fresh_telemetry_rows": 59,
-      "requested_armed_values": [false],
-      "requested_channel_max_abs": 0.0,
-      "telemetry_armed_values": [false],
-      "failsafe_values": [false],
-      "reject_flags_values": [0],
-      "rejected_command_count_first_last": [0, 0],
-      "state_values": [1],
+      "requested_armed_values": [
+        false
+      ],
+      "requested_channel_max_abs": 0,
+      "telemetry_armed_values": [
+        false
+      ],
+      "failsafe_values": [
+        false
+      ],
+      "reject_flags_values": [
+        0
+      ],
+      "rejected_command_count_first_last": [
+        0,
+        0
+      ],
+      "state_values": [
+        1
+      ],
       "depth_pressure_sensor_selection": "first valid absolute-pressure source among channels 0, 1 and 2 at boot; selected channel is not exposed in telemetry",
       "depth_pressure_sensor_runtime_status": "one valid source among channels 0, 1 and 2 initialized successfully; firmware reached disarmed IDLE",
       "ignored_faulty_pressure_sensor_index": 3,
-      "applied_motor_throttle_max_abs": 0.0,
-      "motor_rpm_max_abs": 0.0,
+      "applied_motor_throttle_max_abs": 0,
+      "motor_rpm_max_abs": 0,
       "telemetry_max_age_s": 0.049759,
       "mcu_tick_delta_ms": 2900,
-      "command_count_first_last": [1, 59],
+      "command_count_first_last": [
+        1,
+        59
+      ],
       "imu_quaternion_unique_rows": 57,
       "imu_quaternion_longest_identical_run_frames": 2,
       "imu_gyro_unique_rows": 57,
@@ -339,14 +528,30 @@
     }
   },
   "hardware_adapter": {
-    "positive_force_at_limit": [4.730162, 4.997534, 7.063140],
-    "negative_force_at_limit": [5.050680, 4.783308, 6.867140],
-    "translation_channel_limits": [0.20, 0.20, 0.20],
-    "translation_signs": [1.0, 1.0, 1.0],
+    "positive_force_at_limit": [
+      4.730162,
+      4.997534,
+      7.06314
+    ],
+    "negative_force_at_limit": [
+      5.05068,
+      4.783308,
+      6.86714
+    ],
+    "translation_channel_limits": [
+      0.2,
+      0.2,
+      0.2
+    ],
+    "translation_signs": [
+      1,
+      1,
+      1
+    ],
     "positive_yaw_moment_at_limit": 1.807854,
     "negative_yaw_moment_at_limit": 2.041126,
-    "yaw_channel_limit": 0.20,
-    "yaw_sign": 1.0
+    "yaw_channel_limit": 0.2,
+    "yaw_sign": 1
   },
   "thruster_feedback": {
     "physical_order": [
@@ -373,7 +578,7 @@
       "command_apply_zero_p95_s": 0.1047,
       "confirmed_rotation_at_abs_command": 0.05,
       "force_deadband_identified": false,
-      "analysis_file": "../../raw_data/calibration_logs/rpm_response_timing_m1_m8_20260811.analysis.json",
+      "analysis_file": "calibration_logs/rpm_response_timing_m1_m8_20260811.analysis.json",
       "confidence": "medium for telemetry-visible command/RPM onset; not a measured thrust response",
       "enabled_for_control": false
     },
@@ -384,27 +589,162 @@
       "model": "force_n = sign(rpm) * c1 * (rpm * 2*pi/60)^2",
       "source": "same-vehicle FinsSim V4 Pro1 M005-M008 horizontal load-cell RPM sweeps",
       "same_physical_vehicle_confirmed_by_operator_20260812": true,
-      "c1_positive_n_per_rad_s_sq_m1_m8": [9.387909395e-05, 0.0001118926888, 0.0001118926888, 9.387909395e-05, 9.387909395e-05, 0.0001118926888, 9.387909395e-05, 0.0001118926888],
-      "c1_negative_abs_n_per_rad_s_sq_m1_m8": [7.223931035e-05, 0.00010372069015, 0.00010372069015, 7.223931035e-05, 7.223931035e-05, 0.00010372069015, 7.223931035e-05, 0.00010372069015],
-      "positive_force_limit_prior_n_m1_m8": [7.3809, 8.4749, 8.4749, 7.3809, 7.3809, 8.4749, 7.3809, 8.4749],
-      "negative_force_limit_abs_prior_n_m1_m8": [5.7618, 7.975, 7.975, 5.7618, 5.7618, 7.975, 5.7618, 7.975],
+      "c1_positive_n_per_rad_s_sq_m1_m8": [
+        9.387909395e-05,
+        0.0001118926888,
+        0.0001118926888,
+        9.387909395e-05,
+        9.387909395e-05,
+        0.0001118926888,
+        9.387909395e-05,
+        0.0001118926888
+      ],
+      "c1_negative_abs_n_per_rad_s_sq_m1_m8": [
+        7.223931035e-05,
+        0.00010372069015,
+        0.00010372069015,
+        7.223931035e-05,
+        7.223931035e-05,
+        0.00010372069015,
+        7.223931035e-05,
+        0.00010372069015
+      ],
+      "positive_force_limit_prior_n_m1_m8": [
+        7.3809,
+        8.4749,
+        8.4749,
+        7.3809,
+        7.3809,
+        8.4749,
+        7.3809,
+        8.4749
+      ],
+      "negative_force_limit_abs_prior_n_m1_m8": [
+        5.7618,
+        7.975,
+        7.975,
+        5.7618,
+        5.7618,
+        7.975,
+        5.7618,
+        7.975
+      ],
       "measured_open_loop_throttle": 0.1,
-      "measured_steady_rpm_positive_m1_m8": [950.0, 937.5, 937.5, 950.0, 937.5, 937.5, 950.0, 925.0],
-      "measured_steady_rpm_negative_m1_m8": [-931.25, -925.0, -937.5, -937.5, -937.5, -925.0, -962.5, -937.5],
-      "estimated_force_at_measured_rpm_positive_n_m1_m8": [0.9291, 1.0785, 1.0785, 0.9291, 0.9048, 1.0785, 0.9291, 1.0499],
-      "estimated_force_at_measured_rpm_negative_n_m1_m8": [-0.687, -0.9732, -0.9997, -0.6963, -0.6963, -0.9732, -0.7339, -0.9997],
-      "current_low_throttle_prior_analysis": "../../raw_data/calibration_logs/current_rpm_historical_loadcell_force_prior_20260812.analysis.json",
-      "same_vehicle_acceptance_analysis": "../../raw_data/calibration_logs/same_vehicle_historical_thrust_acceptance_20260812.analysis.json",
-      "current_low_throttle_prior_point_order": [0.05, 0.075, 0.1, -0.05, -0.075, -0.1],
+      "measured_steady_rpm_positive_m1_m8": [
+        950,
+        937.5,
+        937.5,
+        950,
+        937.5,
+        937.5,
+        950,
+        925
+      ],
+      "measured_steady_rpm_negative_m1_m8": [
+        -931.25,
+        -925,
+        -937.5,
+        -937.5,
+        -937.5,
+        -925,
+        -962.5,
+        -937.5
+      ],
+      "estimated_force_at_measured_rpm_positive_n_m1_m8": [
+        0.9291,
+        1.0785,
+        1.0785,
+        0.9291,
+        0.9048,
+        1.0785,
+        0.9291,
+        1.0499
+      ],
+      "estimated_force_at_measured_rpm_negative_n_m1_m8": [
+        -0.687,
+        -0.9732,
+        -0.9997,
+        -0.6963,
+        -0.6963,
+        -0.9732,
+        -0.7339,
+        -0.9997
+      ],
+      "current_low_throttle_prior_analysis": "calibration_logs/current_rpm_historical_loadcell_force_prior_20260812.analysis.json",
+      "same_vehicle_acceptance_analysis": "calibration_logs/same_vehicle_historical_thrust_acceptance_20260812.analysis.json",
+      "current_low_throttle_prior_point_order": [
+        0.05,
+        0.075,
+        0.1,
+        -0.05,
+        -0.075,
+        -0.1
+      ],
       "current_low_throttle_estimated_force_n_m1_m8": [
-        [0.41108, 0.53088, 0.86664, -0.30945, -0.39307, -0.64525],
-        [0.47549, 0.60659, 1.00631, -0.42671, -0.54341, -0.90480],
-        [0.47931, 0.62064, 1.01611, -0.44787, -0.58653, -0.95103],
-        [0.41108, 0.53934, 0.87497, -0.30886, -0.40431, -0.65775],
-        [0.40292, 0.52263, 0.85140, -0.31193, -0.40851, -0.66049],
-        [0.48023, 0.61646, 1.00498, -0.43020, -0.55734, -0.91743],
-        [0.40537, 0.53192, 0.87725, -0.31562, -0.41709, -0.69344],
-        [0.47747, 0.61751, 1.00631, -0.44516, -0.58148, -0.94708]
+        [
+          0.41108,
+          0.53088,
+          0.86664,
+          -0.30945,
+          -0.39307,
+          -0.64525
+        ],
+        [
+          0.47549,
+          0.60659,
+          1.00631,
+          -0.42671,
+          -0.54341,
+          -0.9048
+        ],
+        [
+          0.47931,
+          0.62064,
+          1.01611,
+          -0.44787,
+          -0.58653,
+          -0.95103
+        ],
+        [
+          0.41108,
+          0.53934,
+          0.87497,
+          -0.30886,
+          -0.40431,
+          -0.65775
+        ],
+        [
+          0.40292,
+          0.52263,
+          0.8514,
+          -0.31193,
+          -0.40851,
+          -0.66049
+        ],
+        [
+          0.48023,
+          0.61646,
+          1.00498,
+          -0.4302,
+          -0.55734,
+          -0.91743
+        ],
+        [
+          0.40537,
+          0.53192,
+          0.87725,
+          -0.31562,
+          -0.41709,
+          -0.69344
+        ],
+        [
+          0.47747,
+          0.61751,
+          1.00631,
+          -0.44516,
+          -0.58148,
+          -0.94708
+        ]
       ],
       "confidence": "medium for horizontal low-limit force because both the load-cell curve and current RPM are from this vehicle; medium-low for vertical motors because their curves are transferred by propulsion-unit rotation group rather than individually load-cell measured"
     }
@@ -413,7 +753,7 @@
     "enabled_for_full_attitude_allocation": false,
     "frame": "body_FRD_x_forward_y_right_z_down",
     "reference_origin": "V4 CAD main-assembly origin; this is not yet the measured center of mass",
-    "source": "/home/fins/Zhouyuheng_workspace/V4pro/V4外形.STEP",
+    "source": "assets/cad/V4_body.step",
     "source_sha256": "32ba6a7ddaed7e1a2aadd190c13278a858d9c97c8d293479095b2810ed6273d5",
     "source_units": "millimetres converted to metres",
     "cad_to_frd": "x_frd=-y_cad, y_frd=x_cad, z_frd=z_cad",
@@ -438,34 +778,98 @@
       "NAUO3/#197581"
     ],
     "positions_from_cad_origin_m_m1_m8": [
-      [0.272237385, -0.121285009, 0.030378105],
-      [-0.194858602, -0.198663792, 0.030378105],
-      [0.135375485, -0.157378105, 0.040215062],
-      [-0.135375485, -0.157378105, 0.040215062],
-      [-0.135375485, 0.157378105, 0.040215062],
-      [0.272237385, 0.121285009, 0.030378105],
-      [-0.194858602, 0.198663792, 0.030378105],
-      [0.135375485, 0.157378105, 0.040215062]
+      [
+        0.272237385,
+        -0.121285009,
+        0.030378105
+      ],
+      [
+        -0.194858602,
+        -0.198663792,
+        0.030378105
+      ],
+      [
+        0.135375485,
+        -0.157378105,
+        0.040215062
+      ],
+      [
+        -0.135375485,
+        -0.157378105,
+        0.040215062
+      ],
+      [
+        -0.135375485,
+        0.157378105,
+        0.040215062
+      ],
+      [
+        0.272237385,
+        0.121285009,
+        0.030378105
+      ],
+      [
+        -0.194858602,
+        0.198663792,
+        0.030378105
+      ],
+      [
+        0.135375485,
+        0.157378105,
+        0.040215062
+      ]
     ],
     "positive_throttle_force_directions_frd_m1_m8": [
-      [-0.707106781, -0.707106781, 0.0],
-      [-0.707106781, 0.707106781, 0.0],
-      [0.0, 0.0, 1.0],
-      [0.0, 0.0, -1.0],
-      [0.0, 0.0, 1.0],
-      [-0.707106781, 0.707106781, 0.0],
-      [0.707106781, 0.707106781, 0.0],
-      [0.0, 0.0, 1.0]
+      [
+        -0.707106781,
+        -0.707106781,
+        0
+      ],
+      [
+        -0.707106781,
+        0.707106781,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        -1
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        -0.707106781,
+        0.707106781,
+        0
+      ],
+      [
+        0.707106781,
+        0.707106781,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ]
     ],
     "yaw_moment_arm_about_cad_origin_m_per_positive_force_m1_m8": [
       -0.278262353,
       -0.278262353,
-      0.0,
-      0.0,
-      0.0,
+      0,
+      0,
+      0,
       0.278262353,
       -0.278262353,
-      0.0
+      0
     ],
     "confidence": "CAD centers and axes are high-confidence design geometry; positive-throttle signs are current-vehicle measurements. Full moment allocation remains disabled until center of mass and as-built conformity are confirmed."
   },
@@ -473,20 +877,57 @@
     "enabled_for_mpc_state_correction": false,
     "active_chain_verified_2026_08_11": {
       "device": "/dev/v4l/by-id/usb-DSJ_USB_Camera_200901010001-video-index0",
-      "resolution_px": [1280, 720],
-      "target_tag_ids": [15, 16],
+      "resolution_px": [
+        1280,
+        720
+      ],
+      "target_tag_ids": [
+        15,
+        16
+      ],
       "marker_length_m": 0.093
     },
     "intrinsics": {
-      "camera_matrix": [[540.9305201862155, 0.0, 682.2340572295288], [0.0, 540.9305201862155, 348.61355599431334], [0.0, 0.0, 1.0]],
-      "distortion_plumb_bob_k1_k2_p1_p2_k3": [0.029441755939599856, -0.05975546184046912, 0.0008809786701829642, 0.0017914762603378682, 0.012568621044821903],
+      "camera_matrix": [
+        [
+          540.9305201862155,
+          0,
+          682.2340572295288
+        ],
+        [
+          0,
+          540.9305201862155,
+          348.61355599431334
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "distortion_plumb_bob_k1_k2_p1_p2_k3": [
+        0.029441755939599856,
+        -0.05975546184046912,
+        0.0008809786701829642,
+        0.0017914762603378682,
+        0.012568621044821903
+      ],
       "calibration_reprojection_error_px": 0.2825884320581254,
       "valid_images": 38,
       "source_sha256": "8e40d28b0fa7bd37e907ffbc0bbd724fd449b3f1635900a1f5f267ff6d3f51f5"
     },
     "world_from_camera_extrinsic": {
-      "translation_xyz_m": [0.04093674563826751, -0.1524047718391534, 2.2147194718361503],
-      "rotation_xyzw": [0.9989334485930018, -0.0019376405095682715, 0.00007356191223612514, -0.04613247684650684],
+      "translation_xyz_m": [
+        0.04093674563826751,
+        -0.1524047718391534,
+        2.2147194718361503
+      ],
+      "rotation_xyzw": [
+        0.9989334485930018,
+        -0.0019376405095682715,
+        7.356191223612514e-05,
+        -0.04613247684650684
+      ],
       "point_cloud_sample_count": 160,
       "point_cloud_inlier_count": 160,
       "translation_rmse_m": 0.01033735939554535,
@@ -494,76 +935,179 @@
       "source_sha256": "61b2b19947a7a8f9b264690a32051c7a348512ba1fb0b7b33cc3874d719c995d"
     },
     "body_tag_installation_priors": {
-      "15": {"translation_xyz_m": [0.07, 0.0, 0.10], "rotation_rpy_deg": [0.0, 0.0, 90.0]},
-      "16": {"translation_xyz_m": [-0.07, 0.0, 0.10], "rotation_rpy_deg": [0.0, 0.0, 90.0]},
+      "15": {
+        "translation_xyz_m": [
+          0.07,
+          0,
+          0.1
+        ],
+        "rotation_rpy_deg": [
+          0,
+          0,
+          90
+        ]
+      },
+      "16": {
+        "translation_xyz_m": [
+          -0.07,
+          0,
+          0.1
+        ],
+        "rotation_rpy_deg": [
+          0,
+          0,
+          90
+        ]
+      },
       "confidence": "medium-high for tag ordering and +/-0.07 m horizontal spacing because current PnP measured 0.14081 m; z=0.10 m and tag rotations remain low-confidence priors"
     },
     "onboard_stereo_udp5600_historical_real_calibration": {
       "enabled_for_control": false,
-      "source": "/home/fins/UnderwaterSim/Code/FinsSim/ros2_ws/data/calibration/outputs/finsrov_stereo_udp5600_20260723.yaml",
+      "source": "../../vision/runtime/stereo_camera_config.yaml",
       "source_sha256": "ad6a37e76993a1f68e8bf474b65a2d396097b2c184c7f88f773de3e41bc72d11",
-      "calibration_eye_resolution_px": [640, 480],
-      "historical_udp_combined_resolution_px": [1280, 480],
+      "calibration_eye_resolution_px": [
+        640,
+        480
+      ],
+      "historical_udp_combined_resolution_px": [
+        1280,
+        480
+      ],
       "historical_stream_layout": "left and right images side by side",
       "valid_pair_count": 34,
-      "monocular_rms_px_left_right": [0.2365245032, 0.3822203251],
+      "monocular_rms_px_left_right": [
+        0.2365245032,
+        0.3822203251
+      ],
       "stereo_rms_px": 0.3371523298,
-      "left_camera_matrix": [[574.9848715937, 0.0, 342.5429351542], [0.0, 572.0045911113, 261.4222075895], [0.0, 0.0, 1.0]],
-      "left_distortion_plumb_bob_k1_k2_p1_p2_k3": [0.4612927801, -0.0039138146, 0.0090802907, 0.0068380836, 0.4697149171],
+      "left_camera_matrix": [
+        [
+          574.9848715937,
+          0,
+          342.5429351542
+        ],
+        [
+          0,
+          572.0045911113,
+          261.4222075895
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "left_distortion_plumb_bob_k1_k2_p1_p2_k3": [
+        0.4612927801,
+        -0.0039138146,
+        0.0090802907,
+        0.0068380836,
+        0.4697149171
+      ],
       "stereo_baseline_m": 0.0594590631,
-      "raw_left_full_fov_deg_xy": [58.195058724, 45.523606427],
-      "rectified_left_camera_matrix": [[715.1307744009, 0.0, 319.1771163940], [0.0, 715.1307744009, 256.5949916840], [0.0, 0.0, 1.0]],
-      "rectified_left_full_fov_deg_xy": [48.214225316, 37.103809431],
+      "raw_left_full_fov_deg_xy": [
+        58.195058724,
+        45.523606427
+      ],
+      "rectified_left_camera_matrix": [
+        [
+          715.1307744009,
+          0,
+          319.177116394
+        ],
+        [
+          0,
+          715.1307744009,
+          256.594991684
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "rectified_left_full_fov_deg_xy": [
+        48.214225316,
+        37.103809431
+      ],
       "live_verification_20260812": {
         "device": "USB 05a3:9750, 3D USB Camera, no unique serial exposed",
-        "stream_resolution_px": [1280, 480],
+        "stream_resolution_px": [
+          1280,
+          480
+        ],
         "stream_rate_configured_hz": 30,
         "layout": "two 640x480 eyes side by side",
         "physical_left_eye_half": "left",
         "physical_right_eye_half": "right",
         "eye_order_method": "operator occluded the physical left lens; only the left video half became dark",
-        "servo_initialization_deg_yaw_pitch": [135.0, 150.0],
+        "servo_initialization_deg_yaw_pitch": [
+          135,
+          150
+        ],
         "servo_initialization_source": "V4pro1_MPC/Interface/Examples/TaskSUB.cpp",
-        "unoccluded_snapshot": "../../raw_data/calibration_logs/onboard_stereo_udp5600_init_pose_20260812.jpg",
+        "unoccluded_snapshot": "calibration_logs/onboard_stereo_udp5600_init_pose_20260812.jpg",
         "unoccluded_snapshot_sha256": "b8450be476911ea440fa8949ce329ee9956834af2b641ad98cdf757c205dbaee",
-        "left_occluded_snapshot": "../../raw_data/calibration_logs/onboard_stereo_udp5600_physical_left_occluded_20260812.jpg",
+        "left_occluded_snapshot": "calibration_logs/onboard_stereo_udp5600_physical_left_occluded_20260812.jpg",
         "left_occluded_snapshot_sha256": "1b0f4bb8f45ca72e4602c909928dded1de905be1fbce0d3e415e9819a898b491"
       },
       "live_range_and_mount_check_20260812": {
-        "camera_origin_in_body_frd_m_candidate": [0.2609931, 0.0077881, -0.1236508],
-        "candidate_source": "/home/fins/Zhouyuheng_workspace/V4pro/V4外形.STEP",
+        "camera_origin_in_body_frd_m_candidate": [
+          0.2609931,
+          0.0077881,
+          -0.1236508
+        ],
+        "candidate_source": "assets/cad/V4_body.step",
         "stereo_inferred_forward_origin_two_point_midpoint_m": 0.26153565,
         "stereo_inferred_forward_origin_half_range_m": 0.00523205,
         "cad_minus_stereo_forward_difference_m": -0.00054255,
-        "accepted_stereo_target_ranges_m": [0.5207293, 0.6986044],
-        "accepted_vertical_epipolar_errors_px": [0.36214, -0.12775],
+        "accepted_stereo_target_ranges_m": [
+          0.5207293,
+          0.6986044
+        ],
+        "accepted_vertical_epipolar_errors_px": [
+          0.36214,
+          -0.12775
+        ],
         "rotation_body_from_camera": null,
-        "analysis_file": "../../raw_data/calibration_logs/onboard_stereo_range_extrinsic_20260812.analysis.json",
+        "analysis_file": "calibration_logs/onboard_stereo_range_extrinsic_20260812.analysis.json",
         "confidence": "medium-low for forward origin; CAD-only candidate for right/down origin; camera rotation remains unmeasured",
         "enabled_for_control": false
       },
       "external_red_fish_pipeline_20260812": {
         "external_repository_is_read_only_for_this_task": true,
-        "external_config": "/home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/src/depth_estimation/config.yaml",
+        "external_config": "../../vision/src/depth_estimation/config.yaml",
         "input_schema": "pipeline JSONL tracks[0].position in OpenCV [right,down,forward] metres",
-        "frozen_calibration_jsonl": "../../raw_data/calibration_logs/onboard_vision_three_runs_20260812.jsonl",
+        "frozen_calibration_jsonl": "calibration_logs/onboard_vision_three_runs_20260812.jsonl",
         "frozen_calibration_jsonl_sha256": "d69d4d78f6a9ce64fe4f1b7e4d9904d18c06dc966e8e3c6024a92e5c2a8935bb",
         "overhead_csvs": [
-          "../../raw_data/calibration_logs/onboard_overhead_fish_dynamic_20260812_run01.csv",
-          "../../raw_data/calibration_logs/onboard_overhead_fish_dynamic_20260812_run02.csv",
-          "../../raw_data/calibration_logs/onboard_overhead_fish_dynamic_20260812_run03.csv"
+          "calibration_logs/onboard_overhead_fish_dynamic_20260812_run01.csv",
+          "calibration_logs/onboard_overhead_fish_dynamic_20260812_run02.csv",
+          "calibration_logs/onboard_overhead_fish_dynamic_20260812_run03.csv"
         ],
-        "analysis_file": "../../raw_data/calibration_logs/onboard_overhead_vision_calibration_20260812.analysis.json",
+        "analysis_file": "calibration_logs/onboard_overhead_vision_calibration_20260812.analysis.json",
         "analysis_file_sha256": "eca953024a9f50f4c7f25142f274f500bafab5ed33d379d658a23f64fc0590ee",
         "paired_samples": 752,
         "robust_inlier_samples": 632,
         "robust_rmse_m": 0.0269819522,
         "robust_p95_m": 0.0475803061,
-        "effective_delay_vs_overhead_s": 0.10,
+        "effective_delay_vs_overhead_s": 0.1,
         "rotation_body_from_camera_candidate": [
-          [0.105483644, -0.006124566, 0.994402178],
-          [0.994329497, -0.012918533, -0.105555500],
-          [0.013492699, 0.999897795, 0.004727143]
+          [
+            0.105483644,
+            -0.006124566,
+            0.994402178
+          ],
+          [
+            0.994329497,
+            -0.012918533,
+            -0.1055555
+          ],
+          [
+            0.013492699,
+            0.999897795,
+            0.004727143
+          ]
         ],
         "rotation_deviation_from_axis_aligned_deg": 6.1125,
         "rotation_candidate_warning": "The existing overhead-derived left-camera topic required an MPC-side diag(-1,-1,+1) axis correction. Keep this transform as a candidate until an independent as-built reference confirms it.",
@@ -571,12 +1115,15 @@
           "implementation": "MPC_dual_model/vision_measurement.py",
           "max_result_age_s": 0.25,
           "max_pipeline_delay_s": 0.15,
-          "min_confidence": 0.50,
-          "min_depth_confidence": 0.20,
-          "max_depth_nis": 25.0,
-          "forward_range_m": [0.15, 1.50],
-          "max_speed_m_s": 1.0,
-          "jump_margin_m": 0.10,
+          "min_confidence": 0.5,
+          "min_depth_confidence": 0.2,
+          "max_depth_nis": 25,
+          "forward_range_m": [
+            0.15,
+            1.5
+          ],
+          "max_speed_m_s": 1,
+          "jump_margin_m": 0.1,
           "startup_confirmation_samples": 3,
           "reacquire_confirmation_samples": 5,
           "evidence": "Run03 contained a false 1.84-1.85 m depth excursion with NIS up to 1859.58; the 20260813 frozen rigid-target replay also contained a stable false cluster near 2.0 m that could pass reacquisition twice under the old 2.50 m limit. The 1.50 m maximum now matches the MPC task envelope."
@@ -584,34 +1131,70 @@
         "rigid_target_cross_check_20260813": {
           "target_fixture": "fish visual reference approximately 0.23 m vertically below tag 17 center, with approximately zero horizontal offset",
           "analysis_implementation": "MPC_dual_model/rigid_target_extrinsic_analysis.py",
-          "frozen_front_jsonl": "../../raw_data/calibration_logs/onboard_rigid_target_front_20260812_13.jsonl",
+          "frozen_front_jsonl": "calibration_logs/onboard_rigid_target_front_20260812_13.jsonl",
           "frozen_front_jsonl_sha256": "278246a7c099c2ed01f2ef0ae4a3cbcc2cdefb65ec50f8014fd450d1c70f0069",
           "frozen_front_jsonl_records": 1213,
-          "analysis_file": "../../raw_data/calibration_logs/onboard_rigid_target_extrinsic_20260813.analysis.json",
+          "analysis_file": "calibration_logs/onboard_rigid_target_extrinsic_20260813.analysis.json",
           "analysis_file_sha256": "42e0786ea34d5b38691266b1700f1b645695939ae9ef4944e30c1dae702aee15",
-          "primary_positions": ["center", "left", "right", "up", "down"],
+          "primary_positions": [
+            "center",
+            "left",
+            "right",
+            "up",
+            "down"
+          ],
           "paired_samples": 437,
           "robust_inlier_samples": 405,
           "robust_rmse_m": 0.0310505321,
           "robust_median_m": 0.0248499125,
-          "robust_p95_m": 0.0542106350,
+          "robust_p95_m": 0.054210635,
           "effective_delay_best_s": 0.15,
-          "effective_delay_within_1mm_rmse_interval_s": [0.06, 0.25],
+          "effective_delay_within_1mm_rmse_interval_s": [
+            0.06,
+            0.25
+          ],
           "rotation_body_from_camera_candidate": [
-            [0.127342519, -0.119164640, 0.984674399],
-            [0.991753850, 0.029739313, -0.124659033],
-            [-0.014428592, 0.992429021, 0.121969069]
+            [
+              0.127342519,
+              -0.11916464,
+              0.984674399
+            ],
+            [
+              0.99175385,
+              0.029739313,
+              -0.124659033
+            ],
+            [
+              -0.014428592,
+              0.992429021,
+              0.121969069
+            ]
           ],
           "rotation_deviation_from_axis_aligned_deg": 10.1243,
-          "rotation_difference_from_20260812_dynamic_candidate_deg": 7.0360,
+          "rotation_difference_from_20260812_dynamic_candidate_deg": 7.036,
           "maximum_leave_one_position_rotation_difference_deg": 3.5302,
-          "tag_normal_sensitivity_rmse_p95_m": [0.0292283315, 0.0504557662],
+          "tag_normal_sensitivity_rmse_p95_m": [
+            0.0292283315,
+            0.0504557662
+          ],
           "equal_weight_position_rotation_difference_from_all_samples_deg": 3.6315,
           "similarity_diagnostic_scale": 0.9276090571,
-          "translation_relative_tag15_16_midpoint_frd_m": [0.200315316, -0.031672945, 0.025077913],
-          "tag_midpoint_in_body_frd_operator_estimate_m": [0.0, 0.0, -0.15],
-          "camera_origin_from_approximate_tag_height_candidate_frd_m": [0.200315316, -0.031672945, -0.124922087],
-          "camera_origin_difference_from_cad_norm_m": 0.0723918760,
+          "translation_relative_tag15_16_midpoint_frd_m": [
+            0.200315316,
+            -0.031672945,
+            0.025077913
+          ],
+          "tag_midpoint_in_body_frd_operator_estimate_m": [
+            0,
+            0,
+            -0.15
+          ],
+          "camera_origin_from_approximate_tag_height_candidate_frd_m": [
+            0.200315316,
+            -0.031672945,
+            -0.124922087
+          ],
+          "camera_origin_difference_from_cad_norm_m": 0.072391876,
           "continuous_gate_replay": {
             "records": 1213,
             "control_ready_records": 921,
@@ -641,21 +1224,28 @@
         "p05": 0.001641,
         "p95": 0.034263,
         "sample_count": 559,
-        "source": "../../raw_data/calibration_logs/sway_channel_010_camera_20260811.csv"
+        "source": "calibration_logs/sway_channel_010_camera_20260811.csv"
       },
       "onboard_udp5600_relative_motion_session_s": {
-        "nominal": 0.30,
-        "plausible_interval": [0.18, 0.46],
+        "nominal": 0.3,
+        "plausible_interval": [
+          0.18,
+          0.46
+        ],
         "onboard_effective_rate_hz": 29.6671,
         "confidence": "low because onboard target detection was intermittent",
-        "source": "../../raw_data/calibration_logs/onboard_stereo_relative_latency_20260812.analysis.json",
+        "source": "calibration_logs/onboard_stereo_relative_latency_20260812.analysis.json",
         "enabled_as_fixed_compensation": false
       },
       "conclusion": "Header-to-host latency changed substantially between launch chains. The current onboard motion record indicates a few-tenths-of-a-second relative visual delay, but no fixed controller delay compensation is enabled because it is not an exposure-to-control measurement and the detector was intermittent."
     },
     "underwater_truth_evaluation_warning": {
       "sample_count": 720,
-      "current_rmse_xyz_m": [0.10870016193680264, 0.07355109030329009, 0.3799782535523338],
+      "current_rmse_xyz_m": [
+        0.10870016193680264,
+        0.07355109030329009,
+        0.3799782535523338
+      ],
       "current_rmse_norm_m": 0.4020061706772317,
       "source_sha256": "f77a7d16dbb03c4d8309aaa40c128e4383d194a36e2793c4ac4c6e8702301247",
       "conclusion": "The rigid extrinsic is a measured prior, but the current pinhole/world pose is not a reliable underwater truth model, especially in z."
@@ -669,25 +1259,29 @@
       "firmware_hex_sha256": "b052901f75548ae56e5b5e3635057ab8f689aba8cb99657cee589614516811ca",
       "formula_unit_correction": "TE compensation P result has 0.01 mbar resolution; its numeric value already equals Pa, so the previous extra x100 conversion was removed.",
       "old_100x_records_used_by_operator_request": {
-        "zero_platform_tail_m_reported": [1.975204110, 2.034489750, 2.074693920],
-        "plus_10cm_tail_m_reported": 11.620816200,
-        "plus_20cm_tail_m_reported": 21.969183000,
+        "zero_platform_tail_m_reported": [
+          1.97520411,
+          2.03448975,
+          2.07469392
+        ],
+        "plus_10cm_tail_m_reported": 11.6208162,
+        "plus_20cm_tail_m_reported": 21.969183,
         "correction": "divide reported gauge changes by 100",
         "three_zero_corrected_max_spread_m": 0.000994898,
-        "plus_20cm_corrected_delta_m": 0.199411000,
-        "plus_20cm_error_m": -0.000589000
+        "plus_20cm_corrected_delta_m": 0.199411,
+        "plus_20cm_error_m": -0.000589
       },
       "postflash_air_zero": {
-        "csv": "../../raw_data/calibration_logs/depth_unit_postflash_air_20260812_run01.csv",
+        "csv": "calibration_logs/depth_unit_postflash_air_20260812_run01.csv",
         "depth_median_m": 0.000478316,
-        "depth_std_m": 0.000085616,
+        "depth_std_m": 8.5616e-05,
         "pressure_median_pa": 4.688
       },
       "postflash_water_position": {
-        "operator_sensor_depth_approx_m": 0.20,
-        "csv": "../../raw_data/calibration_logs/depth_scale_fixed_0cm_outbound_20260812_run01.csv",
+        "operator_sensor_depth_approx_m": 0.2,
+        "csv": "calibration_logs/depth_scale_fixed_0cm_outbound_20260812_run01.csv",
         "depth_median_m": 0.215157837,
-        "depth_std_m": 0.000200700
+        "depth_std_m": 0.0002007
       },
       "scale_and_frd_down_sign_usable": true,
       "enabled_as_absolute_pool_depth": false,
@@ -702,13 +1296,16 @@
       "dwp2_alignment_commit": "37757ff9211b51c33e935ba6623cac5eb4de9aa3",
       "source_file": "Assets/Models/FinsROV/Calibrated/FinsROV_DWP2Calibrated.prefab",
       "supporting_displaced_volume_m3": 0.0118,
-      "supporting_water_density_kg_m3": 1027.0,
+      "supporting_water_density_kg_m3": 1027,
       "neutral_displacement_mass_kg": 12.1186,
       "measurement_record_available": false,
       "confidence": "medium: GitHub history proves intentional real-water calibration, but no weighing setup or raw scale reading is present"
     },
     "cg_cb_horizontal_assumption": {
-      "relative_horizontal_offset_xy_m": [0.0, 0.0],
+      "relative_horizontal_offset_xy_m": [
+        0,
+        0
+      ],
       "is_measurement": false,
       "basis": "User-confirmed engineering approximation on 2026-08-11: CG and CB are approximately coincident in the horizontal plane.",
       "vertical_separation_status": "unmeasured_and_deprioritized",
@@ -717,69 +1314,136 @@
       "confidence": "medium as an engineering approximation"
     },
     "static_natural_trim_frd_deg": {
-      "roll_repeat_range": [-4.15, -4.04],
-      "pitch_repeat_range": [0.31, 0.39],
-      "source": "../../raw_data/calibration_logs/static_camera_imu_postmixer_20260811.csv",
+      "roll_repeat_range": [
+        -4.15,
+        -4.04
+      ],
+      "pitch_repeat_range": [
+        0.31,
+        0.39
+      ],
+      "source": "calibration_logs/static_camera_imu_postmixer_20260811.csv",
       "confidence": "medium for the current unloaded natural attitude; not a center-of-gravity or center-of-buoyancy measurement"
     },
     "center_of_buoyancy_relative_to_center_of_gravity_direction_candidate_frd": {
-      "unit_vector": [0.0117, 0.0697, -0.9975],
+      "unit_vector": [
+        0.0117,
+        0.0697,
+        -0.9975
+      ],
       "magnitude_known": false,
       "method": "Direction only from the static gravity vector; absolute CG/CB locations and vertical separation remain unmeasured.",
       "confidence": "low"
     },
     "translation_dynamics": {
       "surge_forward": {
-        "effective_mass_range_kg": [19.92, 29.72],
+        "effective_mass_range_kg": [
+          19.92,
+          29.72
+        ],
         "rigid_body_mass_prior_kg": 12.11,
-        "derived_added_mass_range_kg": [7.813901, 17.607878],
-        "linear_damping_range_n_per_m_s": [7.79, 11.59],
+        "derived_added_mass_range_kg": [
+          7.813901,
+          17.607878
+        ],
+        "linear_damping_range_n_per_m_s": [
+          7.79,
+          11.59
+        ],
         "free_decay_cross_validation": {
           "time_constant_midpoint_s": 2.673812,
-          "time_constant_range_s": [2.609722, 2.737901],
+          "time_constant_range_s": [
+            2.609722,
+            2.737901
+          ],
           "decay_rate_midpoint_per_s": 0.374213,
-          "decay_rate_range_per_s": [0.365243, 0.383183],
-          "decay_implied_linear_damping_range_n_per_m_s": [7.275647, 11.388186],
-          "overlap_with_forced_fit_linear_damping_range_n_per_m_s": [7.79, 11.388186],
-          "analysis_file": "../../raw_data/calibration_logs/surge_decay_bidirectional_0075_20260811.analysis.json",
+          "decay_rate_range_per_s": [
+            0.365243,
+            0.383183
+          ],
+          "decay_implied_linear_damping_range_n_per_m_s": [
+            7.275647,
+            11.388186
+          ],
+          "overlap_with_forced_fit_linear_damping_range_n_per_m_s": [
+            7.79,
+            11.388186
+          ],
+          "analysis_file": "calibration_logs/surge_decay_bidirectional_0075_20260811.analysis.json",
           "enabled_for_control": false
         },
         "analysis_files": [
-          "../../raw_data/calibration_logs/surge_channel_0075_20260811.analysis.json",
-          "../../raw_data/calibration_logs/surge_channel_010_20260811.analysis.json",
-          "../../raw_data/calibration_logs/surge_decay_bidirectional_0075_20260811.analysis.json"
+          "calibration_logs/surge_channel_0075_20260811.analysis.json",
+          "calibration_logs/surge_channel_010_20260811.analysis.json",
+          "calibration_logs/surge_decay_bidirectional_0075_20260811.analysis.json"
         ]
       },
       "sway_right": {
-        "effective_mass_range_kg": [24.94, 27.58],
+        "effective_mass_range_kg": [
+          24.94,
+          27.58
+        ],
         "rigid_body_mass_prior_kg": 12.11,
-        "derived_added_mass_range_kg": [12.834935, 15.460718],
-        "linear_damping_range_n_per_m_s": [13.68, 18.14],
+        "derived_added_mass_range_kg": [
+          12.834935,
+          15.460718
+        ],
+        "linear_damping_range_n_per_m_s": [
+          13.68,
+          18.14
+        ],
         "free_decay_cross_validation": {
           "time_constant_midpoint_s": 2.127176,
-          "time_constant_range_s": [2.102565, 2.151787],
+          "time_constant_range_s": [
+            2.102565,
+            2.151787
+          ],
           "decay_rate_midpoint_per_s": 0.47017,
-          "decay_rate_range_per_s": [0.46473, 0.47561],
-          "decay_implied_linear_damping_range_n_per_m_s": [11.590369, 13.117312],
+          "decay_rate_range_per_s": [
+            0.46473,
+            0.47561
+          ],
+          "decay_implied_linear_damping_range_n_per_m_s": [
+            11.590369,
+            13.117312
+          ],
           "overlap_with_forced_fit_linear_damping_range_n_per_m_s": null,
-          "analysis_file": "../../raw_data/calibration_logs/sway_decay_bidirectional_0075_20260812.analysis.json",
+          "analysis_file": "calibration_logs/sway_decay_bidirectional_0075_20260812.analysis.json",
           "enabled_for_control": false
         },
         "refracted_pose_bidirectional_recheck_20260813": {
           "status": "window_sensitive_rejected_as_control_parameter",
           "method": "Separate +0.075/-0.075 right-channel 2 s pulses, each preceded by 10 s neutral and followed by 10 s neutral coast; pool-world refracted pose projected on each run's initial body-right axis.",
-          "positive_negative_net_displacement_m": [0.529099, -0.495406],
-          "positive_negative_body_axis_angle_range_deg": [9.086058, 8.292484],
+          "positive_negative_net_displacement_m": [
+            0.529099,
+            -0.495406
+          ],
+          "positive_negative_body_axis_angle_range_deg": [
+            9.086058,
+            8.292484
+          ],
           "forced_window_zero_initial_velocity_fit": {
             "effective_mass_kg": 16.003784,
             "linear_damping_n_per_m_s": 14.964789,
             "position_rmse_m": 0.000945
           },
           "pulse_plus_coast_window_sensitivity": {
-            "window_duration_range_s": [2.0, 12.0],
-            "effective_mass_range_kg": [15.203595, 38.065877],
-            "linear_damping_range_n_per_m_s": [6.170718, 16.146220],
-            "time_constant_range_s": [0.941619, 6.168792],
+            "window_duration_range_s": [
+              2,
+              12
+            ],
+            "effective_mass_range_kg": [
+              15.203595,
+              38.065877
+            ],
+            "linear_damping_range_n_per_m_s": [
+              6.170718,
+              16.14622
+            ],
+            "time_constant_range_s": [
+              0.941619,
+              6.168792
+            ],
             "monotonic_parameter_drift_with_window": true
           },
           "camera_refraction_corrected": true,
@@ -787,29 +1451,35 @@
           "enabled_for_control": false,
           "reason_not_enabled": "The fitted mass increases and damping decreases monotonically as late slow drift is included. Corrected pose removes raw-PnP scale as the main explanation, but tether/current/yaw coupling or model mismatch keeps the single linear model non-window-invariant.",
           "analysis_files": [
-            "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_forced_v0zero_20260813.analysis.json",
-            "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_coast_v0zero_20260813.analysis.json",
-            "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json"
+            "calibration_logs/sway_refracted_bidirectional_p0075_forced_v0zero_20260813.analysis.json",
+            "calibration_logs/sway_refracted_bidirectional_p0075_coast_v0zero_20260813.analysis.json",
+            "calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json"
           ]
         },
         "analysis_files": [
-          "../../raw_data/calibration_logs/sway_channel_0075_20260811.analysis.json",
-          "../../raw_data/calibration_logs/sway_channel_010_20260811.analysis.json",
-          "../../raw_data/calibration_logs/sway_decay_bidirectional_0075_20260812.analysis.json",
-          "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_forced_v0zero_20260813.analysis.json",
-          "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_coast_v0zero_20260813.analysis.json",
-          "../../raw_data/calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json"
+          "calibration_logs/sway_channel_0075_20260811.analysis.json",
+          "calibration_logs/sway_channel_010_20260811.analysis.json",
+          "calibration_logs/sway_decay_bidirectional_0075_20260812.analysis.json",
+          "calibration_logs/sway_refracted_bidirectional_p0075_forced_v0zero_20260813.analysis.json",
+          "calibration_logs/sway_refracted_bidirectional_p0075_coast_v0zero_20260813.analysis.json",
+          "calibration_logs/sway_refracted_bidirectional_p0075_window_sensitivity_20260813.analysis.json"
         ]
       },
       "heave_down": {
         "status": "cross_validated_candidate_not_enabled_for_control",
         "positive_buoyancy_observed": true,
         "test_method": "Two repetitions each at +0.05 and +0.075 down channel for 2 s, followed by zero-command natural upward coast. Surface-constrained samples after the first return through pre-pulse depth are excluded.",
-        "effective_mass_independent_fit_range_kg": [22.620613, 28.227163],
+        "effective_mass_independent_fit_range_kg": [
+          22.620613,
+          28.227163
+        ],
         "effective_mass_joint_fit_kg": 26.257826,
-        "linear_damping_independent_fit_range_n_per_m_s": [10.065540, 14.366957],
+        "linear_damping_independent_fit_range_n_per_m_s": [
+          10.06554,
+          14.366957
+        ],
         "linear_damping_joint_fit_n_per_m_s": 11.290874,
-        "constant_force_bias_joint_fit_n": -0.807290,
+        "constant_force_bias_joint_fit_n": -0.80729,
         "constant_force_bias_sign": "negative FRD-down means approximately 0.81 N net upward buoyancy",
         "joint_position_rmse_m": 0.004907,
         "joint_position_abs_error_p95_m": 0.009476,
@@ -820,13 +1490,13 @@
         },
         "cross_amplitude_candidate_gates_passed": true,
         "raw_csvs": [
-          "../../raw_data/calibration_logs/heave_positive_p005_postflash_20260813_run01.csv",
-          "../../raw_data/calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv"
+          "calibration_logs/heave_positive_p005_postflash_20260813_run01.csv",
+          "calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv"
         ],
         "analysis_files": [
-          "../../raw_data/calibration_logs/heave_positive_p005_postflash_20260813_run01.analysis.json",
-          "../../raw_data/calibration_logs/heave_positive_p0075_postflash_20260813_run01.analysis.json",
-          "../../raw_data/calibration_logs/heave_positive_joint_p005_p0075_postflash_20260813.analysis.json"
+          "calibration_logs/heave_positive_p005_postflash_20260813_run01.analysis.json",
+          "calibration_logs/heave_positive_p0075_postflash_20260813_run01.analysis.json",
+          "calibration_logs/heave_positive_joint_p005_p0075_postflash_20260813.analysis.json"
         ],
         "enabled_for_control": false,
         "reason_not_enabled": "Only positive commanded heave plus natural upward coast was measured; vertical motor force curves were transferred by propulsion-unit rotation group, tether loading is not separated, and quadratic damping is not identified."
@@ -838,8 +1508,8 @@
         {
           "name": "surge_decay_010_20260811_run01",
           "reason": "operator reported wall collision during the long-coast trial",
-          "camera_csv": "../../raw_data/calibration_logs/surge_decay_010_camera_20260811_run01.csv",
-          "motor_csv": "../../raw_data/calibration_logs/surge_decay_010_motor_20260811_run01.csv",
+          "camera_csv": "calibration_logs/surge_decay_010_camera_20260811_run01.csv",
+          "motor_csv": "calibration_logs/surge_decay_010_motor_20260811_run01.csv",
           "usable_for_identification": false
         }
       ],
@@ -850,7 +1520,7 @@
       "effective_inertia_kg_m2": 0.33453415,
       "linear_damping_n_m_per_rad_s": 0.32251723,
       "quadratic_damping_identified": false,
-      "source": "../../raw_data/calibration_logs/yaw_dynamics_rpm_sweep_20260811.analysis.json",
+      "source": "calibration_logs/yaw_dynamics_rpm_sweep_20260811.analysis.json",
       "confidence": "medium-low because the force curves are confirmed from the same vehicle, but tether torque and repeated IMU samples remain",
       "enabled_for_control": false
     },
@@ -858,20 +1528,28 @@
       "body_forward_std_m": 0.00212,
       "body_right_std_m": 0.00175,
       "tag_15_16_separation_mean_m": 0.14081,
-      "tag_15_16_separation_std_m": 0.00005,
-      "source": "../../raw_data/calibration_logs/static_camera_imu_postmixer_20260811.csv",
+      "tag_15_16_separation_std_m": 5e-05,
+      "source": "calibration_logs/static_camera_imu_postmixer_20260811.csv",
       "enabled_for_mpc_state_correction": false
     },
     "overhead_camera_relative_target_validation": {
       "operator_expected_forward_difference": "approximately zero",
       "operator_expected_absolute_lateral_difference_m": 0.12,
-      "measured_target_relative_frd_mean_m": [-0.003837445, -0.123248554, -0.000081752],
-      "measured_target_relative_frd_std_m": [0.000610174, 0.000355126, 0.000538483],
+      "measured_target_relative_frd_mean_m": [
+        -0.003837445,
+        -0.123248554,
+        -8.1752e-05
+      ],
+      "measured_target_relative_frd_std_m": [
+        0.000610174,
+        0.000355126,
+        0.000538483
+      ],
       "measured_tag_15_16_separation_mean_m": 0.141577989,
       "valid_three_tag_samples": 199,
       "operator_confirmed_target_side": "left",
       "lateral_sign_validated": true,
-      "analysis_file": "../../raw_data/calibration_logs/camera_relative_target_static_20260811_run01.analysis.json",
+      "analysis_file": "calibration_logs/camera_relative_target_static_20260811_run01.analysis.json",
       "confidence": "high for local lateral sign and medium for local horizontal relative scale at one pose; the physical 0.12 m reference was approximate",
       "does_not_validate": [
         "absolute pool-world position",

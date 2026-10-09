@@ -25,7 +25,7 @@ TELEMETRY_SYNC = b"\x55\x54"
 TELEMETRY_MESSAGE_STATE_EXECUTION = 0x01
 
 COMMAND_FLAG_ARMED = 0x01
-COMMAND_FLAG_MPC_DIRECT = 0x02  # Firmware name; also used by pure PID direct mode.
+COMMAND_FLAG_MPC_DIRECT = 0x02  # Firmware transport flag used by the PID bridge.
 COMMAND_FLAG_YAW_DIRECT = 0x04
 
 TELEMETRY_FLAG_ARMED = 0x01
@@ -70,10 +70,10 @@ _LOWER_MIXER = np.asarray(
 )  # columns: yaw, forward, right; physical motors M1,M2,M6,M7
 _UPPER_MIXER = np.asarray(
     [
-        [-1.0, -1.0, 1.0],
-        [1.0, -1.0, -1.0],
-        [1.0, 1.0, 1.0],
+        [-1.0, 1.0, 1.0],
+        [1.0, 1.0, -1.0],
         [1.0, -1.0, 1.0],
+        [1.0, 1.0, 1.0],
     ],
     dtype=float,
 )  # columns: roll, pitch, down; physical motors M3,M4,M5,M8
@@ -222,6 +222,14 @@ class FineSUBTelemetry:
     def last_command_rejected(self) -> bool:
         return self.command_status == COMMAND_STATUS_REJECTED
 
+    @property
+    def body_frd_yaw_rate_rad_s(self) -> float:
+        """Return raw H30 yaw rate in the body-FRD sign convention."""
+        # V5_SUB negates the raw IMU angular-rate vector before feeding its
+        # attitude controllers. Keep the wire value unchanged and expose the
+        # converted value to the host-side PID controller.
+        return -float(self.angular_velocity_xyz[2])
+
 
 def is_newer_telemetry(current: FineSUBTelemetry, previous: FineSUBTelemetry) -> bool:
     if is_newer_u16_sequence(current.sequence, previous.sequence):
@@ -253,12 +261,19 @@ class FineSUBHardwareAdapter:
 
     positive_force_at_limit: object
     negative_force_at_limit: object
-    translation_channel_limits: object = (0.35, 0.35, 0.50)
+    # Active MPC experimental_auto.max_channel_abs.  The protocol validator
+    # keeps the firmware hard ceiling separately; this adapter is the PID
+    # runtime authority cap.
+    translation_channel_limits: object = (0.20, 0.20, 0.20)
     translation_signs: object = (1.0, 1.0, 1.0)
     positive_yaw_moment_at_limit: float = 2.0
     negative_yaw_moment_at_limit: float = 2.0
     yaw_channel_limit: float = 0.20
     yaw_sign: float = 1.0
+    # ``False`` selects the firmware's validated local yaw-hold loop.  The
+    # host still computes the PID yaw diagnostic, but does not inject an
+    # unvalidated direct-yaw channel into the shared lower mixer.
+    yaw_direct: bool = True
 
     def __post_init__(self) -> None:
         self.positive_force_at_limit = vector3(
@@ -290,6 +305,7 @@ class FineSUBHardwareAdapter:
             setattr(self, name, value)
         if self.yaw_sign not in (-1.0, 1.0):
             raise ValueError("yaw_sign must be +1 or -1")
+        self.yaw_direct = bool(self.yaw_direct)
 
     def convert(
         self,
@@ -309,26 +325,32 @@ class FineSUBHardwareAdapter:
             -self.translation_channel_limits,
             self.translation_channel_limits,
         )
-        signed_moment = self.yaw_sign * _finite_scalar(yaw_moment, "yaw_moment")
-        moment_scale = (
-            self.positive_yaw_moment_at_limit
-            if signed_moment >= 0.0
-            else self.negative_yaw_moment_at_limit
-        )
-        yaw = float(
-            np.clip(
-                signed_moment / moment_scale * self.yaw_channel_limit,
-                -self.yaw_channel_limit,
-                self.yaw_channel_limit,
+        if self.yaw_direct:
+            signed_moment = self.yaw_sign * _finite_scalar(yaw_moment, "yaw_moment")
+            moment_scale = (
+                self.positive_yaw_moment_at_limit
+                if signed_moment >= 0.0
+                else self.negative_yaw_moment_at_limit
             )
-        )
+            yaw = float(
+                np.clip(
+                    signed_moment / moment_scale * self.yaw_channel_limit,
+                    -self.yaw_channel_limit,
+                    self.yaw_channel_limit,
+                )
+            )
+        else:
+            # Firmware local yaw hold captures current attitude on the first
+            # armed command.  The channel must be exactly zero in this mode.
+            _finite_scalar(yaw_moment, "yaw_moment")
+            yaw = 0.0
         return FineSUBControlCommand(
             float(translation[0]),
             float(translation[1]),
             float(translation[2]),
             yaw,
             armed=bool(armed),
-            yaw_direct=True,
+            yaw_direct=self.yaw_direct,
         )
 
     def _channels_to_wrench(
@@ -374,7 +396,9 @@ def pack_command(
     session_id: int,
     sender_time_ms: int,
 ) -> bytes:
-    flags = COMMAND_FLAG_MPC_DIRECT | COMMAND_FLAG_YAW_DIRECT
+    flags = COMMAND_FLAG_MPC_DIRECT
+    if command.yaw_direct:
+        flags |= COMMAND_FLAG_YAW_DIRECT
     if command.armed:
         flags |= COMMAND_FLAG_ARMED
     body = _COMMAND_BODY.pack(

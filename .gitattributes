@@ -1,2 +1,0 @@
-# Keep archived measurements byte-identical to their SHA-256 inventory.
-/raw_data/** -text

@@ -1,6 +1,6 @@
 # 模型二与 PDF 的对应关系
 
-对照 `D:\浏览器下载\Untitled (1).pdf` 第 3-8 页，本实现固定采用 PDF 中“认为目标静止”的模型二：
+对照 `<dataset-directory> (1).pdf` 第 3-8 页，本实现固定采用 PDF 中“认为目标静止”的模型二：
 
 ```text
 v_rel[k+1] = F v_rel[k] + G tau[k]

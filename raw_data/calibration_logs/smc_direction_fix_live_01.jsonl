@@ -1,3 +1,0 @@
-{"event":"start","host_time_s":1786808191.887105,"host_monotonic_s":280967.170788617,"runtime_state":"DISARMED_HANDSHAKE","runtime_label":"SMC EXPERIMENTAL","required_model":"smc-full","yaw_direct":false,"yaw_authority":"LOWER_LOCAL_HOLD"}
-{"event":"bounded_stop","host_time_s":1786808211.8871412,"host_monotonic_s":280987.170824505,"runtime_state":"DISARMED_HANDSHAKE"}
-{"event":"stop","host_time_s":1786808211.8875463,"host_monotonic_s":280987.17122981,"runtime_state":"DISARMED_HANDSHAKE","fatal_reason":null,"clean_stop":true}

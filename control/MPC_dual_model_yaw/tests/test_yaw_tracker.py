@@ -97,10 +97,12 @@ class YawTrackerTest(unittest.TestCase):
         )
         return tracker, fusion
 
-    def test_default_fusion_matches_translation_staircase_definition(self) -> None:
+    def test_default_fusion_matches_active_translation_profile(self) -> None:
         fusion = build_default_staircase_fusion()
-        self.assertEqual(fusion.config.window, 6)
-        self.assertEqual(fusion.config.prediction_horizon, 3)
+        self.assertEqual(fusion.config.window, 8)
+        self.assertEqual(fusion.config.prediction_horizon, 5)
+        self.assertAlmostEqual(fusion.config.weight_update_rate, 0.10)
+        np.testing.assert_allclose(fusion.model1_weight, (0.01, 0.01, 0.01))
         self.assertEqual(
             fusion.config.staircase_horizon_caps,
             DEFAULT_STAIRCASE_HORIZON_CAPS,
@@ -123,12 +125,12 @@ class YawTrackerTest(unittest.TestCase):
         np.testing.assert_allclose(
             tracker.model.translation.restoring_force, (0.0, 0.0, 0.80729)
         )
-        self.assertEqual(config.horizon, 10)
+        self.assertEqual(config.horizon, 15)
         self.assertEqual(config.terminal_weight_scale, 2.0)
-        np.testing.assert_allclose(config.position_weights, (500, 350, 900))
-        np.testing.assert_allclose(config.velocity_weights, (100, 150, 200))
-        np.testing.assert_allclose(config.force_weights, (0.5, 0.5, 0.8))
-        np.testing.assert_allclose(config.delta_force_weights, (4, 0.5, 3))
+        np.testing.assert_allclose(config.position_weights, (1200, 350, 900))
+        np.testing.assert_allclose(config.velocity_weights, (150, 150, 200))
+        np.testing.assert_allclose(config.force_weights, (0.6, 0.5, 0.8))
+        np.testing.assert_allclose(config.delta_force_weights, (5, 0.5, 3))
         np.testing.assert_allclose(
             config.force_min,
             (-5.050680, -4.783308, -6.867140),
@@ -137,17 +139,28 @@ class YawTrackerTest(unittest.TestCase):
             config.force_max,
             (4.730162, 4.997534, 7.063140),
         )
-        np.testing.assert_allclose(config.delta_force_max, (0.8, 0.8, 1.0))
+        np.testing.assert_allclose(config.delta_force_max, (1.2, 0.8, 1.0))
         np.testing.assert_allclose(
             config.reference_position, (0.857634, -0.055545, -0.120815)
         )
         self.assertEqual(config.thruster_wrench_matrix.shape, (4, 8))
         self.assertEqual(config.thruster_force_min.shape, (8,))
         self.assertEqual(config.thruster_force_max.shape, (8,))
+        self.assertEqual(tracker.fusion.config.window, 8)
+        self.assertEqual(tracker.fusion.config.prediction_horizon, 5)
+        self.assertAlmostEqual(tracker.fusion.config.weight_update_rate, 0.10)
+        np.testing.assert_allclose(
+            tracker.fusion.config.staircase_horizon_caps,
+            (5, 5, 5, 5, 5, 4, 3, 1),
+        )
+        np.testing.assert_allclose(
+            tracker.fusion.config.prediction_horizon_weights,
+            (1, 1, 1, 1, 1),
+        )
         yaw_config = tracker.yaw_controller.config
         self.assertAlmostEqual(tracker.model.yaw.effective_inertia, 0.33453415)
         self.assertAlmostEqual(tracker.model.yaw.linear_damping, 0.32251723)
-        self.assertAlmostEqual(np.rad2deg(yaw_config.alpha_on), 3.0)
+        self.assertAlmostEqual(np.rad2deg(yaw_config.alpha_on), 6.0)
         self.assertAlmostEqual(np.rad2deg(yaw_config.alpha_off), 1.2)
         self.assertAlmostEqual(yaw_config.outer_kp, 1.5)
         self.assertAlmostEqual(yaw_config.inner_kp, 0.6)
@@ -231,16 +244,26 @@ class YawTrackerTest(unittest.TestCase):
                 yaw_moment_achieved_previous=0.0,
             )
 
-        # At k=3, origin t0=0 has r=3 and H_cap(3)=2.
+        # At k=3, origin t0=0 has r=3 and the current cap still includes h=3.
         self.assertIn((0, 1), fusion.active_pairs)   # k-2 | k-3
         self.assertIn((0, 2), fusion.active_pairs)   # k-1 | k-3
-        self.assertNotIn((0, 3), fusion.active_pairs)  # k | k-3
+        self.assertIn((0, 3), fusion.active_pairs)  # k | k-3
         self.assertTrue(
             all(origin != target for origin, target in fusion.active_pairs)
         )  # h=0 is never scored.
 
     def test_active_staircase_cell_weights_are_renormalized(self) -> None:
-        fusion = build_default_staircase_fusion()
+        # Keep this numerical renormalization check independent from the
+        # active real-device staircase profile.
+        fusion = OnlineModelFusion(
+            FusionConfig(
+                window=6,
+                prediction_horizon=3,
+                forgetting_factor=0.8,
+                prediction_horizon_weights=(0.5, 0.3, 0.2),
+                staircase_horizon_caps=(3, 3, 2, 2, 1, 1),
+            )
+        )
         errors = (0.1, 0.2, 0.4)
         for target, error in enumerate(errors, start=1):
             fusion.observe_position(

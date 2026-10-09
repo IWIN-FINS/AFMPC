@@ -54,7 +54,9 @@ def _resolve_evidence(config_path: Path, value: Any) -> Path | None:
     return beside if beside.exists() or not repository.exists() else repository
 
 
-def build_experimental_runtime_config(config: dict[str, Any]) -> dict[str, Any]:
+def build_experimental_runtime_config(
+    config: dict[str, Any], *, rotation: bool = False
+) -> dict[str, Any]:
     """Return a runtime copy; never mutate or authorize the formal block."""
 
     experimental = config.get("experimental_auto")
@@ -92,10 +94,11 @@ def build_experimental_runtime_config(config: dict[str, Any]) -> dict[str, Any]:
     runtime = copy.deepcopy(config)
     runtime_auto = copy.deepcopy(experimental)
     runtime_auto["enabled"] = True
-    # Real-device position tuning currently uses the translation-only MPC.
-    # Yaw remains under the lower controller's local hold loop; the upper
-    # computer must not emit a direct yaw channel in this mode.
-    runtime_auto["required_model"] = "dual"
+    # Translation remains the maintained source of the shared MPC parameters.
+    # The optional rotation experiment adds the yaw-aware wrapper in memory;
+    # formal AUTO stays untouched and still fails closed on the unaccepted yaw
+    # candidate.
+    runtime_auto["required_model"] = "dual-yaw" if rotation else "dual"
     runtime_auto["require_execute_flag"] = True
     runtime_auto["legacy_joystick_csrt_entry_allowed_for_auto"] = False
     transform = runtime_auto.get("active_camera_transform")
@@ -112,7 +115,7 @@ def build_experimental_runtime_config(config: dict[str, Any]) -> dict[str, Any]:
         or active_yaw.get("enabled_for_experiment") is not True
     ):
         raise ValueError("experimental yaw parameters are not enabled")
-    active_yaw["enabled_for_control"] = False
+    active_yaw["enabled_for_control"] = bool(rotation)
     runtime["auto_runtime"] = runtime_auto
 
     vision_gate = runtime[
@@ -164,9 +167,10 @@ def evaluate_experimental_readiness(
     *,
     config_path: str | Path = DEFAULT_CONFIG_PATH,
     require_vision_source: bool = True,
+    rotation: bool = False,
 ) -> tuple[dict[str, Any] | None, AutoReadinessReport]:
     try:
-        runtime = build_experimental_runtime_config(config)
+        runtime = build_experimental_runtime_config(config, rotation=rotation)
     except (TypeError, ValueError) as error:
         report = AutoReadinessReport(
             ready=False,
@@ -181,7 +185,7 @@ def evaluate_experimental_readiness(
     report = evaluate_auto_readiness(
         runtime,
         config_path=config_path,
-        selected_model="dual",
+        selected_model="dual-yaw" if rotation else "dual",
         require_vision_source=require_vision_source,
         expected_mode=EXPERIMENTAL_MODE,
         allow_unaccepted_calibration_candidates=True,
@@ -264,6 +268,11 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="read-only override for the external vision result JSONL",
     )
+    parser.add_argument(
+        "--rotation",
+        action="store_true",
+        help="enable the explicitly risk-accepted direct-yaw experiment in memory",
+    )
     args = parser.parse_args(argv)
     if args.max_runtime_sec < 0.0:
         parser.error("--max-runtime-sec must be non-negative")
@@ -278,6 +287,7 @@ def main(argv: list[str] | None = None) -> int:
     runtime, report = evaluate_experimental_readiness(
         source_config,
         config_path=config_path,
+        rotation=args.rotation,
     )
     if runtime is None:
         for blocker in report.blockers:
@@ -287,17 +297,18 @@ def main(argv: list[str] | None = None) -> int:
         print(f"[EXPERIMENTAL RISK] {warning}")
     trace_path = None
     if args.execute:
-        trace_path = Path(args.trace_jsonl) if args.trace_jsonl else (
-            Path(__file__).resolve().parents[2] / "raw_data" / "calibration_logs"
-            / f"experimental_auto_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
-        )
+        trace_path = Path(args.trace_jsonl) if args.trace_jsonl else Path(
+            "calibration_logs"
+        ) / f"experimental_auto_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
         print(f"[EXPERIMENTAL AUTO] trace={trace_path}")
     return run_auto_only(
         runtime,
         report,
         execute=args.execute,
         max_runtime_s=max_runtime_s,
-        runtime_label="EXPERIMENTAL AUTO",
+        runtime_label=(
+            "EXPERIMENTAL ROTATION AUTO" if args.rotation else "EXPERIMENTAL AUTO"
+        ),
         trace_jsonl_path=trace_path,
         reacquire_on_vision_loss=True,
         accept_any_vision_track=False,

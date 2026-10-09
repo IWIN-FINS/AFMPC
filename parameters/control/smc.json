@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "authoritative_source": "control/MPC_dual_model/finesub_v4pro1_smc.json",
+  "source_sha256": "c6aaf3a30f4a70cf7ad86819c154475020d3aa4769d830bf977b2a812e705e30",
+  "base_config": "finesub_v4pro1_mpc.json",
+  "formal_source": "auto_runtime",
+  "experimental_source": "experimental_auto",
+  "smc_parameters": {
+    "reference_position": [
+      0.857634,
+      -0.055545,
+      -0.120815
+    ],
+    "forward_distance_guard": {
+      "target_distance_m": 0.6,
+      "approach_start_m": 0.8,
+      "hard_minimum_m": 0.3,
+      "max_approach_force_n": 3.2,
+      "minimum_retreat_force_n": 0.75,
+      "alignment_tolerance_m": 0.01
+    },
+    "runtime_safety": {
+      "max_channel_abs": 0.2,
+      "startup_confirmation_samples": 3,
+      "reacquire_confirmation_samples": 5,
+      "max_depth_nis": 25.0
+    },
+    "yaw_authority": "lower_local_hold",
+    "controller": {
+      "translation": [
+        {
+          "outer_gain": 1.0,
+          "rate_limit": 0.3,
+          "rate_filter_tau": 0.15,
+          "reaching_gain": 0.7,
+          "robust_gain": 0.04,
+          "boundary_layer": 0.06,
+          "delta_input_limit": 1.0,
+          "brake_input_limit": 0.8
+        },
+        {
+          "outer_gain": 1.0,
+          "rate_limit": 0.25,
+          "rate_filter_tau": 0.2,
+          "reaching_gain": 0.6,
+          "robust_gain": 0.04,
+          "boundary_layer": 0.05,
+          "delta_input_limit": 0.8,
+          "brake_input_limit": 0.8
+        },
+        {
+          "outer_gain": 1.0,
+          "rate_limit": 0.2,
+          "rate_filter_tau": 0.25,
+          "reaching_gain": 0.6,
+          "robust_gain": 0.04,
+          "boundary_layer": 0.04,
+          "delta_input_limit": 1.0,
+          "brake_input_limit": 1.0
+        }
+      ],
+      "yaw": {
+        "outer_gain": 1.6,
+        "rate_limit": 0.35,
+        "rate_filter_tau": 0.2,
+        "reaching_gain": 1.8,
+        "robust_gain": 0.25,
+        "boundary_layer": 0.05,
+        "delta_input_limit": 0.4
+      }
+    }
+  }
+}

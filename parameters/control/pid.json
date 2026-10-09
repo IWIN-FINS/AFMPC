@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "authoritative_source": "control/PID_controller/live_integration_example.py",
+  "source_sha256": "d8da9dda7e3e0ce04ee9b35c03db19581f9b8de09360e0a2d07b8294b5eac951",
+  "translation": {
+    "dt": 0.05,
+    "reference_position": [
+      0.857634,
+      -0.055545,
+      -0.120815
+    ],
+    "kp": [
+      28.0,
+      35.0,
+      42.0
+    ],
+    "ki": [
+      0.1,
+      0.15,
+      0.0
+    ],
+    "kd": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "derivative_filter_time_constant": 0.35,
+    "integral_limit": [
+      2.0,
+      1.5,
+      1.2
+    ],
+    "anti_windup_gain": 1.0,
+    "error_deadband": [
+      0.005,
+      0.005,
+      0.008
+    ],
+    "force_min": [
+      -5.05068,
+      -4.783308,
+      -6.86714
+    ],
+    "force_max": [
+      4.730162,
+      4.997534,
+      7.06314
+    ],
+    "delta_force_min": [
+      -1.2,
+      -0.8,
+      -1.0
+    ],
+    "delta_force_max": [
+      1.2,
+      0.8,
+      1.0
+    ],
+    "thruster_force_matrix": [
+      [
+        0.0,
+        0.0,
+        0.25
+      ],
+      [
+        0.0,
+        0.0,
+        0.25
+      ],
+      [
+        0.0,
+        0.0,
+        0.25
+      ],
+      [
+        0.0,
+        0.0,
+        0.25
+      ],
+      [
+        0.35355339059327373,
+        0.35355339059327373,
+        0.0
+      ],
+      [
+        0.35355339059327373,
+        -0.35355339059327373,
+        0.0
+      ],
+      [
+        -0.35355339059327373,
+        -0.35355339059327373,
+        0.0
+      ],
+      [
+        -0.35355339059327373,
+        0.35355339059327373,
+        0.0
+      ]
+    ],
+    "thruster_force_min": [
+      -7.975,
+      -5.7618,
+      -5.7618,
+      -7.975,
+      -5.7618,
+      -7.975,
+      -5.7618,
+      -7.975
+    ],
+    "thruster_force_max": [
+      8.4749,
+      7.3809,
+      7.3809,
+      8.4749,
+      7.3809,
+      8.4749,
+      7.3809,
+      8.4749
+    ]
+  },
+  "yaw": {
+    "dt": 0.05,
+    "kp": 1.8,
+    "ki": 0.12,
+    "kd": 0.55,
+    "integral_limit": 0.6108652381980153,
+    "derivative_filter_time_constant": 0.1,
+    "angle_deadband": 0.012217304763960306,
+    "anti_windup_gain": 1.0,
+    "yaw_moment_min": -2.041126,
+    "yaw_moment_max": 1.807854,
+    "delta_yaw_moment_min": -0.5,
+    "delta_yaw_moment_max": 0.5
+  },
+  "camera_calibrated": true,
+  "track_target_bearing": false
+}

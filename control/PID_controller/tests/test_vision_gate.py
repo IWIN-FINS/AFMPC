@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from vision_gate import PIDVisionGate, VisionGateConfig
+from PID_controller.vision_gate import PIDVisionGate, VisionGateConfig
 
 
 def test_gate_requires_stable_startup_samples() -> None:
@@ -103,3 +103,32 @@ def test_safety_reset_preserves_reacquisition_history() -> None:
     assert not gate.update((0.0, 0.0, 1.0), now=0.1).ready
     assert not gate.update((0.0, 0.0, 1.0), now=0.2).ready
     assert gate.update((0.0, 0.0, 1.0), now=0.3).ready
+
+
+def test_one_sample_reacquisition_never_accepts_first_implausible_jump() -> None:
+    gate = PIDVisionGate(
+        VisionGateConfig(
+            startup_confirmation_samples=1,
+            reacquire_confirmation_samples=1,
+            jump_margin_m=0.20,
+            max_step_m=0.30,
+        )
+    )
+    assert gate.update((0.0, 0.0, 1.0), now=0.0).ready
+    first_jump = gate.update((0.5, 0.0, 1.0), now=0.05)
+    assert first_jump.reason == "vision_jump_ignored"
+    np.testing.assert_allclose(first_jump.position_camera_xyz, (0.0, 0.0, 1.0))
+
+
+def test_one_sample_reacquisition_after_real_camera_gap() -> None:
+    gate = PIDVisionGate(
+        VisionGateConfig(
+            startup_confirmation_samples=1,
+            reacquire_confirmation_samples=1,
+            max_inter_sample_gap_s=1.0,
+        )
+    )
+    assert gate.update((0.0, 0.0, 1.0), now=0.0).ready
+    reacquired = gate.update((0.4, 0.0, 1.0), now=1.1)
+    assert reacquired.ready
+    np.testing.assert_allclose(reacquired.position_camera_xyz, (0.4, 0.0, 1.0))

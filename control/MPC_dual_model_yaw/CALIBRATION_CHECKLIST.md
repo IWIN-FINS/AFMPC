@@ -57,22 +57,23 @@
 
 ## D. 双模型历史评价（实验整定/设计选择）
 
-- [x] `staircase_horizon_caps=(3,3,2,2,1,1)`：已按用户指定固定。
-- [x] `prediction_horizon_weights=(0.5,0.3,0.2)`：已按用户指定固定。
+- [x] 当前实验 `staircase_horizon_caps=(5,5,5,5,5,4,3,1)`：与平移融合参数同步。
+- [x] 当前实验 `prediction_horizon_weights=(1,1,1,1,1)`：与平移融合参数同步。
 - [ ] `forgetting_factor=0.8`：用不同机动阶段的数据检查旧样本衰减速度。
 - [ ] `position_error_clip=(0.5,0.5,0.5)`：按视觉离群误差和正常模型误差分布确定。
 - [ ] `epsilon=1e-10`：检查误差很小时权重是否受数值项主导。
 - [ ] `indistinguishable_score_threshold=(1e-7,1e-7,1e-7)`：确认低噪声仿真中
   双模型不可区分时保持模型一偏好的阈值合适。
-- [ ] `weight_update_rate=0.35`：检查模型权重平滑速度能否兼顾转向瞬态与稳态辨识。
+- [ ] `weight_update_rate=0.10`：检查模型权重平滑速度能否兼顾转向瞬态与稳态辨识。
 - [ ] `minimum_weight=0.01`：决定是否保留双模型最低占比；它使代码不能得到 0/1
   纯模型权重，与 PDF 公式不同。
-- [ ] 当前实机 `initial_model1_weight=(0.8,0.8,0.99)`：由无历史数据时更可信的模型决定。
+- [ ] 当前实验 `initial_model1_weight=(0,0,0)`：归一化后受 `minimum_weight=0.01` 保护，
+  与当前平移融合配置一致。
 - [ ] 验证所有启用格子的权重归一化、当前拍更新次序和三轴权重变化符合实验预期。
 
 ## E. yaw 状态机与双环 PID（实验整定/设计选择）
 
-当前保守候选：`alpha_on/off/emergency=3.0/1.2/8.0 deg`，
+当前保守候选：`alpha_on/off/emergency=6.0/1.2/8.0 deg`，
 `outer_kp/kd=1.5/0.2`，`inner_kp/ki=0.60/0.02`，最大角速度 `30 deg/s`，
 最大角加速度 `60 deg/s²`；力矩绝对限额来自实机通道映射
 `-2.041126..+1.807854 N*m`，每个 `0.10 s` 周期变化 `+-0.50 N*m`。这些 PID 数值尚未

@@ -302,6 +302,10 @@ class SMCControllerTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "does not match"):
             build_smc_tracker(runtime)
 
+    @unittest.skipUnless(
+        (DEFAULT_SMC_PROFILE_PATH.parent / "runtime" / "vision" / "pipeline_results.jsonl").is_file(),
+        "requires private calibration evidence and a recorded/live vision stream",
+    )
     def test_profile_selects_full_smc_in_experiment_and_skips_osqp(self):
         runtime = load_smc_runtime_config(DEFAULT_SMC_PROFILE_PATH, experimental=True)
         report = evaluate_auto_readiness(

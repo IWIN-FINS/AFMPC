@@ -1,0 +1,386 @@
+models:
+  yolo_backend: ultralytics
+  yolo_path: models/yolo/best.pt
+  yolov5_repo: megafish/yolov5_repo
+  stereo_backend: fast_foundationstereo
+  stereo_ckpt: third_party/Fast-FoundationStereo/weights/model_best_bp2_serialize.pth
+  stereo_cfg_yaml: checkpoints/FoundationStereo/11-30-40/cfg.yaml
+camera:
+  fx: 715.1307744009247
+  fy: 715.1307744009247
+  cx: 319.17711639404297
+  cy: 256.59499168395996
+  baseline_m: 0.05945906306251153
+rectification:
+  enabled: true
+  calibration_image_width: 640
+  calibration_image_height: 480
+  alpha: 0.0
+  zero_disparity: true
+  K_left:
+  - - 714.6146317526988
+    - 0.0
+    - 332.01527653197655
+  - - 0.0
+    - 715.2107013001645
+    - 253.6144665790488
+  - - 0.0
+    - 0.0
+    - 1.0
+  K_right:
+  - - 716.5196698739255
+    - 0.0
+    - 323.70568994797844
+  - - 0.0
+    - 717.1465579587925
+    - 257.8087944798862
+  - - 0.0
+    - 0.0
+    - 1.0
+  D_left:
+  - 0.46129278013207947
+  - -0.003913814614670485
+  - 0.0090802906834849
+  - 0.006838083572871901
+  - 0.46971491709677754
+  D_right:
+  - 0.40269503637630677
+  - 0.5928922817988643
+  - 0.006741505989464357
+  - -0.010147047959762925
+  - -0.9564173465439929
+  R:
+  - - 0.9989731639108168
+    - -0.0007165901482337807
+    - 0.04530015766608077
+  - - 0.0004619115781774317
+    - 0.9999840321183149
+    - 0.005632241657718906
+  - - -0.045303470327407225
+    - -0.005605533601402534
+    - 0.9989575434268152
+  T:
+  - -0.05945855782859883
+  - -0.00019421137331380946
+  - 0.00014954316222246382
+stereo:
+  image_scale: 0.2
+  valid_iters: 4
+  low_memory: true
+  max_disp: 192
+  small_target_refine:
+    enabled: false
+    local_refine_enabled: false
+    require_depth_prior: true
+    always_refine_small_target: false
+    max_bbox_area_ratio: 0.006
+    max_bbox_long_side_px: 72
+    max_bbox_short_side_px: 56
+    force_local_refine_max_bbox_area_ratio: 0.0035
+    force_local_refine_max_bbox_long_side_px: 56
+    force_local_refine_max_bbox_short_side_px: 40
+    trigger_on_invalid: true
+    trigger_sep_score_max: 0.0
+    near_jump_only: true
+    trigger_depth_delta_m: 0.45
+    trigger_depth_ratio_max: 0.72
+    max_valid_ratio_for_trigger: 0.35
+    cooldown_frames: 12
+    hold_frames: 6
+    exit_consecutive_frames: 3
+    exit_depth_delta_m: 0.18
+    exit_min_valid_ratio: 0.18
+    exit_min_sep_score: 0.2
+    exit_min_core_px: 160
+    expand_ratio: 2.6
+    min_crop_size_px: 128
+    bucket_enabled: true
+    bucket_sizes_px: [224]
+    bucket_pad_square: true
+    upsample_factor: 2.0
+    image_scale: 1.0
+    valid_iters: 6
+    low_memory: true
+    border_mode: replicate
+    prefer_if_closer_by_m: 0.05
+    protect_enabled: false
+    protect_depth_delta_m: 0.55
+    protect_sep_score_max: 0.0
+detection:
+  min_confidence: 0.3
+  device: cuda
+  detector_imgsz: 960
+  quantize: fp16
+  single_target:
+    enabled: true
+    strategy: highest_confidence
+  roi_redetect:
+    enabled: true
+    trigger_on_empty_only: false
+    trigger_on_low_confidence: true
+    base_confidence_threshold: 0.35
+    trigger_on_small_bbox: true
+    max_bbox_area_ratio: 0.008
+    max_bbox_long_side_px: 96
+    max_bbox_short_side_px: 72
+    expand_ratio: 2.2
+    min_crop_size_px: 128
+    detector_imgsz: 1280
+    min_confidence: 0.2
+    min_iou_with_prior: 0.05
+    merge_iou_threshold: 0.5
+tracker:
+  type: bytetrack
+  single_target_output_only: true
+  run_stereo_on_memory_tracks: false
+  stereo_every_n_yolo_frames: 4
+  stereo_every_n_tracker_frames: 8
+  max_age: 6
+  min_hits: 1
+  iou_threshold: 0.3
+  smoothing_alpha: 0.7
+  bbox_smoothing_enabled: true
+  bbox_center_alpha: 0.35
+  bbox_size_alpha: 0.30
+  track_high_thresh: 0.35
+  track_low_thresh: 0.1
+  new_track_thresh: 0.35
+  track_buffer: 6
+  match_thresh: 0.8
+  fuse_score: true
+output_bbox_filter:
+  enabled: false
+  center_alpha_min: 0.16
+  center_alpha_max: 0.86
+  size_alpha_min: 0.12
+  size_alpha_max: 0.68
+  velocity_scale_px_per_s: 240.0
+  size_velocity_scale_px_per_s: 190.0
+  tracker_only_alpha_scale: 0.78
+  reset_after_missed_frames: 3
+  fallback_dt_s: 0.10
+refiner:
+  enabled: false
+  device: cuda
+  checkpoint_path: models/refiner/best.pt
+  buffer_size: 5
+  roi_size: 128
+  crop_expand_ratio: 1.8
+  apply_on_tracker_only: false
+  post_smooth_enabled: true
+  post_smooth_center_alpha: 0.65
+  post_smooth_size_alpha: 0.55
+  visible_accept_threshold: 0.35
+  truncation_threshold: 0.5
+  max_center_shift_ratio: 0.25
+  max_size_change_ratio: 0.35
+corrector_smoother:
+  enabled: true
+  device: cuda
+  checkpoint_path: models/corrector_smoother/best.pt
+  buffer_size: 5
+  roi_size: 128
+  crop_expand_ratio: 1.8
+  quality_threshold: 0.45
+  visible_accept_threshold: 0.0
+  max_center_shift_ratio: 0.35
+  max_size_change_ratio: 0.45
+  output_smooth_enabled: true
+  output_smooth_center_alpha: 0.70
+  output_smooth_size_alpha: 0.60
+  apply_on_tracker_only: false
+  max_idle_frames: 3
+  future_prior_enabled: true
+  future_prior_tracker_only: true
+  future_quality_threshold: 0.40
+  future_visible_threshold: 0.30
+  future_prior_center_alpha: 0.45
+  future_prior_size_alpha: 0.35
+  future_max_center_shift_ratio: 0.60
+  future_max_size_change_ratio: 0.60
+temporal_depth:
+  filter_type: sequence_conf_kalman
+  enabled: true
+  state_hold_max_s: 0.6
+  fallback_dt_s: 0.1
+  min_dt_s: 0.005
+  max_dt_s: 2.0
+  v_max_mps: 1
+  gate_margin_m: 0.25
+  soft_gate_scale: 2.0
+  sigma_jump_m: 0.5
+  measurement_noise_m2: 0.04
+  process_var_z: 0.0085
+  process_var_z_dot: 0.1
+  min_confidence: 0.03
+  confidence_decay: 0.8
+  nis_gate_enabled: false
+  nis_gate_threshold: 6.63
+  center_filter:
+    type: alpha_beta
+    enabled: true
+    alpha: 0.52
+    beta: 0.07
+  center_ema:
+    enabled: false
+    time_constant_s: 0.615
+    alpha: 0.15
+  uvz_joint:
+    enabled: false
+    sigma_u_meas_px: 1.5
+    sigma_v_meas_px: 1.5
+    sigma_a_u_px: 200.24096871180936
+    sigma_a_v_px: 119.1759384239439
+    sigma_a_z_m: 0.8
+    effective_sample_divisor: 1024.0
+    r_z_min_m2: 1.912285354830619e-06
+    r_z_max_m2: 0.002214733520385924
+    nis_gate_enabled: false
+    partial_update_enabled: true
+    gate_chi2_df1: 6.63
+    gate_chi2_df3: 11.34
+    gate_chi2_df2: 9.21
+    hard_gate_enabled: true
+    hard_gate_history_size: 4
+    hard_gate_min_history: 3
+    hard_gate_pred_margin_m: 0.28
+    hard_gate_hist_margin_m: 0.28
+    hard_gate_rel_ratio: 0.35
+    init_sigma_u_px: 8.0
+    init_sigma_v_px: 8.0
+    init_sigma_z_m: 0.35
+    init_sigma_udot_px_s: 40.0
+    init_sigma_vdot_px_s: 40.0
+    init_sigma_zdot_m_s: 0.8
+  fusion:
+    enabled: true
+    buffer_size: 6
+    N_ref: 48
+    measurement_variance_mode: sample_variance
+    effective_sample_divisor: 1024.0
+    measurement_var_min: 1.912285354830619e-06
+    measurement_var_max: 0.002214733520385924
+    sigma_iqr: 0.04
+    sep_ref: 2.0
+    sigma_res: 0.25
+    R_base: 0.04
+    process_var_v: 0.1
+    init_var_z: 0.04
+    init_var_v: 1.0
+    r_min: 0.05
+    z_iqr_hard: 0.08
+    r_hard_bad: 0.05
+    update_gain_threshold: 0.65
+    weak_gain_threshold: 0.15
+    nis_gate_enabled: false
+    nis_gate_threshold: 6.63
+    hard_gate_enabled: true
+    hard_gate_history_size: 4
+    hard_gate_min_history: 3
+    hard_gate_pred_margin_m: 0.28
+    hard_gate_hist_margin_m: 0.28
+    hard_gate_rel_ratio: 0.35
+  roi:
+    mask_version: external_ring_mahalanobis_otsu
+    center_fraction: 0.6
+    min_disparity_px: 0.5
+    min_depth_m: 0.1
+    max_depth_m: 10.0
+    trim_fraction: 0.1
+    min_valid_ratio: 0.05
+    max_valid_iqr_m: 0.20
+    histogram_bins: 16
+    use_foreground_depth_mask: true
+    foreground_histogram_bins: 24
+    foreground_min_pixels: 20
+    foreground_min_ratio: 0.08
+    foreground_peak_rel_height: 0.35
+    foreground_band_margin_m: 0.06
+    foreground_fallback_near_quantile: 0.35
+    foreground_prefer_depth_prior: false
+    foreground_use_near_seed_refine: true
+    foreground_seed_near_quantile: 0.12
+    foreground_seed_min_pixels: 12
+    foreground_seed_band_margin_m: 0.03
+    foreground_seed_dilate_iterations: 2
+    foreground_target_min_pixels: 24
+    foreground_target_min_ratio_roi: 0.01
+    use_color_foreground_mask: true
+    color_fg_method: external_ring_mahalanobis_otsu
+    color_fg_border_fraction: 0.18
+    color_fg_hue_tolerance: 14
+    color_fg_sat_tolerance: 52
+    color_fg_val_tolerance: 52
+    color_fg_score_min: 1.35
+    color_fg_quantile: 0.78
+    color_fg_bg_expand_ratio: 1.35
+    color_fg_bg_min_pixels: 64
+    color_fg_cov_shrinkage: 0.08
+    color_fg_otsu_bins: 128
+    color_fg_min_pixels: 24
+    color_fg_min_ratio: 0.05
+    color_fg_dilate_iterations: 0
+    color_fg_external_ring_failure: empty
+    color_fg_reject_weak_presence: true
+    color_fg_presence_quantile: 0.90
+    color_fg_presence_min_score: 1.60
+    color_fg_presence_min_margin: 0.45
+    color_fg_fallback_to_valid_mask: false
+    color_fg_allow_depth_fallback: false
+    foreground_disp_otsu_bins: 128
+    foreground_disp_otsu_failure: empty
+    center_use_color_mask: true
+    center_geometry: ellipse_or_min_rect
+    center_support_dilate_iterations: 1
+    center_select_main_component: false
+    center_component_min_area_px: 20
+    color_depth_support_dilate_iterations: 0
+    color_depth_consensus_min_pixels: 16
+    color_depth_consensus_min_ratio: 0.30
+    intersection_invalid_if_sparse: true
+    temporal_prior_recovery_enabled: true
+    temporal_prior_chi2_threshold: 11.34
+    temporal_prior_min_sigma_disp_px: 0.75
+    temporal_recover_strong_ratio_bbox: 0.06
+    temporal_recover_strong_min_pixels: 8
+    temporal_recover_min_ratio_bbox: 0.01
+    temporal_recover_min_pixels: 4
+    use_background_color_reject: false
+    background_hsv_center:
+    - 90
+    - 145
+    - 185
+    background_hue_tolerance: 18
+    background_sat_tolerance: 72
+    background_val_tolerance: 72
+    background_similarity_max: 1.0
+    background_keep_min_pixels: 24
+    background_keep_min_ratio: 0.05
+    background_ring_dilate_iterations: 3
+    background_ring_min_pixels: 20
+    # August 5 evening baseline: use the complete final foreground mask for Z.
+    use_foreground_core_for_depth: false
+    foreground_core_keep_fraction: 0.45
+    foreground_core_min_pixels: 12
+    foreground_core_min_ratio_of_foreground: 0.20
+    foreground_core_erode_iterations: 1
+    use_depth_prior: true
+    depth_prior_margin_m: 0.35
+    depth_prior_min_pixels: 12
+    depth_prior_min_ratio: 0.03
+    depth_prior_sigma_m: 0.15
+    use_center_prior: true
+    center_prior_radius_px: 45
+    center_prior_min_pixels: 12
+    center_prior_min_ratio: 0.03
+    center_prior_sigma_px: 12
+    use_connected_component: false
+    min_component_area_px: 20
+  confidence:
+    sigma_iqr_m: 0.4
+output:
+  coordinate_frame: camera
+  unit: meters
+runtime:
+  empty_cache_enabled: false
+  empty_cache_interval_frames: 1

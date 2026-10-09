@@ -9,6 +9,7 @@ limiter. Transport may be direct serial or the MPC-style TCP/UDP bridge.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import time
 import numpy as np
 
 try:
@@ -63,10 +64,19 @@ class PIDHardwareSession:
         self.connection = connection
         self.hardware_adapter = hardware_adapter
         self.vision_gate = vision_gate or PIDVisionGate()
+        self.yaw_direct = bool(hardware_adapter.yaw_direct)
+        # Keep yaw active at the hardware boundary.  The tracker latches the
+        # current telemetry yaw when the first valid armed-session sample is
+        # accepted, then holds that angle with its scalar yaw PID.
+        self.yaw_output_frozen = False
+        self.tracker.enable_yaw()
+        self.tracker.track_target_bearing = False
         self._controller_initialized = False
         self._safety_latched = False
         self._armed_session_active = False
         self._last_arm_requested = False
+        self._last_fresh_vision_monotonic: float | None = None
+        self.vision_max_age_s = 0.25
 
     @property
     def safety_latched(self) -> bool:
@@ -86,6 +96,7 @@ class PIDHardwareSession:
         self._armed_session_active = False
         self._last_arm_requested = False
         self._controller_initialized = False
+        self._last_fresh_vision_monotonic = None
         return self.connection.send_disarm()
 
     def close(self) -> None:
@@ -97,12 +108,14 @@ class PIDHardwareSession:
             self._controller_initialized = False
             self._armed_session_active = False
             self._last_arm_requested = False
+            self._last_fresh_vision_monotonic = None
 
     def _latch_safety_stop(self) -> None:
         self._safety_latched = True
         self._armed_session_active = False
         self._controller_initialized = False
         self.vision_gate.reset(preserve_lock_history=True)
+        self._last_fresh_vision_monotonic = None
 
     def _clear_explicit_disarm(self) -> None:
         """Clear a latched stop only after the caller has requested disarm."""
@@ -110,6 +123,7 @@ class PIDHardwareSession:
         self._armed_session_active = False
         self._controller_initialized = False
         self.vision_gate.reset(preserve_lock_history=True)
+        self._last_fresh_vision_monotonic = None
 
     def step(
         self,
@@ -118,6 +132,7 @@ class PIDHardwareSession:
         arm_requested: bool,
         reference_position: object | None = None,
         reference_yaw_rad: float | None = None,
+        fresh_vision_sample: bool = True,
     ) -> HardwareStepResult:
         """Run exactly one 20 Hz control update and transmit one command.
 
@@ -169,7 +184,7 @@ class PIDHardwareSession:
             not telemetry.failsafe
             and not telemetry.last_command_rejected
             and telemetry.pid_direct
-            and telemetry.yaw_direct
+            and telemetry.yaw_direct == self.yaw_direct
             and telemetry.execution_feedback_valid
         )
         if not telemetry_safe:
@@ -188,7 +203,43 @@ class PIDHardwareSession:
                 command_sent=sent,
             )
 
-        gate_result: VisionGateResult = self.vision_gate.update(position_camera_xyz)
+        if fresh_vision_sample:
+            gate_result: VisionGateResult = self.vision_gate.update(position_camera_xyz)
+            self._last_fresh_vision_monotonic = time.monotonic()
+        elif (
+            self._last_fresh_vision_monotonic is None
+            or time.monotonic() - self._last_fresh_vision_monotonic > self.vision_max_age_s
+        ):
+            if telemetry.armed and self.connection.armed_confirmation_fresh():
+                holding = self.target_lost(keep_armed=True)
+                return HardwareStepResult(
+                    status=(
+                        "active:vision_gap_baseline"
+                        if holding else "disarmed:vision_gap_hardware_fault"
+                    ),
+                    telemetry=telemetry,
+                    controller_output=None,
+                    achieved_force=achieved_force,
+                    achieved_yaw_moment=achieved_yaw_moment,
+                    requested_arm=arm_requested,
+                    transmitted_arm=holding,
+                    command_sent=holding,
+                )
+            sent = self.connection.send_disarm()
+            if self._armed_session_active or self._controller_initialized:
+                self._latch_safety_stop()
+            return HardwareStepResult(
+                status="disarmed:vision_stale",
+                telemetry=telemetry,
+                controller_output=None,
+                achieved_force=achieved_force,
+                achieved_yaw_moment=achieved_yaw_moment,
+                requested_arm=arm_requested,
+                transmitted_arm=False,
+                command_sent=sent,
+            )
+        else:
+            gate_result = self.vision_gate.hold_without_sample()
         if not gate_result.ready:
             sent = self.connection.send_disarm()
             self._controller_initialized = False
@@ -258,11 +309,15 @@ class PIDHardwareSession:
             achieved_force,
             reference_position=reference_position,
             yaw_rad=telemetry.yaw_rad,
-            yaw_rate_rad_s=telemetry.yaw_rate_rad_s,
+            yaw_rate_rad_s=telemetry.body_frd_yaw_rate_rad_s,
             achieved_yaw_moment_previous=achieved_yaw_moment,
             reference_yaw_rad=reference_yaw_rad,
         )
-        yaw_moment = 0.0 if output.yaw_pid is None else output.yaw_pid.yaw_moment
+        yaw_moment = (
+            0.0
+            if self.yaw_output_frozen or output.yaw_pid is None
+            else output.yaw_pid.yaw_moment
+        )
         command = self.hardware_adapter.convert(
             output.pid.force,
             yaw_moment,
@@ -303,7 +358,11 @@ class PIDHardwareSession:
         )
 
     def target_lost(self, *, keep_armed: bool = False) -> bool:
-        """Default to immediate zero/disarm when vision loses the target."""
+        """On vision loss, disarm or return to baseline while already armed.
+
+        The armed-baseline path never initiates arming. It requires fresh,
+        accepted, armed telemetry and sends no stale PID position output.
+        """
         if not keep_armed:
             if self._armed_session_active or self._last_arm_requested:
                 self._latch_safety_stop()
@@ -312,16 +371,34 @@ class PIDHardwareSession:
                 self.vision_gate.reset()
             return self.connection.send_disarm()
         telemetry = self.connection.fresh_telemetry()
-        if telemetry is None:
-            return self.connection.send_disarm()
+        if (
+            telemetry is None
+            or not telemetry.armed
+            or telemetry.failsafe
+            or telemetry.last_command_rejected
+            or not telemetry.pid_direct
+            or telemetry.yaw_direct != self.yaw_direct
+            or not telemetry.execution_feedback_valid
+            or not self.connection.armed_confirmation_fresh()
+        ):
+            self.connection.send_disarm()
+            self._latch_safety_stop()
+            return False
         force, moment = self.hardware_adapter.achieved_wrench(telemetry)
         safe = self.tracker.target_lost(force, moment)
+        safe_yaw_moment = 0.0 if self.yaw_output_frozen else safe.yaw_moment
         command = self.hardware_adapter.convert(
             safe.force,
-            safe.yaw_moment,
+            safe_yaw_moment,
             armed=True,
         )
-        return self.connection.send(command)
+        sent = self.connection.send(command)
+        effective = self.connection.last_effective_command
+        if not sent or effective is None or not effective.armed:
+            self.connection.send_disarm()
+            self._latch_safety_stop()
+            return False
+        return True
 
 
 def build_serial_hardware_session(
@@ -334,37 +411,39 @@ def build_serial_hardware_session(
     # image-centre standoff reference.  The plain ``build_tracker()`` API
     # remains available for legacy aligned-frame simulations/tests.
     tracker = build_tracker(calibrated_reference=True)
-    tracker.freeze_yaw()
     config = tracker.controller.config
     yaw_config = tracker.yaw_controller.config
     adapter = FineSUBHardwareAdapter(
         positive_force_at_limit=config.force_max,
         negative_force_at_limit=-config.force_min,
-        translation_channel_limits=(0.10, 0.10, 0.10),
+        # Keep the serial path at the same active MPC translation authority.
+        translation_channel_limits=(0.20, 0.20, 0.20),
         translation_signs=(1.0, 1.0, 1.0),
         positive_yaw_moment_at_limit=yaw_config.yaw_moment_max,
         negative_yaw_moment_at_limit=-yaw_config.yaw_moment_min,
         yaw_channel_limit=0.20,
         yaw_sign=1.0,
+        yaw_direct=False,
     )
     connection = FineSUBConnection(
         SerialTransport(serial_port, baudrate=115200),
         telemetry_max_age_s=0.20,
         confirmation_max_age_s=0.30,
         logger=logger,
+        yaw_direct=adapter.yaw_direct,
     )
     return PIDHardwareSession(tracker, connection, adapter, PIDVisionGate())
 
 
 def _vision_gate_from_runtime_config(config: dict) -> PIDVisionGate:
-    """Read only the MPC JSON's conservative vision-gate limits.
+    """Read the experiment's accepted vision-gate limits for PID.
 
     This does not import or execute an MPC controller.  Existing MPC runtime
     files put the accepted forward range and jump margin under
     ``experimental_auto.vision_gate_overrides``; a PID-specific
     ``pid_vision_gate`` object may override the same small set of fields.
-    MPC's one-sample startup setting is deliberately not inherited: PID uses
-    its own three-sample startup and five-sample reacquisition confirmation.
+    A PID-specific ``pid_vision_gate`` object may override the experiment's
+    values without editing the global MPC runtime configuration.
     """
 
     values: dict[str, object] = {}
@@ -391,14 +470,15 @@ def _vision_gate_from_runtime_config(config: dict) -> PIDVisionGate:
             max_forward_m=maximum,
             max_speed_m_s=float(values.get("max_speed_m_s", 1.0)),
             jump_margin_m=float(values.get("jump_margin_m", 0.10)),
+            max_step_m=float(values.get("max_step_m", 0.30)),
             max_inter_sample_gap_s=float(
                 values.get("max_inter_sample_gap_s", 0.50)
             ),
             startup_confirmation_samples=int(
-                explicit_values.get("startup_confirmation_samples", 3)
+                values.get("startup_confirmation_samples", 3)
             ),
             reacquire_confirmation_samples=int(
-                explicit_values.get("reacquire_confirmation_samples", 5)
+                values.get("reacquire_confirmation_samples", 5)
             ),
         )
     )
@@ -432,9 +512,6 @@ def build_runtime_hardware_session(
     active_tracker = (
         build_tracker(calibrated_reference=True) if tracker is None else tracker
     )
-    # Real-vehicle test mode currently freezes yaw until translation signs and
-    # vision bearing behavior are independently validated.
-    active_tracker.freeze_yaw()
     tracker_config = active_tracker.controller.config
     yaw_config = active_tracker.yaw_controller.config
     positive_force = adapter_config.get(
@@ -446,9 +523,12 @@ def build_runtime_hardware_session(
     adapter = FineSUBHardwareAdapter(
         positive_force_at_limit=positive_force,
         negative_force_at_limit=negative_force,
-        # Deliberately cap the MPC JSON's former 0.20 authority for this PID
-        # experiment.  The cap is local to PID and does not edit the MPC file.
-        translation_channel_limits=(0.10, 0.10, 0.10),
+        # Use the active MPC adapter envelope.  This is read from the MPC
+        # runtime JSON when present, while the fallback remains the same
+        # operator-authorized 0.20 cap.
+        translation_channel_limits=adapter_config.get(
+            "translation_channel_limits", (0.20, 0.20, 0.20)
+        ),
         translation_signs=adapter_config.get("translation_signs", (1.0, 1.0, 1.0)),
         positive_yaw_moment_at_limit=adapter_config.get(
             "positive_yaw_moment_at_limit", yaw_config.yaw_moment_max
@@ -458,6 +538,7 @@ def build_runtime_hardware_session(
         ),
         yaw_channel_limit=adapter_config.get("yaw_channel_limit", 0.20),
         yaw_sign=adapter_config.get("yaw_sign", 1.0),
+        yaw_direct=adapter_config.get("yaw_direct", False),
     )
     connection = FineSUBConnection(
         make_transport(transport_config),
@@ -469,6 +550,7 @@ def build_runtime_hardware_session(
             transport_config.get("reconnect_interval_sec", 1.0)
         ),
         logger=logger,
+        yaw_direct=adapter.yaw_direct,
     )
     return PIDHardwareSession(
         active_tracker,

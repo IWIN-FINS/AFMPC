@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "profile": "mpc_fusion.json",
+  "authoritative_source": "control/MPC_dual_model/finesub_v4pro1_mpc.json",
+  "source_sha256": "b61176d189206b1ac4bf0b3da54c9a4c8dff1dcf2f6e32aca233bfeb5d33ae43",
+  "reference_position_body_frd_m": [
+    0.857634,
+    -0.055545,
+    -0.120815
+  ],
+  "expected_vision_update_period_s": 0.1,
+  "command_channel_limit_abs": 0.2,
+  "camera_transform": {
+    "enabled_for_experiment": true,
+    "enabled_for_control": false,
+    "selection": "20260812 three-run dynamic candidate plus CAD camera origin",
+    "rotation_body_from_camera": [
+      [
+        0.105484,
+        -0.006125,
+        0.994402
+      ],
+      [
+        0.994329,
+        -0.012919,
+        -0.105555
+      ],
+      [
+        0.013493,
+        0.999898,
+        0.004727
+      ]
+    ],
+    "camera_origin_in_body_frd_m": [
+      0.260993,
+      0.007788,
+      -0.123651
+    ]
+  },
+  "mpc": {
+    "enabled_for_experiment": true,
+    "enabled_for_control": false,
+    "model_family": "dual",
+    "baseline_adaptation": {
+      "enabled": true,
+      "update_mode": "gated_ema",
+      "axis_enabled": [
+        true,
+        true,
+        true
+      ],
+      "adaptation_rate": 0.02,
+      "transient_adaptation_rate": 0.08,
+      "steady_position_error_tolerance": 0.03,
+      "steady_velocity_tolerance": 0.02,
+      "position_error_tolerance": 0.2,
+      "velocity_tolerance": 0.2,
+      "matched_motion_axis_enabled": [
+        false,
+        false,
+        false
+      ],
+      "matched_motion_min_velocity": 0.05,
+      "matched_motion_max_velocity": 0.2,
+      "matched_motion_acceleration_tolerance": 0.2,
+      "matched_motion_confirmation_updates": 3
+    },
+    "model": {
+      "effective_mass_matrix_kg": [
+        [
+          24.82,
+          0,
+          0
+        ],
+        [
+          0,
+          26.26,
+          0
+        ],
+        [
+          0,
+          0,
+          26.257826
+        ]
+      ],
+      "linear_damping_matrix_n_s_per_m": [
+        [
+          9.589,
+          0,
+          0
+        ],
+        [
+          0,
+          14.964789,
+          0
+        ],
+        [
+          0,
+          0,
+          11.290874
+        ]
+      ],
+      "sample_period_s": 0.1,
+      "restoring_force_frd_n": [
+        0,
+        0,
+        0.80729
+      ]
+    },
+    "kalman": {
+      "position_std": [
+        0.03,
+        0.03,
+        0.05
+      ],
+      "acceleration_std": [
+        0.35,
+        0.4,
+        0.5
+      ],
+      "initial_position_std": [
+        0.05,
+        0.05,
+        0.08
+      ],
+      "initial_velocity_std": [
+        0.3,
+        0.35,
+        0.45
+      ]
+    },
+    "controller": {
+      "horizon": 15,
+      "reference_position": [
+        0.857634,
+        -0.055545,
+        -0.120815
+      ],
+      "position_weights": [
+        1200,
+        350,
+        900
+      ],
+      "velocity_weights": [
+        150,
+        150,
+        200
+      ],
+      "terminal_weight_scale": 2,
+      "force_weights": [
+        0.6,
+        0.5,
+        0.8
+      ],
+      "delta_force_weights": [
+        5,
+        0.5,
+        3
+      ],
+      "actuator_model_enabled": true,
+      "actuator_pure_delay_s": 0.08,
+      "actuator_time_constant_s": 0.15,
+      "force_min": [
+        -5.05068,
+        -4.783308,
+        -6.86714
+      ],
+      "force_max": [
+        4.730162,
+        4.997534,
+        7.06314
+      ],
+      "delta_force_min": [
+        -1.2,
+        -0.8,
+        -1
+      ],
+      "delta_force_max": [
+        1.2,
+        0.8,
+        1
+      ],
+      "thruster_command_matrix": [
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0,
+          1,
+          0
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "thruster_command_limit": 4,
+      "thruster_command_min": [
+        -5.05068,
+        -4.783308,
+        -6.86714
+      ],
+      "thruster_command_max": [
+        4.730162,
+        4.997534,
+        7.06314
+      ],
+      "forward_distance_min": 0.2,
+      "forward_distance_max": 1.5,
+      "horizontal_half_fov_deg": 42,
+      "vertical_half_fov_deg": 30,
+      "fov_margin_deg": 7,
+      "slack_quadratic_weight": 50000,
+      "slack_linear_weight": 100,
+      "slack_max": 5,
+      "forward_axis": 0,
+      "horizontal_axis": 1,
+      "vertical_axis": 2,
+      "solver_settings": {
+        "backend": "osqp",
+        "rho": 10,
+        "sigma": 1e-08,
+        "max_iterations": 1500,
+        "absolute_tolerance": 2e-05,
+        "relative_tolerance": 0.0003,
+        "adaptive_rho": true,
+        "adaptive_interval": 25,
+        "adaptive_tolerance": 5,
+        "rho_min": 0.0001,
+        "rho_max": 100000,
+        "time_limit_seconds": 0.035,
+        "check_termination_interval": 10
+      }
+    },
+    "fusion": {
+      "window": 8,
+      "prediction_horizon": 5,
+      "forgetting_factor": 0.8,
+      "horizon_weight_decay": 0.95,
+      "weight_update_rate": 0.1,
+      "epsilon": 1e-10,
+      "indistinguishable_score_threshold": [
+        1e-07,
+        1e-07,
+        1e-07
+      ],
+      "prediction_horizon_weights": [
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "staircase_horizon_caps": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        4,
+        3,
+        1
+      ],
+      "initial_model1_weight": [
+        0,
+        0,
+        0
+      ],
+      "fixed_model1_weight": null,
+      "minimum_weight": 0.01,
+      "position_error_clip": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "yaw": {
+    "enabled_for_experiment": true,
+    "enabled_for_control": false,
+    "dynamics": {
+      "effective_inertia_kg_m2": 0.33453415,
+      "linear_damping_n_m_per_rad_s": 0.32251723,
+      "quadratic_damping_n_m_per_rad_s2": 0
+    },
+    "controller": {
+      "alpha_on": 0.10471975511965978,
+      "alpha_off": 0.020943951023931952,
+      "alpha_emergency": 0.13962634015954636,
+      "trigger_frames": 3,
+      "settle_frames": 5,
+      "require_outward_motion_to_trigger": false,
+      "yaw_tolerance": 0.03490658503988659,
+      "omega_tolerance": 0.03490658503988659,
+      "outer_kp": 1.5,
+      "outer_ki": 0,
+      "outer_kd": 0.2,
+      "outer_integral_limit": 0.5235987755982988,
+      "inner_kp": 0.6,
+      "inner_ki": 0.02,
+      "inner_kd": 0,
+      "inner_integral_limit": 1.0471975511965976,
+      "omega_command_max": 0.5235987755982988,
+      "omega_command_acceleration_max": 1.0471975511965976,
+      "yaw_moment_min": -2.041126,
+      "yaw_moment_max": 1.807854,
+      "delta_yaw_moment_min": -0.5,
+      "delta_yaw_moment_max": 0.5,
+      "use_dynamics_feedforward": false
+    },
+    "actuator_model": {
+      "enabled": true,
+      "thruster_force_limit_scale": 0.2,
+      "basis": "real M1..M8 force directions, same-vehicle force-limit priors and CAD-origin yaw arms; planar force+yaw only"
+    }
+  },
+  "vision_gate_overrides": {
+    "accepted_depth_filter_modes": [
+      "update",
+      "weak_update"
+    ],
+    "clamp_implausible_steps": false,
+    "forward_range_m": [
+      0.3,
+      1.4
+    ],
+    "jump_margin_m": 0.2,
+    "max_depth_nis": 25,
+    "max_inter_sample_gap_s": 1,
+    "max_step_m": 0.3,
+    "startup_confirmation_samples": 1,
+    "reacquire_confirmation_samples": 1
+  }
+}

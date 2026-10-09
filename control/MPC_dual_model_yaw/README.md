@@ -141,8 +141,8 @@ W_4x8 u_thr[j] = [Fx,Fright,Fdown,N_yaw][j]
 
 ```text
 1 <= h <= min(r,H,H_cap(r))
-H_cap = [3,3,2,2,1,1]
-omega_h = [0.5,0.3,0.2]
+H_cap = [5,5,5,5,5,4,3,1]
+omega_h = [1,1,1,1,1]
 ```
 
 历史回放每一步都使用实际执行力、预测起点保存的 `tau_base` 和实际 IMU yaw 增量，
@@ -204,7 +204,7 @@ command = to_finesub_command(output, armed=True)
 ## 7. 当前实机候选参数与边界
 
 - `build_tracker()` 和安全实机入口共用严格构造器，读取
-  `experimental_auto.active_mpc_parameters` 与 `active_yaw_parameters`：`dt=0.10 s`、`N=5`、实机 `M/D`、
+  `experimental_auto.active_mpc_parameters` 与 `active_yaw_parameters`：`dt=0.10 s`、`N=15`、实机 `M/D`、
   `tau_h=[0,0,0.80729] N`、0.6 m 相机参考对应的机体系参考点、当前 Q/Qv/R/S、
   卡尔曼、融合、相机外参与 `0.20` 三轴限额，不再复制仿真参数。
 - yaw 动力学读取实机候选 `effective_inertia=0.33453415 kg*m^2`、

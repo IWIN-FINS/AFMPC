@@ -263,7 +263,7 @@ def make_transport(config: dict) -> FullDuplexTransport:
         )
     if transport_type == "tcp":
         return TcpTransport(
-            str(config.get("host", "192.168.138.2")),
+            str(config.get("host", "127.0.0.1")),
             int(config.get("port", 5000)),
             timeout_sec,
         )
@@ -271,7 +271,7 @@ def make_transport(config: dict) -> FullDuplexTransport:
         return UdpTransport(
             str(config.get("bind_host", "0.0.0.0")),
             int(config.get("bind_port", 54321)),
-            str(config.get("remote_host", "192.168.0.2")),
+            str(config.get("remote_host", "192.0.2.2")),
             int(config.get("remote_port", 58766)),
             int(config.get("command_datagram_size", 0)),
             int(config.get("telemetry_source_port", 0)),

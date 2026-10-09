@@ -1,6 +1,6 @@
 # 两份代码与 PDF 数学结构的差异
 
-对照文件：`D:\浏览器下载\Untitled (1).pdf` 第 3-8 页。
+对照文件：`<dataset-directory> (1).pdf` 第 3-8 页。
 
 ## PDF 与代码一致的主干
 
