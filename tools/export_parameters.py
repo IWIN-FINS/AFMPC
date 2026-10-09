@@ -102,7 +102,7 @@ def main() -> int:
         },
     )
 
-    smc_source = base_dir / "finesub_v4pro1_smc.json"
+    smc_source = CONTROL / "SMC_controller" / "finesub_v4pro1_smc.json"
     smc = _read_json(smc_source)
     _write_json(
         control_out / "smc.json",
@@ -145,4 +145,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

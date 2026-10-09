@@ -1,5 +1,5 @@
 {
-  "base_config": "finesub_v4pro1_mpc.json",
+  "base_config": "../MPC_dual_model/finesub_v4pro1_mpc.json",
   "formal_source": "auto_runtime",
   "experimental_source": "experimental_auto",
   "smc_parameters": {

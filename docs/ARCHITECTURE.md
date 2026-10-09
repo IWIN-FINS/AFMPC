@@ -1,33 +1,31 @@
-# Architecture
+# 系统架构
 
 ```text
-stereo cameras
+双目相机
       |
       v
-vision/demo_video.py -- timestamped 3D target JSONL
+vision/demo_video.py —— 输出带时间戳的目标三维坐标 JSONL
       |
       v
-vision gate + camera-to-body transform
+视觉门控 + 相机坐标系到机体坐标系变换
       |
-      +--> dual-model translational MPC + optional yaw MPC
-      +--> three-axis PID + yaw PID
-      +--> full-vehicle SMC
-      |
-      v
-force/yaw adapter + eight-thruster allocation
+      +--> 双模型融合平移 MPC + 可选 yaw MPC
+      +--> 三轴 PID + yaw PID
+      +--> 全潜器 SMC
       |
       v
-v5 command protocol over UDP/TCP/USART
+力/yaw 适配器 + 八推进器分配
       |
       v
-STM32 firmware: validation, attitude hold, mixer, DShot output, telemetry
+通过 UDP/TCP/USART 传输的 v5 命令协议
+      |
+      v
+STM32 下位机：校验、姿态保持、混控、DShot 输出和遥测
 ```
 
-All controller coordinates use body FRD: forward, right, down. Vision emits
-OpenCV camera coordinates: right, down, forward. The calibrated rigid transform
-in the runtime configuration is the only supported conversion for hardware
-experiments.
+所有控制器都使用机体 FRD 坐标系，即前、右、下。视觉模块输出 OpenCV
+相机坐标，即右、下、前。实机实验只允许使用运行配置中已标定的刚体变换完成
+二者之间的坐标转换。
 
-The pool-top camera is not part of this repository and must never be used as
-the real-time control measurement source.
+池顶相机不属于本仓库，也不得作为实时控制的测量源。
 

@@ -29,7 +29,7 @@ from MPC_dual_model_yaw.auto_tracker import (
     build_auto_tracker as build_rotation_auto_tracker,
 )
 from .camera_transform import camera_to_body_position, wrap_angle
-from .smc_controller import build_smc_tracker
+from SMC_controller.smc_controller import build_smc_tracker
 from .finesub_protocol import (
     FineSUBControlCommand,
     build_runtime_hardware_adapter,

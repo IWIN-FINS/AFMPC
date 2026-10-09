@@ -12,7 +12,7 @@ from pathlib import Path
 
 from MPC_dual_model.auto_only_runtime import run_auto_only
 from MPC_dual_model.auto_readiness import evaluate_auto_readiness
-from MPC_dual_model.smc_config import (
+from SMC_controller.smc_config import (
     DEFAULT_SMC_PROFILE_PATH,
     load_smc_runtime_config,
 )

@@ -5,11 +5,11 @@ import numpy as np
 
 from MPC_dual_model.auto_only_runtime import _build_runtime_tracker
 from MPC_dual_model.auto_readiness import evaluate_auto_readiness
-from MPC_dual_model.smc_config import (
+from SMC_controller.smc_config import (
     DEFAULT_SMC_PROFILE_PATH,
     load_smc_runtime_config,
 )
-from MPC_dual_model.smc_controller import (
+from SMC_controller.smc_controller import (
     AxisSMCConfig,
     FullVehicleSMCController,
     RelativeStateEstimator,

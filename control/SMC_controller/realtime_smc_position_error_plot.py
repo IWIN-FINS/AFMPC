@@ -14,7 +14,7 @@ os.environ["MPLBACKEND"] = "Agg"
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .realtime_position_error_plot import (
+from MPC_dual_model.realtime_position_error_plot import (
     AXIS_COLORS,
     AXIS_NAMES,
     ERROR_REFERENCE_LEVELS_CM,
@@ -229,7 +229,7 @@ def main(argv: Iterable[str] | None = None) -> int:
 
     from PyQt6 import QtWidgets
 
-    from .realtime_position_error_window import PositionErrorWindow
+    from MPC_dual_model.realtime_position_error_window import PositionErrorWindow
 
     application = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
     window = PositionErrorWindow(plot, args.refresh_ms)

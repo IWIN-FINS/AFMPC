@@ -25,10 +25,10 @@ from typing import Any
 
 import numpy as np
 
-from .camera_transform import rotation_state_body_from_previous, wrap_angle
-from .finesub_protocol import build_runtime_hardware_adapter
-from .fossen_fixed_dl_model import FixedLinearDampingRelativeModel
-from .relative_kalman import KalmanConfig, RelativePositionKalmanFilter
+from MPC_dual_model.camera_transform import rotation_state_body_from_previous, wrap_angle
+from MPC_dual_model.finesub_protocol import build_runtime_hardware_adapter
+from MPC_dual_model.fossen_fixed_dl_model import FixedLinearDampingRelativeModel
+from MPC_dual_model.relative_kalman import KalmanConfig, RelativePositionKalmanFilter
 
 
 Array = np.ndarray
