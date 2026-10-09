@@ -11,7 +11,7 @@
 
 ## 控制代码
 
-融合 MPC、旋转 MPC、固定模型、SMC 和实机通信代码位于 `control/`。MPC 与 SMC 已分成并列目录；SMC 仅引用双方共用的通信、安全和动力学基础模块。实机入口为：
+融合 MPC、旋转 MPC、固定模型、SMC 和实机通信代码位于 `control/`。实机入口为：
 
 ```bash
 cd control
