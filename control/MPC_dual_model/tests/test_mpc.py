@@ -2,19 +2,19 @@ import unittest
 
 import numpy as np
 
-from device_adapter import FineSUBThrusterAllocator, ForceCommandAdapter
-from dense_qp import QPSolution
-from fossen_fixed_dl_model import FixedLinearDampingRelativeModel
-from model_fusion import FusionConfig, OnlineModelFusion
-from live_integration_example import build_tracker as build_live_tracker
-from mpc_controller import MPCConfig, RelativeMPCController
-from mpc_tracker import (
+from MPC_dual_model.device_adapter import FineSUBThrusterAllocator, ForceCommandAdapter
+from MPC_dual_model.dense_qp import QPSolution
+from MPC_dual_model.fossen_fixed_dl_model import FixedLinearDampingRelativeModel
+from MPC_dual_model.model_fusion import FusionConfig, OnlineModelFusion
+from MPC_dual_model.live_integration_example import build_tracker as build_live_tracker
+from MPC_dual_model.mpc_controller import MPCConfig, RelativeMPCController
+from MPC_dual_model.mpc_tracker import (
     BaselineAdaptationConfig,
     DEFAULT_PREDICTION_HORIZON_WEIGHTS,
     DEFAULT_STAIRCASE_HORIZON_CAPS,
     MPCTracker,
 )
-from relative_kalman import RelativePositionKalmanFilter
+from MPC_dual_model.relative_kalman import RelativePositionKalmanFilter
 
 
 class MPCTest(unittest.TestCase):

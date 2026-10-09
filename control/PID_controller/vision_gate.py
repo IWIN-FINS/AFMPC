@@ -32,6 +32,7 @@ class VisionGateConfig:
     max_forward_m: float = 2.50
     max_speed_m_s: float = 1.0
     jump_margin_m: float = 0.10
+    max_step_m: float = 0.30
     max_inter_sample_gap_s: float = 0.50
     startup_confirmation_samples: int = 3
     reacquire_confirmation_samples: int = 3
@@ -42,12 +43,15 @@ class VisionGateConfig:
             self.max_forward_m,
             self.max_speed_m_s,
             self.jump_margin_m,
+            self.max_step_m,
             self.max_inter_sample_gap_s,
         )
         if not all(math.isfinite(float(value)) and float(value) > 0.0 for value in positive):
             raise ValueError("vision gate limits must be finite and positive")
         if self.max_forward_m <= self.min_forward_m:
             raise ValueError("max_forward_m must exceed min_forward_m")
+        if self.max_step_m < self.jump_margin_m:
+            raise ValueError("max_step_m must be at least jump_margin_m")
         if int(self.startup_confirmation_samples) < 1:
             raise ValueError("startup_confirmation_samples must be positive")
         if int(self.reacquire_confirmation_samples) < 1:
@@ -121,7 +125,10 @@ class PIDVisionGate:
         else:
             dt = now - self._jump_candidate_time
             distance = float(np.linalg.norm(position - self._jump_candidate_position))
-            limit = self.config.jump_margin_m + self.config.max_speed_m_s * max(dt, 0.0)
+            limit = min(
+                self.config.max_step_m,
+                self.config.jump_margin_m + self.config.max_speed_m_s * max(dt, 0.0),
+            )
             if (
                 not math.isfinite(dt)
                 or dt <= 0.0
@@ -142,7 +149,9 @@ class PIDVisionGate:
     ) -> VisionGateResult:
         """Hold the previous sample, or accept a stable new target in-place."""
         count = self._register_jump_candidate(position, now)
-        required = int(self.config.reacquire_confirmation_samples)
+        # One-sample reacquisition after a genuine gap must not make the
+        # first implausible jump acceptable while a lock still exists.
+        required = max(2, int(self.config.reacquire_confirmation_samples))
         in_range = self.config.min_forward_m <= float(position[2]) <= self.config.max_forward_m
         if count >= required and in_range:
             self._last_position = position.copy()
@@ -175,6 +184,17 @@ class PIDVisionGate:
             lost=bool(lost),
         )
 
+    def hold_without_sample(self) -> VisionGateResult:
+        """Keep a locked position between camera frames without confirming it twice.
+
+        The hardware session separately enforces a maximum age for the last
+        genuinely new frame. This method only preserves the current gate
+        state for the faster 20 Hz command loop.
+        """
+        if self._locked and self._last_position is not None:
+            return self._result(True, "vision_held_between_frames", self._last_position)
+        return self._result(False, "vision_wait_new_frame", None)
+
     def _plausible_step(self, position: np.ndarray, now: float) -> bool:
         if self._last_position is None or self._last_time is None:
             return True
@@ -182,7 +202,10 @@ class PIDVisionGate:
         if not math.isfinite(dt) or dt <= 0.0 or dt > self.config.max_inter_sample_gap_s:
             return False
         distance = float(np.linalg.norm(position - self._last_position))
-        limit = self.config.jump_margin_m + self.config.max_speed_m_s * dt
+        limit = min(
+            self.config.max_step_m,
+            self.config.jump_margin_m + self.config.max_speed_m_s * dt,
+        )
         return distance <= limit
 
     def update(
@@ -203,6 +226,15 @@ class PIDVisionGate:
         current_time = time.monotonic() if now is None else float(now)
         if not math.isfinite(current_time):
             raise ValueError("now must be finite")
+
+        # A genuine camera gap ends the old lock. The next valid measurement
+        # follows the configured reacquisition count, rather than being
+        # misclassified as a jump from an obsolete position.
+        if (
+            self._last_time is not None
+            and current_time - self._last_time > self.config.max_inter_sample_gap_s
+        ):
+            self.reset(preserve_lock_history=True)
 
         forward = float(position[2])
         plausible = self._plausible_step(position, current_time)
@@ -270,8 +302,9 @@ class PIDVisionGate:
         else:
             pending_dt = current_time - self._pending_time
             pending_distance = float(np.linalg.norm(position - self._pending_position))
-            pending_limit = self.config.jump_margin_m + self.config.max_speed_m_s * max(
-                pending_dt, 0.0
+            pending_limit = min(
+                self.config.max_step_m,
+                self.config.jump_margin_m + self.config.max_speed_m_s * max(pending_dt, 0.0),
             )
             if (
                 pending_dt <= 0.0

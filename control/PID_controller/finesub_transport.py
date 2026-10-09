@@ -287,7 +287,7 @@ def make_transport(config: dict) -> FullDuplexTransport:
         )
     if transport_type == "tcp":
         return TcpTransport(
-            str(config.get("host", "192.168.138.2")),
+            str(config.get("host", "127.0.0.1")),
             int(config.get("port", 5000)),
             timeout_sec,
         )
@@ -295,7 +295,7 @@ def make_transport(config: dict) -> FullDuplexTransport:
         return UdpTransport(
             str(config.get("bind_host", "0.0.0.0")),
             int(config.get("bind_port", 54321)),
-            str(config.get("remote_host", "192.168.0.2")),
+            str(config.get("remote_host", "192.0.2.2")),
             int(config.get("remote_port", 58766)),
             int(config.get("command_datagram_size", 0)),
             int(config.get("telemetry_source_port", 0)),
@@ -333,12 +333,14 @@ class FineSUBConnection:
         reconnect_interval_s: float = 1.0,
         logger: Callable[[str], None] | None = print,
         session_id: int | None = None,
+        yaw_direct: bool = True,
     ) -> None:
         self.transport = transport
         self.telemetry_max_age_s = float(telemetry_max_age_s)
         self.confirmation_max_age_s = float(confirmation_max_age_s)
         self.reconnect_interval_s = float(reconnect_interval_s)
         self.logger = logger
+        self.yaw_direct = bool(yaw_direct)
         self.session_id = (
             int(session_id) & 0xFFFFFFFF
             if session_id is not None
@@ -472,7 +474,14 @@ class FineSUBConnection:
         effective = command
         if command.armed and not self.confirmation_fresh():
             # Firmware requires a confirmed disarmed frame for every new session.
-            effective = FineSUBControlCommand(0.0, 0.0, 0.0, 0.0, armed=False)
+            effective = FineSUBControlCommand(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                armed=False,
+                yaw_direct=command.yaw_direct,
+            )
         sender_ms = int(time.monotonic() * 1000.0) & 0xFFFFFFFF
         sequence = self.sequence
         frame = pack_command(
@@ -503,4 +512,13 @@ class FineSUBConnection:
         return True
 
     def send_disarm(self) -> bool:
-        return self.send(FineSUBControlCommand(0.0, 0.0, 0.0, 0.0, armed=False))
+        return self.send(
+            FineSUBControlCommand(
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                armed=False,
+                yaw_direct=self.yaw_direct,
+            )
+        )

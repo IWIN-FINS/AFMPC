@@ -1,40 +1,37 @@
-# Python bytecode and caches
+.venv/
 __pycache__/
 *.py[cod]
-*$py.class
 .pytest_cache/
-.mypy_cache/
 .ruff_cache/
+.mypy_cache/
 
-# Virtual environments and local runtimes
-.venv/
-venv/
-env/
-tmp/
+# Runtime data and local hardware settings
+runtime/
+recordings/
+calibration_logs/
+*.jsonl
+*.csv
 
-# Build and packaging output
+# Model weights are distributed separately
+models/
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# Build products
 build/
 dist/
 *.egg-info/
+firmware/cmake-build-*/
+firmware/Build/
+firmware/**/*.elf
+firmware/**/*.hex
+firmware/**/*.bin
+firmware/**/*.map
 
-# Coverage, logs, and temporary files
-.coverage
-htmlcov/
-*.log
-*.tmp
-*.bak
-/calibration_logs/
-/control/calibration_logs/
-# Raw experiment logs are part of the archived dataset.
-!/raw_data/**/*.log
-
-# Local configuration and secrets
-.env
-.env.*
-!.env.example
-
-# IDE and operating-system files
+# Editors and operating systems
 .idea/
 .vscode/
 .DS_Store
-Thumbs.db
+

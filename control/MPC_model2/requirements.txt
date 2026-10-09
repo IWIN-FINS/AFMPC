@@ -1,2 +1,0 @@
-numpy
-osqp>=1.0

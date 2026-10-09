@@ -3,12 +3,12 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from device_adapter import (
+from PID_controller.device_adapter import (
     FINESUB_V4_PRO1_FORCE_NEGATIVE_N,
     FINESUB_V4_PRO1_FORCE_POSITIVE_N,
     finesub_translation_thruster_force_matrix,
 )
-from pid_controller import PIDConfig, RelativePIDController
+from PID_controller.pid_controller import PIDConfig, RelativePIDController
 
 
 def build_controller(**overrides) -> RelativePIDController:

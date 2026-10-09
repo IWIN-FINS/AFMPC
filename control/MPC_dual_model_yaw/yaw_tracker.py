@@ -29,21 +29,21 @@ from .yaw_relative_model import (
 )
 
 
-DEFAULT_STAIRCASE_HORIZON_CAPS = (3, 3, 2, 2, 1, 1)
-DEFAULT_PREDICTION_HORIZON_WEIGHTS = (0.5, 0.3, 0.2)
+DEFAULT_STAIRCASE_HORIZON_CAPS = (5, 5, 5, 5, 5, 4, 3, 1)
+DEFAULT_PREDICTION_HORIZON_WEIGHTS = (1.0, 1.0, 1.0, 1.0, 1.0)
 
 
 def build_default_staircase_fusion() -> OnlineModelFusion:
-    """Match the maintained translation tracker's 2-D staircase score."""
+    """Match the current experimental translation fusion profile."""
     return OnlineModelFusion(
         FusionConfig(
             window=len(DEFAULT_STAIRCASE_HORIZON_CAPS),
             prediction_horizon=len(DEFAULT_PREDICTION_HORIZON_WEIGHTS),
             forgetting_factor=0.8,
-            weight_update_rate=0.35,
+            weight_update_rate=0.10,
             prediction_horizon_weights=DEFAULT_PREDICTION_HORIZON_WEIGHTS,
             staircase_horizon_caps=DEFAULT_STAIRCASE_HORIZON_CAPS,
-            initial_model1_weight=(0.80, 0.80, 0.80),
+            initial_model1_weight=(0.0, 0.0, 0.0),
             minimum_weight=0.01,
         )
     )

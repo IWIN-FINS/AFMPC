@@ -58,18 +58,28 @@ def build_tracker(*, calibrated_reference: bool = False) -> PIDTracker:
         # standoff.  The calibrated camera mount is applied before this
         # reference in the real hardware/camera-window entry points.
         reference_position=reference_position,
-        # Safe starting values, not completed real-vehicle tuning values.
-        kp=(28.0, 38.0, 50.0),
-        ki=(1.0, 1.5, 2.0),
-        kd=(16.0, 22.0, 26.0),
-        derivative_filter_time_constant=0.12,
+        # Retune after the latest real-vehicle replay: Kp=[12,15,18] left
+        # appreciable forward/lateral tracking lag.  The 20 Hz PID loop only
+        # receives a new stereo position about every 0.10 s, while rejected
+        # jumps are held; the previous full I/D trial therefore increased
+        # command reversals instead of adding useful damping.  Keep the
+        # higher P authority and add only a small planar I term for the
+        # sustained forward/right bias seen in the latest replay.  Depth I
+        # stays disabled because its stereo noise accumulated in the held
+        # samples; D stays disabled until a variable-rate derivative is used.
+        kp=(28.0, 35.0, 42.0),
+        ki=(0.10, 0.15, 0.0),
+        kd=(0.0, 0.0, 0.0),
+        derivative_filter_time_constant=0.35,
         integral_limit=(2.0, 1.5, 1.2),
         force_min=force_min,
         force_max=force_max,
-        # Lowered real-vehicle authority after the yaw/vision test.  The
-        # hardware adapter applies the same 0.10 normalized channel cap.
-        delta_force_min=(-0.4, -0.4, -0.5),
-        delta_force_max=(0.4, 0.4, 0.5),
+        # Match the active MPC runtime envelope in
+        # ``MPC_dual_model/finesub_v4pro1_mpc.json``.  These are per-20 Hz
+        # force-step limits, not PID gains; keeping them identical avoids a
+        # different acceleration/braking authority when switching models.
+        delta_force_min=(-1.2, -0.8, -1.0),
+        delta_force_max=(1.2, 0.8, 1.0),
         thruster_force_matrix=finesub_translation_thruster_force_matrix(),
         thruster_force_min=-FINESUB_V4_PRO1_FORCE_NEGATIVE_N,
         thruster_force_max=FINESUB_V4_PRO1_FORCE_POSITIVE_N,
@@ -82,7 +92,8 @@ def build_tracker(*, calibrated_reference: bool = False) -> PIDTracker:
     )
     allocator = FineSUBThrusterAllocator(
         positive_force_at_limit=force_max,
-        translation_channel_limits=(0.10, 0.10, 0.10),
+        # Active MPC experimental_auto.max_channel_abs = 0.20.
+        translation_channel_limits=(0.20, 0.20, 0.20),
         enable_depth=True,
     )
     yaw_controller = YawPIDController(
@@ -93,8 +104,11 @@ def build_tracker(*, calibrated_reference: bool = False) -> PIDTracker:
             kd=0.55,
             yaw_moment_min=-2.041126,
             yaw_moment_max=1.807854,
-            delta_yaw_moment_min=-0.25,
-            delta_yaw_moment_max=0.25,
+            # Match active MPC yaw slew limits while holding the startup yaw
+            # angle.  The yaw reference is latched from the first valid IMU
+            # sample; it is not recomputed from the target bearing.
+            delta_yaw_moment_min=-0.5,
+            delta_yaw_moment_max=0.5,
         )
     )
     yaw_adapter = YawMomentChannelAdapter(
@@ -108,7 +122,9 @@ def build_tracker(*, calibrated_reference: bool = False) -> PIDTracker:
         allocator,
         yaw_controller=yaw_controller,
         yaw_adapter=yaw_adapter,
-        track_target_bearing=True,
+        # Hold the current yaw angle.  ``PIDTracker.latch_baseline`` latches
+        # the first valid IMU yaw as the reference for the yaw PID.
+        track_target_bearing=False,
     )
     # Keep the frame selection with the tracker so the small integration
     # helper cannot silently pair a calibrated reference with the old aligned

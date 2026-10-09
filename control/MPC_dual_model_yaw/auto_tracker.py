@@ -51,6 +51,29 @@ def _strict_dataclass_kwargs(
     return dict(mapping)
 
 
+def _shared_translation_mpc_kwargs(base) -> dict[str, Any]:
+    """Copy every field shared by the translation and yaw-aware MPC configs.
+
+    The yaw controller has a different actuator constraint representation, so
+    its thruster-wrench fields are supplied by the yaw-specific builder below.
+    All other overlapping fields must come from the maintained translation
+    controller instead of being duplicated here.
+    """
+
+    yaw_fields = {item.name for item in fields(YawMPCConfig)}
+    return {
+        name: getattr(base, name)
+        for name in yaw_fields
+        if hasattr(base, name)
+        and name
+        not in {
+            "thruster_wrench_matrix",
+            "thruster_force_min",
+            "thruster_force_max",
+        }
+    }
+
+
 def _real_planar_actuator_model(
     runtime_config: dict[str, Any], yaw_active: dict[str, Any]
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -179,38 +202,15 @@ def build_auto_tracker(runtime_config: dict[str, Any]) -> RotationAwareMPCTracke
     wrench, thruster_min, thruster_max = _real_planar_actuator_model(
         runtime_config, yaw_active
     )
+    yaw_mpc_kwargs = _shared_translation_mpc_kwargs(base)
+    yaw_mpc_kwargs.update(
+        thruster_wrench_matrix=wrench,
+        thruster_force_min=thruster_min,
+        thruster_force_max=thruster_max,
+    )
     controller = RotationAwareMPCController(
         model,
-        YawMPCConfig(
-            horizon=base.horizon,
-            reference_position=base.reference_position,
-            position_weights=base.position_weights,
-            velocity_weights=base.velocity_weights,
-            terminal_weight_scale=base.terminal_weight_scale,
-            force_weights=base.force_weights,
-            delta_force_weights=base.delta_force_weights,
-            force_min=base.force_min,
-            force_max=base.force_max,
-            delta_force_min=base.delta_force_min,
-            delta_force_max=base.delta_force_max,
-            thruster_wrench_matrix=wrench,
-            thruster_force_min=thruster_min,
-            thruster_force_max=thruster_max,
-            forward_distance_min=base.forward_distance_min,
-            forward_distance_max=base.forward_distance_max,
-            horizontal_half_fov_deg=base.horizontal_half_fov_deg,
-            vertical_half_fov_deg=base.vertical_half_fov_deg,
-            fov_margin_deg=base.fov_margin_deg,
-            forward_axis=base.forward_axis,
-            horizontal_axis=base.horizontal_axis,
-            vertical_axis=base.vertical_axis,
-            rotation_visibility_from_body=base.rotation_visibility_from_body,
-            camera_origin_in_body=base.camera_origin_in_body,
-            slack_quadratic_weight=base.slack_quadratic_weight,
-            slack_linear_weight=base.slack_linear_weight,
-            slack_max=base.slack_max,
-            solver_settings=base.solver_settings,
-        ),
+        YawMPCConfig(**yaw_mpc_kwargs),
     )
     estimator = RotationAwareKalmanFilter(
         model, translation_tracker.estimator.config

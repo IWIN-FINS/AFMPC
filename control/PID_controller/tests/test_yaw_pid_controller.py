@@ -3,8 +3,8 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from live_integration_example import build_tracker, one_control_update
-from yaw_pid_controller import YawPIDConfig, YawPIDController, wrap_angle
+from PID_controller.live_integration_example import build_tracker, one_control_update
+from PID_controller.yaw_pid_controller import YawPIDConfig, YawPIDController, wrap_angle
 
 
 def test_angle_wrap_uses_shortest_turn() -> None:
@@ -33,10 +33,10 @@ def test_yaw_moment_slew_limit() -> None:
     assert result.saturated
 
 
-def test_tracker_turns_right_toward_target_bearing() -> None:
+def test_tracker_holds_latched_startup_yaw() -> None:
     tracker = build_tracker()
     tracker.latch_baseline(np.zeros(3), 0.0, yaw_rad=0.0)
-    # Camera [right, down, forward]: target is to the right of the nose.
+    # A target to the right must not replace the startup yaw reference.
     output = one_control_update(
         tracker,
         position_camera_xyz=(0.4, 0.0, 1.0),
@@ -46,13 +46,30 @@ def test_tracker_turns_right_toward_target_bearing() -> None:
         last_achieved_yaw_moment=0.0,
     )
     assert output.yaw_pid is not None
-    assert output.yaw_pid.reference_yaw == pytest.approx(np.arctan2(0.4, 1.0))
-    assert output.yaw_pid.yaw_moment > 0.0
-    assert output.yaw_channel > 0.0
+    assert output.yaw_pid.reference_yaw == pytest.approx(0.0)
+    assert output.yaw_pid.yaw_moment == pytest.approx(0.0)
+    assert output.yaw_channel == pytest.approx(0.0)
     np.testing.assert_allclose(
         output.thruster_allocation.attitude_channels[:2], 0.0
     )
-    assert output.thruster_allocation.attitude_channels[2] > 0.0
+    assert output.thruster_allocation.attitude_channels[2] == pytest.approx(0.0)
+
+
+def test_tracker_corrects_deviation_from_latched_startup_yaw() -> None:
+    tracker = build_tracker()
+    tracker.latch_baseline(np.zeros(3), 0.0, yaw_rad=0.0)
+    output = one_control_update(
+        tracker,
+        position_camera_xyz=(0.4, 0.0, 1.0),
+        last_achieved_force_body=np.zeros(3),
+        imu_yaw_rad=0.2,
+        imu_yaw_rate_rad_s=0.0,
+        last_achieved_yaw_moment=0.0,
+    )
+    assert output.yaw_pid is not None
+    assert output.yaw_pid.reference_yaw == pytest.approx(0.0)
+    assert output.yaw_pid.angle_error < 0.0
+    assert output.yaw_pid.yaw_moment < 0.0
 
 
 def test_explicit_yaw_reference_overrides_target_bearing() -> None:
@@ -102,19 +119,20 @@ def test_wrap_angle_range() -> None:
     assert -np.pi <= wrap_angle(123.0) < np.pi
 
 
-def test_nominal_yaw_closed_loop_converges() -> None:
+def test_nominal_yaw_hold_rejects_a_disturbance() -> None:
     tracker = build_tracker()
     yaw = 0.0
     yaw_rate = 0.0
     yaw_moment = 0.0
     force = np.zeros(3)
-    target_world_yaw = 0.6
     tracker.latch_baseline(force, yaw_moment, yaw)
-    for _ in range(240):
-        bearing = wrap_angle(target_world_yaw - yaw)
-        position_body = np.array([np.cos(bearing), np.sin(bearing), 0.0])
+    for index in range(240):
+        # Apply a small external yaw disturbance during the first half of the
+        # run; the held startup angle remains the reference.
+        if index < 40:
+            yaw = wrap_angle(yaw + 0.01)
         output = tracker.update(
-            position_body,
+            np.array([0.8, 0.0, 0.0]),
             force,
             yaw_rad=yaw,
             yaw_rate_rad_s=yaw_rate,
@@ -124,4 +142,4 @@ def test_nominal_yaw_closed_loop_converges() -> None:
         yaw_moment = output.yaw_pid.yaw_moment
         yaw_rate += (yaw_moment - 0.8 * yaw_rate) / 0.8 * 0.05
         yaw = wrap_angle(yaw + yaw_rate * 0.05)
-    assert abs(wrap_angle(target_world_yaw - yaw)) < np.deg2rad(1.0)
+    assert abs(yaw) < np.deg2rad(1.0)

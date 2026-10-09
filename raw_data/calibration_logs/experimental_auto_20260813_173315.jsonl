@@ -1,4 +1,0 @@
-{"event":"start","host_time_s":1786613595.536574,"host_monotonic_s":86370.820257535,"runtime_state":"DISARMED_HANDSHAKE","runtime_label":"EXPERIMENTAL AUTO"}
-{"event":"arming","host_time_s":1786613624.1377215,"host_monotonic_s":86399.421405024,"runtime_state":"ARMING"}
-{"event":"vision_reject","host_time_s":1786613625.6367965,"host_monotonic_s":86400.920479971,"runtime_state":"ARMING","reason":"no_target"}
-{"event":"stop","host_time_s":1786613625.6368904,"host_monotonic_s":86400.920573857,"runtime_state":"ARMING","fatal_reason":"vision gate rejected a new result: no_target","clean_stop":false}

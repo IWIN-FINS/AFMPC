@@ -6,7 +6,8 @@
 [forward, right, down] = [0.80, 0.0, 0.0] m
 ```
 
-控制器输出综合平移力和 yaw 力矩（当前实机 PID 配置先冻结 yaw，实机通道只下发平移）：
+控制器输出综合平移力和 yaw 力矩；实机 PID 在首次有效遥测时锁存当前 yaw
+角作为保持目标，持续抑制偏航误差：
 
 ```text
 tau = [F_forward, F_right, F_down] N
@@ -20,21 +21,21 @@ e[k]      = p_target_body[k] - p_reference
 de_f[k]   = LPF((e[k] - e[k-1]) / dt)
 tau_raw   = tau_baseline + Kp*e + Ki*sum(e*dt) + Kd*de_f
 
-psi_goal  = psi_imu + atan2(target_right, target_forward)
+psi_goal  = psi_startup
 e_yaw     = wrap(psi_goal - psi_imu)
 N_yaw     = Kp_yaw*e_yaw + Ki_yaw*sum(e_yaw*dt) - Kd_yaw*omega_imu
 ```
 
 `tau_baseline` 是 AUTO 开启时锁存的当前实际合力，只是无扰切换和目标丢失回退值，不是动力学模型。D 项使用一阶低通，第一帧强制为零，避免启用瞬间的微分冲击；I 项有积分限幅和反算抗饱和。
 
-yaw 只控制绕 FRD 下轴的航向角，正 yaw 表示艏部向右转；roll 和 pitch 不在这个 PID 中控制。默认根据相机水平视线让艏部朝向目标，也可以给 `reference_yaw_rad` 保持固定绝对航向。角度使用弧度并通过 `wrap()` 选择最短旋转方向。
+yaw 只控制绕 FRD 下轴的航向角，正 yaw 表示艏部向右转；roll 和 pitch 不在这个 PID 中控制。默认保持首次有效遥测的当前航向，也可以给 `reference_yaw_rad` 指定固定绝对航向。角度使用弧度并通过 `wrap()` 选择最短旋转方向。
 
 ## 与 MPC 的对应关系
 
 | 能力 | 纯 PID 实现 |
 |---|---|
 | 三轴相对位置保持 | 三套独立 PID |
-| yaw 航向跟踪 | 单独的角度 PID，D 项使用 IMU yaw 角速度 |
+| yaw 航向保持 | 单独的角度 PID，锁存启动时 yaw，D 项使用 IMU yaw 角速度 |
 | roll / pitch | 不控制，始终给混控器传 0 |
 | 测量噪声处理 | D 项一阶低通、误差死区 |
 | 综合力上下限 | `force_min/max` |
@@ -62,6 +63,11 @@ PID 没有 MPC 的未来视场约束和前瞻能力，因此无法严格保证�
 - `vision_gate.py`：相机距离/跳变/启动确认门控；已锁定后遇到单帧视觉跳变会忽略该帧并保持上一帧有效位置，不把异常坐标送入 PID。
 - `hardware_diagnostic.py`：只发 disarm、永不解锁电机的连接诊断程序，支持 MPC 风格 JSON。
 - `camera_pid_tuner.py`：池顶相机窗口、ROI/手动目标、实时误差曲线和 OpenCV PID 滑块调参。
+- `dual_vision_pid_runtime.py`：实机/干跑的正确双路视觉入口。双目
+  `pipeline_results.jsonl` 提供 PID 的三维位置；池顶相机和
+  `/finsrov/vision/refracted_pose_6d` 只提供位置、速度、跳变辅助信息和窗口显示。
+  旧的 `camera_pid_tuner.py` 单目像素/固定距离模式只适合离线观察，不应作为
+  双目实机控制输入。
 - `tests/`：控制方向、约束、回退、接口和闭环收敛测试。
 
 ## 安装与验证
@@ -69,7 +75,7 @@ PID 没有 MPC 的未来视场约束和前瞻能力，因此无法严格保证�
 本项目使用 `uv` 管理独立虚拟环境：
 
 ```bash
-cd /home/fins/Zhouyuheng_workspace/MPC/PID_controller
+cd PID_controller
 uv sync --dev
 uv run pytest -q
 uv run python example_simulation.py
@@ -82,13 +88,26 @@ uv sync --extra gui
 uv run python camera_pid_tuner.py --camera-index 3 --fx 600 --fy 600 --range-m 2.0
 ```
 
-若要沿用 MPC 当前的网络桥接配置，只替换传输层，PID 仍然使用本目录的
-纯 PID 增益和状态：
+双目实机/干跑窗口使用现有 stereo pipeline 的 JSONL，池顶视频仅作辅助显示；
+下面命令默认保持 disarmed：
 
 ```bash
-uv run python camera_pid_tuner.py \
-  --runtime-config /home/fins/Zhouyuheng_workspace/MPC/MPC_dual_model/finesub_v4pro1_mpc.json \
-  --camera-index 0 --fx 600 --fy 600 --range-m 2.0
+uv run python dual_vision_pid_runtime.py \
+  --stereo-jsonl runtime/vision/<session>/pipeline_results.jsonl \
+  --camera-device /dev/video2
+```
+
+`--stereo-jsonl` 必须是正在更新的双目输出；如果它停止更新，PID 会进入等待/安全
+状态。窗口中的 TOP position/speed 不会送入 `PIDTracker`。只有明确增加
+`--enable-arm` 并按下 `a` 才会请求实机 armed；不要把旧的池顶单目窗口接到实机。
+
+若要沿用 MPC 当前的网络桥接配置，只替换传输层，仍使用双目入口：
+
+```bash
+uv run python dual_vision_pid_runtime.py \
+  --stereo-jsonl runtime/vision/<session>/pipeline_results.jsonl \
+  --runtime-config MPC_dual_model/finesub_v4pro1_mpc.json \
+  --camera-device /dev/video2
 ```
 
 设备索引以本机 `v4l2-ctl --list-devices` 为准，也可以传
@@ -109,7 +128,7 @@ TCP/UDP 连接用 `--runtime-config /path/to/runtime.json`。无论哪种方式�
 
 ```bash
 uv run python hardware_diagnostic.py --runtime-config \
-  /home/fins/Zhouyuheng_workspace/MPC/MPC_dual_model/finesub_v4pro1_mpc.json \
+  MPC_dual_model/finesub_v4pro1_mpc.json \
   --seconds 10
 ```
 
@@ -119,17 +138,17 @@ uv run python hardware_diagnostic.py --runtime-config \
 
 - USART3，115200 baud，8N1；板端引脚为 `PD8/TX`、`PD9/RX`。
 - 命令顺序为归一化 `[forward,right,down,yaw]`，范围分别为 `±0.35/±0.35/±0.50/±0.20`。
-- yaw 使用 `yaw-direct`；下位机 roll/pitch PID 仍然工作，PID 上位机不控制 roll/pitch。
+- 实机默认使用下位机 `LOWER_LOCAL_HOLD` yaw 模式：armed 首帧锁存当前 yaw，避免未经验证的 direct-yaw 通道和共享推进器混控引起旋转；上位机仍计算 yaw PID 误差用于窗口诊断。下位机 roll/pitch PID 仍然工作，PID 上位机不控制 roll/pitch。
 - 新上位机进程先发送 disarm 帧并等待 session/sequence/CRC 回执，确认后才允许发送 armed 帧。
 - 遥测超过 0.20 秒、命令被拒绝、failsafe 或缺少实际执行反馈时，上位机只发送零值 disarm。
 - armed 期间遥测失联、failsafe、执行反馈异常或持续的无效/范围错误视觉会锁存 disarm；单帧视觉跳变只保持上一帧有效位置并继续 armed，不会直接停机。
 - 下位机自身超过 500 ms 没有命令时也会 failsafe 并要求重新 disarm 握手。
 
-PID 实机实验的默认平移包络已收紧到当前 MPC 实验包络：
+PID 实机实验的默认平移包络与当前 MPC 实验包络一致：
 `force_max=[4.730162,4.997534,7.06314] N`、每拍变化率
-`[0.4,0.4,0.5] N`、PID 实机归一化平移通道 `±0.10`，且 yaw 通道固定为 0。
-这不是实机最终 PID
-调参值，只是避免 PID 在视觉异常时直接打满旧的推进器包络。
+`[1.2,0.8,1.0] N`、PID 实机归一化平移通道 `±0.20`；yaw 实机不再发送
+direct-yaw，而是使用下位机当前角度保持环。这不是实机最终 PID 调参值，
+只是保留当前已授权的实验包络并避免未验证 direct-yaw 共享混控引起旋转。
 实机入口和相机窗口还使用同一套 PID 目录内的相机外参：OpenCV
 `[right,down,forward]` 经过旋转后得到 FRD `[forward,right,down]`，并加上
 相机在机体中的安装原点偏移；其 `[0,0,0.60] m` 图像中心点对应当前池顶
