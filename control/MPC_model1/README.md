@@ -85,7 +85,7 @@ tau_previous+ = tau
 
 ## 5. 安装与验证
 
-在 `<repository>/control` 下运行：
+在 `D:\FINSMCAT\Machine\MPC` 下运行：
 
 ```powershell
 python -m pip install -r MPC_model1/requirements.txt

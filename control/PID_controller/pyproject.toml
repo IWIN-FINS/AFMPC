@@ -1,0 +1,32 @@
+[project]
+name = "finesub-pid-controller"
+version = "0.1.0"
+description = "Pure PID three-axis relative-position tracking for FineSUB"
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "numpy>=1.24",
+    "pyserial>=3.5",
+]
+
+[project.optional-dependencies]
+gui = [
+    "opencv-python>=4.8",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = [
+    "-p", "no:ament_xmllint",
+    "-p", "no:ament_lint",
+    "-p", "no:ament_copyright",
+    "-p", "no:launch_ros",
+    "-p", "no:ament_pep257",
+    "-p", "no:ament_flake8",
+    "-p", "no:launch_testing",
+]

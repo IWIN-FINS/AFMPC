@@ -1,4 +1,0 @@
--r requirements.txt
-opencv-contrib-python>=4.8
-pyserial>=3.5
-

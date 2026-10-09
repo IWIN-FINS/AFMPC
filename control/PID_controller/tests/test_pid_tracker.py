@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from PID_controller.camera_transform import camera_to_body_position
-from PID_controller.live_integration_example import build_tracker, one_control_update
+from camera_transform import camera_to_body_position
+from live_integration_example import build_tracker, one_control_update
 
 
 def test_camera_coordinate_order() -> None:

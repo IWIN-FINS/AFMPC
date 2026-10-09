@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "authoritative_source": "control/MPC_dual_model/finesub_v4pro1_mpc.json",
-  "source_sha256": "b61176d189206b1ac4bf0b3da54c9a4c8dff1dcf2f6e32aca233bfeb5d33ae43",
+  "source_sha256": "f559647c7064b7bb7bcd5514bbfc7307b2c87aec6aad3e5f5179ebc600ef29c9",
   "control": {
     "protocol_version": 5,
     "period_sec": 0.05,
@@ -17,19 +17,19 @@
     "local_roll_rate_pid": {
       "kp": 0.1,
       "ki_per_1khz_cycle": 0.0001,
-      "kd": 0
+      "kd": 0.0
     },
     "local_pitch_attitude_outer_gain": 2.5,
     "local_pitch_rate_pid": {
       "kp": 0.1,
       "ki_per_1khz_cycle": 0.0001,
-      "kd": 0
+      "kd": 0.0
     },
     "local_yaw_attitude_outer_gain": 2.5,
     "local_yaw_rate_pid": {
       "kp": 0.12,
       "ki_per_1khz_cycle": 5e-05,
-      "kd": 0
+      "kd": 0.0
     },
     "local_attitude_gain_validation": "Roll, pitch and yaw were isolated with firmware single-axis modes, then re-checked together in water. With all three low-gain loops active, no motor reached the 10% limit; horizontal yaw motor output fell from old-gain P95 5.06% / max 7.75% to P95 0% / max 1.01%.",
     "local_attitude_state_initialization": "All Matrixf controller states are explicitly initialized with matrixf::zeros. Matrixf's default constructor does not clear its backing array; leaving targetAttitude roll/pitch uninitialized caused reset-dependent positive feedback.",
@@ -48,7 +48,7 @@
       "requested_armed_values": [
         false
       ],
-      "requested_channel_max_abs": 0,
+      "requested_channel_max_abs": 0.0,
       "telemetry_armed_values": [
         false
       ],
@@ -68,8 +68,8 @@
       "depth_pressure_sensor_selection": "first valid absolute-pressure source among channels 0, 1 and 2 at boot; selected channel is not exposed in telemetry",
       "depth_pressure_sensor_runtime_status": "one valid source among channels 0, 1 and 2 initialized successfully; firmware reached disarmed IDLE",
       "ignored_faulty_pressure_sensor_index": 3,
-      "applied_motor_throttle_max_abs": 0,
-      "motor_rpm_max_abs": 0,
+      "applied_motor_throttle_max_abs": 0.0,
+      "motor_rpm_max_abs": 0.0,
       "telemetry_max_age_s": 0.049759,
       "mcu_tick_delta_ms": 2900,
       "command_count_first_last": [
@@ -99,14 +99,14 @@
       0.2
     ],
     "translation_signs": [
-      1,
-      1,
-      1
+      1.0,
+      1.0,
+      1.0
     ],
     "positive_yaw_moment_at_limit": 1.807854,
     "negative_yaw_moment_at_limit": 2.041126,
     "yaw_channel_limit": 0.2,
-    "yaw_sign": 1
+    "yaw_sign": 1.0
   },
   "thruster_feedback": {
     "physical_order": [
@@ -186,22 +186,22 @@
       ],
       "measured_open_loop_throttle": 0.1,
       "measured_steady_rpm_positive_m1_m8": [
-        950,
+        950.0,
         937.5,
         937.5,
-        950,
+        950.0,
         937.5,
         937.5,
-        950,
-        925
+        950.0,
+        925.0
       ],
       "measured_steady_rpm_negative_m1_m8": [
         -931.25,
-        -925,
+        -925.0,
         -937.5,
         -937.5,
         -937.5,
-        -925,
+        -925.0,
         -962.5,
         -937.5
       ],
@@ -308,7 +308,7 @@
     "enabled_for_full_attitude_allocation": false,
     "frame": "body_FRD_x_forward_y_right_z_down",
     "reference_origin": "V4 CAD main-assembly origin; this is not yet the measured center of mass",
-    "source": "assets/cad/V4_body.step",
+    "source": "/home/fins/Zhouyuheng_workspace/V4pro/V4外形.STEP",
     "source_sha256": "32ba6a7ddaed7e1a2aadd190c13278a858d9c97c8d293479095b2810ed6273d5",
     "source_units": "millimetres converted to metres",
     "cad_to_frd": "x_frd=-y_cad, y_frd=x_cad, z_frd=z_cad",
@@ -378,53 +378,53 @@
       [
         -0.707106781,
         -0.707106781,
-        0
+        0.0
       ],
       [
         -0.707106781,
         0.707106781,
-        0
+        0.0
       ],
       [
-        0,
-        0,
-        1
+        0.0,
+        0.0,
+        1.0
       ],
       [
-        0,
-        0,
-        -1
+        0.0,
+        0.0,
+        -1.0
       ],
       [
-        0,
-        0,
-        1
+        0.0,
+        0.0,
+        1.0
       ],
       [
         -0.707106781,
         0.707106781,
-        0
+        0.0
       ],
       [
         0.707106781,
         0.707106781,
-        0
+        0.0
       ],
       [
-        0,
-        0,
-        1
+        0.0,
+        0.0,
+        1.0
       ]
     ],
     "yaw_moment_arm_about_cad_origin_m_per_positive_force_m1_m8": [
       -0.278262353,
       -0.278262353,
-      0,
-      0,
-      0,
+      0.0,
+      0.0,
+      0.0,
       0.278262353,
       -0.278262353,
-      0
+      0.0
     ],
     "confidence": "CAD centers and axes are high-confidence design geometry; positive-throttle signs are current-vehicle measurements. Full moment allocation remains disabled until center of mass and as-built conformity are confirmed."
   }

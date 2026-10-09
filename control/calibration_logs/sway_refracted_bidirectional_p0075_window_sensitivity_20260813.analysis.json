@@ -1,0 +1,97 @@
+{
+  "status": "window_sensitive_rejected_as_control_parameter",
+  "axis_frd": "right",
+  "model": "F_axis = M_eff * dv/dt + D_linear * v + bias",
+  "method": "Bidirectional split runs, refracted pool-world pose, zero velocity at pulse onset after each 10 s neutral baseline. The same shared-parameter fit is repeated with progressively longer pulse-plus-coast windows.",
+  "source": {
+    "positive_camera_csv": "calibration_logs/sway_refracted_p0075_camera_20260813_run01.csv",
+    "positive_camera_csv_sha256": "6702823adbca6c679437ab2f574f23d5df8cedec0e2efef37340dfe0a392c199",
+    "positive_motor_csv": "calibration_logs/sway_refracted_p0075_motor_20260813_run01.csv",
+    "positive_motor_csv_sha256": "e6241b048eb05f1da74656a49060d5752408f67cb0362b0fcc12962bae7d4e0a",
+    "negative_camera_csv": "calibration_logs/sway_refracted_n0075_camera_20260813_run01.csv",
+    "negative_camera_csv_sha256": "1d93d023bdeb915f25ee50e92bfe15645da79ef7127740b2a5e60019923c3575",
+    "negative_motor_csv": "calibration_logs/sway_refracted_n0075_motor_20260813_run01.csv",
+    "negative_motor_csv_sha256": "c3926b111bb24172801a1345bb890043419780d636a4034791d3bf0a4a78c7fe",
+    "config": "MPC_dual_model/finesub_v4pro1_mpc.json",
+    "config_sha256": "6898c8c91bef3bd87e9e696d0f320afac61e0e5ede163c0f4fea80e70233d3bd"
+  },
+  "fits": [
+    {
+      "window_duration_s": 2.0,
+      "effective_mass_kg": 15.203594599085875,
+      "linear_damping_n_per_m_s": 16.14621995950852,
+      "time_constant_s": 0.9416194401670136,
+      "bias_n": -0.055742411540019354,
+      "position_rmse_m": 0.0009840158502991794,
+      "position_abs_error_p95_m": 0.0018991608920733152,
+      "sample_count": 77
+    },
+    {
+      "window_duration_s": 4.0,
+      "effective_mass_kg": 20.4993798704488,
+      "linear_damping_n_per_m_s": 12.182259099187101,
+      "time_constant_s": 1.6827240090318456,
+      "bias_n": -0.01967752764354591,
+      "position_rmse_m": 0.002825425974746865,
+      "position_abs_error_p95_m": 0.004905209942335918,
+      "sample_count": 157
+    },
+    {
+      "window_duration_s": 6.0,
+      "effective_mass_kg": 26.914271971044215,
+      "linear_damping_n_per_m_s": 9.191466308021496,
+      "time_constant_s": 2.9281804522914725,
+      "bias_n": -0.01016236142163778,
+      "position_rmse_m": 0.005824189487871639,
+      "position_abs_error_p95_m": 0.010209821066840381,
+      "sample_count": 237
+    },
+    {
+      "window_duration_s": 8.0,
+      "effective_mass_kg": 31.203771884324013,
+      "linear_damping_n_per_m_s": 7.594409893992172,
+      "time_constant_s": 4.10878163279136,
+      "bias_n": -0.005712905804064139,
+      "position_rmse_m": 0.0076211626336865415,
+      "position_abs_error_p95_m": 0.013047721398880635,
+      "sample_count": 316
+    },
+    {
+      "window_duration_s": 10.0,
+      "effective_mass_kg": 35.31556170990662,
+      "linear_damping_n_per_m_s": 6.765780464425362,
+      "time_constant_s": 5.219732135205495,
+      "bias_n": -0.001465538699856661,
+      "position_rmse_m": 0.008918046643798826,
+      "position_abs_error_p95_m": 0.016213752954905764,
+      "sample_count": 396
+    },
+    {
+      "window_duration_s": 12.0,
+      "effective_mass_kg": 38.06587728315408,
+      "linear_damping_n_per_m_s": 6.170717784218684,
+      "time_constant_s": 6.168792450775458,
+      "bias_n": 0.0013202897855908446,
+      "position_rmse_m": 0.009745524653910717,
+      "position_abs_error_p95_m": 0.018230676089537906,
+      "sample_count": 476
+    }
+  ],
+  "stability": {
+    "effective_mass_range_kg": [
+      15.203594599085875,
+      38.06587728315408
+    ],
+    "linear_damping_range_n_per_m_s": [
+      6.170717784218684,
+      16.14621995950852
+    ],
+    "time_constant_range_s": [
+      0.9416194401670136,
+      6.168792450775458
+    ],
+    "stable_enough_for_control": false,
+    "reason": "M_eff rises and D_linear falls monotonically as late slow drift is included; a single linear free-decay model is not window-invariant."
+  },
+  "enabled_for_control": false
+}

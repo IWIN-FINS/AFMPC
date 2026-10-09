@@ -1,0 +1,158 @@
+{
+  "status": "cross_validated_candidate_only_not_enabled_for_control",
+  "axis_frd": "down",
+  "model": "F_down = M_eff * d(depth_velocity)/dt + D_linear * depth_velocity + bias",
+  "method": "Joint exact position-domain fit of all pulse-and-natural-buoyancy-coast segments with shared M_eff, D_linear and force bias; independent initial position and velocity per segment. Surface-constrained data after the first baseline return are excluded.",
+  "source": {
+    "motor_csvs": [
+      {
+        "path": "calibration_logs/heave_positive_p005_postflash_20260813_run01.csv",
+        "sha256": "0bb93400f65992e3cee0eb1b0a347a55c04475171bd4e698c5b1ee3ed29a77fa"
+      },
+      {
+        "path": "calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv",
+        "sha256": "771d073d7fa48b322244384424e37e38acc30572c47165386de47852f57fe41b"
+      }
+    ],
+    "config": "MPC_dual_model/finesub_v4pro1_mpc.json",
+    "config_sha256": "dac9053f5d410f5bb277f7c43c09c0a484991f858620cf791a44d38c3113631a"
+  },
+  "depth": {
+    "coordinate": "firmware pressure depth, FRD positive down",
+    "combined_unique_sample_count": 1476,
+    "range_m": [
+      0.2034511,
+      0.3677081
+    ],
+    "absolute_pool_surface_reference": false
+  },
+  "force": {
+    "source": "current-vehicle measured RPM converted by accepted same-vehicle low-limit RPM-force prior",
+    "rpm_values_replaced_as_isolated_outliers": 48,
+    "active_min_n": 0.0,
+    "active_max_n": 4.504541244589815,
+    "requested_absolute_channel_amplitudes": [
+      0.05,
+      0.075
+    ],
+    "excitation_directions": [
+      "positive"
+    ],
+    "vertical_motor_force_curves_individually_load_cell_measured": false
+  },
+  "segments": [
+    {
+      "phase": "cycle_1_positive",
+      "sample_count_with_neutral_coast": 95,
+      "duration_with_neutral_coast_s": 6.778835999997682,
+      "active_depth_displacement_m": 0.03991191000000002,
+      "pre_pulse_depth_m": 0.2123082,
+      "coast_truncated_at_first_baseline_return": true,
+      "segment_depth_min_m": 0.2120273,
+      "segment_depth_max_m": 0.3280325,
+      "source_motor_csv": "calibration_logs/heave_positive_p005_postflash_20260813_run01.csv"
+    },
+    {
+      "phase": "cycle_2_positive",
+      "sample_count_with_neutral_coast": 94,
+      "duration_with_neutral_coast_s": 7.102939999997034,
+      "active_depth_displacement_m": 0.03834399999999996,
+      "pre_pulse_depth_m": 0.21274248,
+      "coast_truncated_at_first_baseline_return": true,
+      "segment_depth_min_m": 0.2120512,
+      "segment_depth_max_m": 0.3184542,
+      "source_motor_csv": "calibration_logs/heave_positive_p005_postflash_20260813_run01.csv"
+    },
+    {
+      "phase": "cycle_1_positive",
+      "sample_count_with_neutral_coast": 148,
+      "duration_with_neutral_coast_s": 7.8485360000049695,
+      "active_depth_displacement_m": 0.05318708,
+      "pre_pulse_depth_m": 0.211945,
+      "coast_truncated_at_first_baseline_return": true,
+      "segment_depth_min_m": 0.211981,
+      "segment_depth_max_m": 0.3645113,
+      "source_motor_csv": "calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv"
+    },
+    {
+      "phase": "cycle_2_positive",
+      "sample_count_with_neutral_coast": 151,
+      "duration_with_neutral_coast_s": 7.8753340000112075,
+      "active_depth_displacement_m": 0.05029894000000004,
+      "pre_pulse_depth_m": 0.21143226000000004,
+      "coast_truncated_at_first_baseline_return": true,
+      "segment_depth_min_m": 0.2114278,
+      "segment_depth_max_m": 0.3677081,
+      "source_motor_csv": "calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv"
+    }
+  ],
+  "independent_fits": [
+    {
+      "motor_csv": "calibration_logs/heave_positive_p005_postflash_20260813_run01.csv",
+      "requested_absolute_channel_amplitudes": [
+        0.05
+      ],
+      "effective_mass_kg": 22.620612648226384,
+      "linear_damping_n_per_m_s": 14.366956671677888,
+      "constant_force_bias_n": -0.692201754082796,
+      "initial_velocity_m_s_by_segment": [
+        -0.004171904036330509,
+        -0.008800329275013721
+      ],
+      "position_rmse_m": 0.004512258556453326,
+      "position_abs_error_p95_m": 0.009232969692224686,
+      "quadratic_damping_identified": false
+    },
+    {
+      "motor_csv": "calibration_logs/heave_positive_p0075_postflash_20260813_run01.csv",
+      "requested_absolute_channel_amplitudes": [
+        0.075
+      ],
+      "effective_mass_kg": 28.227163286704908,
+      "linear_damping_n_per_m_s": 10.065539701027022,
+      "constant_force_bias_n": -0.8737873130722753,
+      "initial_velocity_m_s_by_segment": [
+        -0.01627554114746863,
+        -0.00999204258253956
+      ],
+      "position_rmse_m": 0.0033094253624182226,
+      "position_abs_error_p95_m": 0.0066067281045581305,
+      "quadratic_damping_identified": false
+    }
+  ],
+  "cross_amplitude_consistency": {
+    "effective_mass_relative_span": 0.22052294462802446,
+    "linear_damping_relative_span": 0.35210621993225805,
+    "force_bias_relative_span": 0.2319116560875681,
+    "candidate_thresholds": {
+      "effective_mass_relative_span_max": 0.3,
+      "linear_damping_relative_span_max": 0.4,
+      "force_bias_relative_span_max": 0.3
+    },
+    "passes_candidate_thresholds": true
+  },
+  "joint_fit": {
+    "effective_mass_kg": 26.25782631321387,
+    "linear_damping_n_per_m_s": 11.290874287051459,
+    "constant_force_bias_n": -0.8072901788672027,
+    "initial_velocity_m_s_by_segment": [
+      0.004139759868027556,
+      0.003240775392960695,
+      -0.024363410127077774,
+      -0.016956891190447666
+    ],
+    "position_rmse_m": 0.0049071719528120065,
+    "position_abs_error_p95_m": 0.00947630474404371,
+    "quadratic_damping_identified": false
+  },
+  "confidence": {
+    "level": "medium-low cross-validated candidate",
+    "enabled_for_control": false,
+    "reasons": [
+      "only positive commanded heave is present; natural buoyancy supplies the upward coast but not a negative-thrust asymmetry check",
+      "vertical motor force curves are transferred by propulsion-unit rotation group rather than individually load-cell measured",
+      "vertical tether loading is inseparable from hydrodynamic damping",
+      "quadratic damping is not independently identified"
+    ]
+  }
+}

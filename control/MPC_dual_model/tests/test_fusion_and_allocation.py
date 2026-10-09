@@ -2,10 +2,10 @@ import unittest
 
 import numpy as np
 
-from MPC_dual_model.device_adapter import FineSUBThrusterAllocator
-from MPC_dual_model.fossen_fixed_dl_model import FixedLinearDampingRelativeModel
-from MPC_dual_model.model_fusion import FusionConfig, OnlineModelFusion
-from MPC_dual_model.mpc_controller import MPCConfig, RelativeMPCController
+from device_adapter import FineSUBThrusterAllocator
+from fossen_fixed_dl_model import FixedLinearDampingRelativeModel
+from model_fusion import FusionConfig, OnlineModelFusion
+from mpc_controller import MPCConfig, RelativeMPCController
 
 
 class FusionAndAllocationTest(unittest.TestCase):
@@ -257,7 +257,7 @@ class FusionAndAllocationTest(unittest.TestCase):
         np.testing.assert_allclose(predicted, np.zeros((3, 6)), atol=1e-12)
 
     def test_diagonal_horizontal_force_hits_joint_thruster_limit(self) -> None:
-        from MPC_dual_model.device_adapter import (
+        from device_adapter import (
             FINESUB_V4_PRO1_FORCE_NEGATIVE_N,
             FINESUB_V4_PRO1_FORCE_POSITIVE_N,
             finesub_translation_thruster_force_matrix,
@@ -275,7 +275,7 @@ class FusionAndAllocationTest(unittest.TestCase):
         )
 
     def test_canonical_translation_force_matrix_order_and_signs(self) -> None:
-        from MPC_dual_model.device_adapter import finesub_translation_thruster_force_matrix
+        from device_adapter import finesub_translation_thruster_force_matrix
 
         matrix = finesub_translation_thruster_force_matrix()
         np.testing.assert_allclose(matrix[:4, :2], np.zeros((4, 2)))

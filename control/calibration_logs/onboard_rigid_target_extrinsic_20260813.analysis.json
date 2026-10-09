@@ -1,0 +1,965 @@
+{
+  "analysis": "rigid tag-17/red-fish onboard-camera extrinsic cross-check",
+  "coordinate_conventions": {
+    "front_input": "OpenCV [right, down, forward] metres",
+    "fit_output": "ROV body FRD [forward, right, down] metres",
+    "vehicle_forward": "tag15 center minus tag16 center, projected onto pool horizontal",
+    "vehicle_right": "pool_down cross vehicle_forward",
+    "vehicle_reference_origin": "midpoint of tag15/tag16 centers",
+    "pool_down_in_overhead_camera": [
+      3.180940253876755e-05,
+      0.092166833449918,
+      0.9957435783373032
+    ]
+  },
+  "target_fixture": {
+    "target_tag_id": 17,
+    "fish_visual_reference_below_tag_center_m": 0.23,
+    "horizontal_offset_m": [
+      0.0,
+      0.0
+    ],
+    "operator_precision": "approximately 23 cm",
+    "primary_interpretation": "fixed pool-vertical down direction",
+    "sensitivity_interpretation": "tag-17 PnP normal, oriented toward pool down",
+    "translation_uncertainty_note": "any error in the approximately 0.23 m fixture length transfers directly into the fitted down translation"
+  },
+  "sources": {
+    "front_jsonl": "calibration_logs/onboard_rigid_target_front_20260812_13.jsonl",
+    "front_jsonl_sha256": "278246a7c099c2ed01f2ef0ae4a3cbcc2cdefb65ec50f8014fd450d1c70f0069",
+    "snapshot_records": 1213,
+    "continuous_snapshot_gate_replay": {
+      "records": 1213,
+      "control_ready_records": 921,
+      "rejected_or_pending_records": 292,
+      "decision_reasons": {
+        "depth_mode:weak_update": 37,
+        "depth_nis_outlier": 13,
+        "forward_range": 52,
+        "invalid_depth": 2,
+        "low_confidence": 26,
+        "low_depth_confidence": 48,
+        "no_target": 1,
+        "reacquire_pending": 111,
+        "reacquired": 17,
+        "startup_confirmed": 1,
+        "startup_pending": 2,
+        "tracking": 903
+      },
+      "records_above_1p50m": 80,
+      "records_above_1p50m_control_ready": 0
+    },
+    "external_read_only_source": "/home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/finesub_v4pro1_camera_cal_20260812_run02/pipeline_results.jsonl",
+    "primary_runs": [
+      {
+        "label": "center",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_center_20260812_run01.csv",
+        "overhead_csv_sha256": "9d025ef1925cc57580e2b3786c3e715217ccad2cb7f5b49d747f851650d5693d",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 198,
+        "mpc_gate_approved_front_samples": 100,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 3,
+          "low_confidence": 1,
+          "reacquire_pending": 4,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 98
+        },
+        "tag_15_16_separation_mean_m": 0.1418509678901028,
+        "tag_15_16_separation_std_m": 0.003794561916878565,
+        "tag17_normal_tilt_median_deg": 4.031637109571081,
+        "tag17_normal_tilt_p95_deg": 9.146502587570415,
+        "pnp_reprojection_error_p95_px": 0.1877687,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 198
+        }
+      },
+      {
+        "label": "left",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_left20cm_20260812_run02.csv",
+        "overhead_csv_sha256": "e1b32d0be3a216057be8903f5723f93459b69a4aefad85052acb83c586357d20",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 159,
+        "mpc_gate_approved_front_samples": 98,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 5,
+          "low_confidence": 1,
+          "reacquire_pending": 4,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 96
+        },
+        "tag_15_16_separation_mean_m": 0.13969807873932727,
+        "tag_15_16_separation_std_m": 0.0007834059365743857,
+        "tag17_normal_tilt_median_deg": 1.5378341357057939,
+        "tag17_normal_tilt_p95_deg": 2.591263961774261,
+        "pnp_reprojection_error_p95_px": 0.12342659999999997,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 159,
+          "(16, 17)": 40
+        }
+      },
+      {
+        "label": "right",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_right20cm_20260813_run02.csv",
+        "overhead_csv_sha256": "f4b249789551c1a09fb2bc9f81d36204af01c5b41840f1ad4ee9e3a7b418df24",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 175,
+        "mpc_gate_approved_front_samples": 81,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 1,
+          "depth_nis_outlier": 2,
+          "forward_range": 6,
+          "low_confidence": 12,
+          "no_target": 1,
+          "reacquire_pending": 4,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 79
+        },
+        "tag_15_16_separation_mean_m": 0.1418631032013667,
+        "tag_15_16_separation_std_m": 0.0017423848249999044,
+        "tag17_normal_tilt_median_deg": 1.3137717757863827,
+        "tag17_normal_tilt_p95_deg": 2.1854072603015577,
+        "pnp_reprojection_error_p95_px": 0.19644379999999992,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 175,
+          "(16, 17)": 10
+        }
+      },
+      {
+        "label": "up",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_up15cm_20260813_run06.csv",
+        "overhead_csv_sha256": "e463bddb473720ad28285be59bb1c8f87f768793151ec0113589e5152228b75c",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 198,
+        "mpc_gate_approved_front_samples": 99,
+        "front_gate_reasons": {
+          "depth_nis_outlier": 1,
+          "invalid_depth": 1,
+          "low_confidence": 2,
+          "low_depth_confidence": 5,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 98
+        },
+        "tag_15_16_separation_mean_m": 0.14199978642643282,
+        "tag_15_16_separation_std_m": 0.0017427396430986844,
+        "tag17_normal_tilt_median_deg": 5.121831617905375,
+        "tag17_normal_tilt_p95_deg": 10.350088241919757,
+        "pnp_reprojection_error_p95_px": 0.24794090000000002,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 198,
+          "(16, 17)": 1
+        }
+      },
+      {
+        "label": "down",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_down15cm_20260813_run02.csv",
+        "overhead_csv_sha256": "7112a9794edd08bb975678f30b5d8d14df3d05bcde26b72660f9e4ac25afc8d8",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 159,
+        "mpc_gate_approved_front_samples": 101,
+        "front_gate_reasons": {
+          "depth_nis_outlier": 1,
+          "forward_range": 6,
+          "low_depth_confidence": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 100
+        },
+        "tag_15_16_separation_mean_m": 0.14136045794633492,
+        "tag_15_16_separation_std_m": 0.0001632481267994599,
+        "tag17_normal_tilt_median_deg": 1.420991876530589,
+        "tag17_normal_tilt_p95_deg": 2.4330106988221076,
+        "pnp_reprojection_error_p95_px": 0.1155724,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16)": 25,
+          "(15, 16, 17)": 159,
+          "(16, 17)": 2,
+          "(16,)": 13
+        }
+      }
+    ],
+    "excluded_runs_not_used_for_fit": [
+      {
+        "label": "left_initial_occluded",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_left20cm_20260812_run01.csv",
+        "overhead_csv_sha256": "07c4810483698525ee5697e9f5b61cc5d94944af0bf6f47aa540efc05260b774",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 21,
+        "mpc_gate_approved_front_samples": 104,
+        "front_gate_reasons": {
+          "low_confidence": 1,
+          "low_depth_confidence": 3,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 103
+        },
+        "tag_15_16_separation_mean_m": 0.14097982081924976,
+        "tag_15_16_separation_std_m": 0.0018850391964719611,
+        "tag17_normal_tilt_median_deg": 1.3663583798788566,
+        "tag17_normal_tilt_p95_deg": 4.034047900741477,
+        "pnp_reprojection_error_p95_px": 0.9651692999999998,
+        "detected_id_counts": {
+          "()": 3,
+          "(15, 16)": 1,
+          "(15, 16, 17)": 21,
+          "(16, 17)": 169,
+          "(16,)": 2,
+          "(17,)": 4
+        }
+      },
+      {
+        "label": "right_initial_occluded",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_right20cm_20260812_run01.csv",
+        "overhead_csv_sha256": "6cd80e45bbf01a85c51057aebaee190a5de3446309ba778b111aca2423c0d61a",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 82,
+        "mpc_gate_approved_front_samples": 44,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 21,
+          "depth_nis_outlier": 4,
+          "forward_range": 3,
+          "invalid_depth": 1,
+          "low_depth_confidence": 12,
+          "reacquire_pending": 24,
+          "reacquired": 2,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 41
+        },
+        "tag_15_16_separation_mean_m": 0.15398704061844998,
+        "tag_15_16_separation_std_m": 0.019052494802675592,
+        "tag17_normal_tilt_median_deg": 3.378443435050554,
+        "tag17_normal_tilt_p95_deg": 8.390062167032752,
+        "pnp_reprojection_error_p95_px": 1.2718835,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 82,
+          "(15, 17)": 112,
+          "(17,)": 3
+        }
+      },
+      {
+        "label": "up_initial_occluded",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_up15cm_20260813_run01.csv",
+        "overhead_csv_sha256": "04924cc2812d8be6be3598f2cedf51ed3c362e00d6b049fd8cb1d7921d72d7f1",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 22,
+        "mpc_gate_approved_front_samples": 88,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 1,
+          "forward_range": 3,
+          "low_confidence": 8,
+          "low_depth_confidence": 1,
+          "reacquire_pending": 8,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 86
+        },
+        "tag_15_16_separation_mean_m": 0.1465477661116371,
+        "tag_15_16_separation_std_m": 0.006745703842095514,
+        "tag17_normal_tilt_median_deg": 1.5114357730884576,
+        "tag17_normal_tilt_p95_deg": 1.8270117095697351,
+        "pnp_reprojection_error_p95_px": 0.6015622500000001,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 22,
+          "(15, 17)": 126,
+          "(16, 17)": 23,
+          "(17,)": 26
+        }
+      },
+      {
+        "label": "up_second_occluded",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_up15cm_20260813_run02.csv",
+        "overhead_csv_sha256": "e23116addf762b48841a208ba665137fc7994d25d5980868db9cca157c48422b",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 6,
+        "mpc_gate_approved_front_samples": 102,
+        "front_gate_reasons": {
+          "depth_nis_outlier": 1,
+          "low_confidence": 1,
+          "reacquire_pending": 4,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 100
+        },
+        "tag_15_16_separation_mean_m": 0.14538767999454827,
+        "tag_15_16_separation_std_m": 0.002203688227230821,
+        "tag17_normal_tilt_median_deg": 1.3108908019446543,
+        "tag17_normal_tilt_p95_deg": 1.8146537614165088,
+        "pnp_reprojection_error_p95_px": 0.31665779999999877,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 6,
+          "(16, 17)": 193
+        }
+      },
+      {
+        "label": "up_fourth_occluded",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_up15cm_20260813_run04.csv",
+        "overhead_csv_sha256": "e94a547a6b2d42ee089652ca7a6ab85e5d8e760f0992cb217abe7b57091a39fd",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 10,
+        "mpc_gate_approved_front_samples": 39,
+        "front_gate_reasons": {
+          "depth_mode:weak_update": 6,
+          "depth_nis_outlier": 3,
+          "forward_range": 28,
+          "low_depth_confidence": 15,
+          "reacquire_pending": 17,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 37
+        },
+        "tag_15_16_separation_mean_m": 0.14208625179736242,
+        "tag_15_16_separation_std_m": 0.0007478447542879247,
+        "tag17_normal_tilt_median_deg": 3.870143870823167,
+        "tag17_normal_tilt_p95_deg": 4.161001534424332,
+        "pnp_reprojection_error_p95_px": 0.5334983499999989,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16, 17)": 10,
+          "(16, 17)": 189
+        }
+      },
+      {
+        "label": "down_operator_rejected",
+        "overhead_csv": "calibration_logs/onboard_rawtags_rigid_down15cm_20260813_run01.csv",
+        "overhead_csv_sha256": "559bdf78bffdb46f54a3441e5dbbf2c163123726ddd6ee3c087c8c9ea3874842",
+        "csv_rows": 200,
+        "simultaneous_three_tag_samples": 124,
+        "mpc_gate_approved_front_samples": 84,
+        "front_gate_reasons": {
+          "depth_nis_outlier": 1,
+          "forward_range": 6,
+          "low_depth_confidence": 11,
+          "reacquire_pending": 7,
+          "reacquired": 1,
+          "startup_confirmed": 1,
+          "startup_pending": 2,
+          "tracking": 82
+        },
+        "tag_15_16_separation_mean_m": 0.14131972907500706,
+        "tag_15_16_separation_std_m": 0.0006188420616231618,
+        "tag17_normal_tilt_median_deg": 3.651080093641676,
+        "tag17_normal_tilt_p95_deg": 4.943106509397573,
+        "pnp_reprojection_error_p95_px": 0.20094814999999988,
+        "detected_id_counts": {
+          "()": 1,
+          "(15, 16)": 72,
+          "(15, 16, 17)": 124,
+          "(16, 17)": 2
+        }
+      }
+    ]
+  },
+  "method": {
+    "front_filter": "production MPC VisionMeasurementGate, reset per capture",
+    "pairing": "linear interpolation of raw-tag reference at front frame timestamp plus scanned lag",
+    "lag_scan_s": [
+      -0.35,
+      0.35,
+      0.005
+    ],
+    "fit": "Kabsch rigid transform with iterative median/MAD rejection",
+    "cross_validation": "leave one physical placement out",
+    "external_repositories_modified": false
+  },
+  "primary_fixed_vertical_fit": {
+    "reference_key": "fixed",
+    "paired_samples": 437,
+    "inlier_samples": 405,
+    "inlier_fraction": 0.9267734553775744,
+    "best_lag_s": -0.1499999999999998,
+    "effective_front_delay_vs_overhead_s": 0.1499999999999998,
+    "near_optimal_lag_within_1mm_rmse_s": [
+      -0.2499999999999999,
+      -0.05999999999999972
+    ],
+    "lag_identifiability_note": "short mostly-static placements give a broader lag minimum than the earlier continuous-motion experiment",
+    "outlier_threshold_m": 0.06382487739004655,
+    "rmse_m": 0.03105053208756273,
+    "median_m": 0.02484991248300952,
+    "p95_m": 0.054210634976091084,
+    "singular_values": [
+      6.375734994412626,
+      2.866909820735168,
+      1.3925343486496624
+    ],
+    "rotation_body_from_camera": [
+      [
+        0.12734251857829043,
+        -0.11916463991882824,
+        0.9846743987507512
+      ],
+      [
+        0.9917538498551821,
+        0.029739313390597925,
+        -0.1246590331122457
+      ],
+      [
+        -0.014428591738697583,
+        0.992429021054943,
+        0.12196906947405167
+      ]
+    ],
+    "rotation_deviation_from_axis_aligned_deg": 10.124326382737701,
+    "translation_relative_tag_midpoint_frd_m": [
+      0.20031531627601007,
+      -0.0316729453569613,
+      0.0250779126150633
+    ],
+    "per_run": [
+      {
+        "label": "center",
+        "paired_samples": 89,
+        "inlier_samples": 75,
+        "rmse_m": 0.03704460905814967,
+        "median_m": 0.03263163765270111,
+        "p95_m": 0.056547792260151955
+      },
+      {
+        "label": "left",
+        "paired_samples": 89,
+        "inlier_samples": 85,
+        "rmse_m": 0.03699287083959047,
+        "median_m": 0.03237565305440172,
+        "p95_m": 0.055754511462521444
+      },
+      {
+        "label": "right",
+        "paired_samples": 74,
+        "inlier_samples": 72,
+        "rmse_m": 0.034283741539652204,
+        "median_m": 0.031673392571402774,
+        "p95_m": 0.05296046182333611
+      },
+      {
+        "label": "up",
+        "paired_samples": 95,
+        "inlier_samples": 84,
+        "rmse_m": 0.024769083112225736,
+        "median_m": 0.018359517551683,
+        "p95_m": 0.04242161450610193
+      },
+      {
+        "label": "down",
+        "paired_samples": 90,
+        "inlier_samples": 89,
+        "rmse_m": 0.019850672885311598,
+        "median_m": 0.017535615872204535,
+        "p95_m": 0.027056119610362986
+      }
+    ],
+    "leave_one_run_out": [
+      {
+        "held_out_label": "center",
+        "held_out_samples": 89,
+        "rmse_m": 0.050091423220362585,
+        "median_m": 0.040364255479817854,
+        "p95_m": 0.09113542186220083,
+        "rotation_difference_from_all_deg": 0.7029775909679896,
+        "translation_difference_from_all_m": 0.00975707304615899
+      },
+      {
+        "held_out_label": "left",
+        "held_out_samples": 89,
+        "rmse_m": 0.053336533679474066,
+        "median_m": 0.05079875857019921,
+        "p95_m": 0.07092736453837334,
+        "rotation_difference_from_all_deg": 3.5301691811078113,
+        "translation_difference_from_all_m": 0.01927225337267582
+      },
+      {
+        "held_out_label": "right",
+        "held_out_samples": 74,
+        "rmse_m": 0.042247195624823625,
+        "median_m": 0.04140060892282149,
+        "p95_m": 0.06099789904550026,
+        "rotation_difference_from_all_deg": 3.493022333756982,
+        "translation_difference_from_all_m": 0.01528254830510489
+      },
+      {
+        "held_out_label": "up",
+        "held_out_samples": 95,
+        "rmse_m": 0.049071234533079856,
+        "median_m": 0.030561173142266657,
+        "p95_m": 0.10371559187492965,
+        "rotation_difference_from_all_deg": 2.9951471382687376,
+        "translation_difference_from_all_m": 0.029807946068104798
+      },
+      {
+        "held_out_label": "down",
+        "held_out_samples": 90,
+        "rmse_m": 0.02993082025730132,
+        "median_m": 0.025738839919195185,
+        "p95_m": 0.03657418902706796,
+        "rotation_difference_from_all_deg": 2.0860929234993395,
+        "translation_difference_from_all_m": 0.00850845458165771
+      }
+    ],
+    "similarity_diagnostic": {
+      "uniform_scale": 0.9276090571309695,
+      "translation_relative_tag_midpoint_frd_m": [
+        0.24040521251210512,
+        -0.036674290164715906,
+        0.0314758049167706
+      ],
+      "rmse_m": 0.0285619254969852,
+      "median_m": 0.024177884717201316,
+      "p95_m": 0.04742225042245349,
+      "control_use": false,
+      "reason": "diagnostic only; MPC camera transform must remain rigid"
+    },
+    "equal_weight_placement_centroid_fit": {
+      "labels": [
+        "center",
+        "left",
+        "right",
+        "up",
+        "down"
+      ],
+      "rotation_body_from_camera": [
+        [
+          0.18688845455110117,
+          -0.10232651857886203,
+          0.9770373529968195
+        ],
+        [
+          0.9819847714712083,
+          0.04770836890940776,
+          -0.18283823488166656
+        ],
+        [
+          -0.027903658436498266,
+          0.9936061569513014,
+          0.10939922629674112
+        ]
+      ],
+      "translation_relative_tag_midpoint_frd_m": [
+        0.20317813881224123,
+        -0.0028478320590618195,
+        0.031629982748499264
+      ],
+      "rotation_difference_from_all_samples_deg": 3.6314768245143743,
+      "singular_values": [
+        0.07805818513482295,
+        0.026648046379645254,
+        0.015113074665440481
+      ],
+      "rmse_m": 0.025369729564684817,
+      "residual_by_label_m": {
+        "center": 0.02254729684887114,
+        "left": 0.04233418210427859,
+        "right": 0.01854418364652115,
+        "up": 0.015425742245175279,
+        "down": 0.01832244662610293
+      },
+      "control_use": false,
+      "reason": "five placement medians are a weighting sensitivity check"
+    },
+    "candidate_rotation_comparison": [
+      {
+        "name": "axis_aligned_nominal",
+        "rotation_deviation_from_axis_aligned_deg": 0.0,
+        "rotation_difference_from_new_fit_deg": 10.124326382737701,
+        "best_translation_relative_tag_midpoint_m": [
+          0.18941055411232224,
+          -0.10148938122783743,
+          0.09379469845495021
+        ],
+        "rmse_m": 0.03959659468597491,
+        "median_m": 0.03542633937476404,
+        "p95_m": 0.06380463628931611
+      },
+      {
+        "name": "three_dynamic_runs_20260812",
+        "rotation_deviation_from_axis_aligned_deg": 6.112501208474447,
+        "rotation_difference_from_new_fit_deg": 7.036040975540954,
+        "best_translation_relative_tag_midpoint_m": [
+          0.19261524277931516,
+          -0.04162384378844433,
+          0.0911174528329148
+        ],
+        "rmse_m": 0.034873588516136686,
+        "median_m": 0.029677359190397212,
+        "p95_m": 0.05810412453386868
+      },
+      {
+        "name": "earlier_raw_tag_recalculation",
+        "rotation_deviation_from_axis_aligned_deg": 7.105763286390753,
+        "rotation_difference_from_new_fit_deg": 6.218470479790843,
+        "best_translation_relative_tag_midpoint_m": [
+          0.19528337296922044,
+          -0.07549657067536021,
+          0.03378854854798689
+        ],
+        "rmse_m": 0.03427874652995634,
+        "median_m": 0.02994439349127491,
+        "p95_m": 0.056895500921904
+      },
+      {
+        "name": "new_rigid_target_fit",
+        "rotation_deviation_from_axis_aligned_deg": 10.124326382737701,
+        "rotation_difference_from_new_fit_deg": 0.0,
+        "best_translation_relative_tag_midpoint_m": [
+          0.2003153162760107,
+          -0.031672945356961336,
+          0.025077912615063317
+        ],
+        "rmse_m": 0.031050532087562737,
+        "median_m": 0.024849912483009304,
+        "p95_m": 0.05421063497609139
+      }
+    ]
+  },
+  "tag_normal_sensitivity_fit": {
+    "reference_key": "tag_normal",
+    "paired_samples": 439,
+    "inlier_samples": 404,
+    "inlier_fraction": 0.9202733485193622,
+    "best_lag_s": -0.09999999999999976,
+    "effective_front_delay_vs_overhead_s": 0.09999999999999976,
+    "near_optimal_lag_within_1mm_rmse_s": [
+      -0.17999999999999983,
+      -0.054999999999999716
+    ],
+    "lag_identifiability_note": "short mostly-static placements give a broader lag minimum than the earlier continuous-motion experiment",
+    "outlier_threshold_m": 0.060151631726887984,
+    "rmse_m": 0.0292283315083729,
+    "median_m": 0.02401305212864069,
+    "p95_m": 0.05045576617620552,
+    "singular_values": [
+      6.498215953010635,
+      3.0559397997762123,
+      1.3746195749253898
+    ],
+    "rotation_body_from_camera": [
+      [
+        0.14551732448036625,
+        -0.0926038840638026,
+        0.9850122988736607
+      ],
+      [
+        0.9883519491778505,
+        0.058443111465907034,
+        -0.14051628830327104
+      ],
+      [
+        -0.04455482950725131,
+        0.9939863798757413,
+        0.10002971453072536
+      ]
+    ],
+    "rotation_deviation_from_axis_aligned_deg": 10.366988941704463,
+    "translation_relative_tag_midpoint_frd_m": [
+      0.19815279295724608,
+      -0.024888442258075016,
+      0.036989195382298085
+    ],
+    "per_run": [
+      {
+        "label": "center",
+        "paired_samples": 90,
+        "inlier_samples": 76,
+        "rmse_m": 0.03693638086088178,
+        "median_m": 0.03598254020613846,
+        "p95_m": 0.05184361799120443
+      },
+      {
+        "label": "left",
+        "paired_samples": 90,
+        "inlier_samples": 83,
+        "rmse_m": 0.0327645058832918,
+        "median_m": 0.028613323285392428,
+        "p95_m": 0.051885386432461246
+      },
+      {
+        "label": "right",
+        "paired_samples": 74,
+        "inlier_samples": 70,
+        "rmse_m": 0.03158138345147817,
+        "median_m": 0.02618851706617822,
+        "p95_m": 0.051646931566360056
+      },
+      {
+        "label": "up",
+        "paired_samples": 95,
+        "inlier_samples": 87,
+        "rmse_m": 0.022128138035100765,
+        "median_m": 0.020979837000913822,
+        "p95_m": 0.03652267008175203
+      },
+      {
+        "label": "down",
+        "paired_samples": 90,
+        "inlier_samples": 88,
+        "rmse_m": 0.021301526103395522,
+        "median_m": 0.01935472354074024,
+        "p95_m": 0.03185571259297604
+      }
+    ],
+    "leave_one_run_out": [
+      {
+        "held_out_label": "center",
+        "held_out_samples": 90,
+        "rmse_m": 0.05366485397204818,
+        "median_m": 0.043479340775509745,
+        "p95_m": 0.09617555328374668,
+        "rotation_difference_from_all_deg": 0.9595380682803204,
+        "translation_difference_from_all_m": 0.011626692986668656
+      },
+      {
+        "held_out_label": "left",
+        "held_out_samples": 90,
+        "rmse_m": 0.04891265914534944,
+        "median_m": 0.04396814303817176,
+        "p95_m": 0.0744287497382529,
+        "rotation_difference_from_all_deg": 3.143340573416931,
+        "translation_difference_from_all_m": 0.017185013557212483
+      },
+      {
+        "held_out_label": "right",
+        "held_out_samples": 74,
+        "rmse_m": 0.03607597385859072,
+        "median_m": 0.031587780170141244,
+        "p95_m": 0.06088083098837921,
+        "rotation_difference_from_all_deg": 1.7575082117938703,
+        "translation_difference_from_all_m": 0.008918008520274481
+      },
+      {
+        "held_out_label": "up",
+        "held_out_samples": 95,
+        "rmse_m": 0.035699078185067,
+        "median_m": 0.023333205694762663,
+        "p95_m": 0.07232759702372846,
+        "rotation_difference_from_all_deg": 0.31893732501088673,
+        "translation_difference_from_all_m": 0.0027406124206353424
+      },
+      {
+        "held_out_label": "down",
+        "held_out_samples": 90,
+        "rmse_m": 0.03574607843947756,
+        "median_m": 0.03014567386956986,
+        "p95_m": 0.04471959148443265,
+        "rotation_difference_from_all_deg": 2.713389061195004,
+        "translation_difference_from_all_m": 0.011042589021878475
+      }
+    ],
+    "similarity_diagnostic": {
+      "uniform_scale": 0.9547692859828416,
+      "translation_relative_tag_midpoint_frd_m": [
+        0.22312174882362767,
+        -0.028357467571106257,
+        0.04039135146830693
+      ],
+      "rmse_m": 0.028219343219316798,
+      "median_m": 0.02529282551089512,
+      "p95_m": 0.046790051793491765,
+      "control_use": false,
+      "reason": "diagnostic only; MPC camera transform must remain rigid"
+    },
+    "equal_weight_placement_centroid_fit": {
+      "labels": [
+        "center",
+        "left",
+        "right",
+        "up",
+        "down"
+      ],
+      "rotation_body_from_camera": [
+        [
+          0.19901110216632328,
+          -0.06244161349022742,
+          0.9780059438057023
+        ],
+        [
+          0.9777215641689498,
+          0.08062146198828812,
+          -0.1938058895541961
+        ],
+        [
+          -0.06674671657517904,
+          0.9947870248307462,
+          0.07709507801944783
+        ]
+      ],
+      "translation_relative_tag_midpoint_frd_m": [
+        0.20298024241125678,
+        0.0007542663178531223,
+        0.04991626813386964
+      ],
+      "rotation_difference_from_all_samples_deg": 3.688148792879075,
+      "singular_values": [
+        0.07986154564272757,
+        0.03061891580083802,
+        0.016584426478340037
+      ],
+      "rmse_m": 0.0262187624683267,
+      "residual_by_label_m": {
+        "center": 0.037444031256128704,
+        "left": 0.03722874225783659,
+        "right": 0.005790749224836516,
+        "up": 0.017564462200499644,
+        "down": 0.017522548075682005
+      },
+      "control_use": false,
+      "reason": "five placement medians are a weighting sensitivity check"
+    },
+    "candidate_rotation_comparison": [
+      {
+        "name": "axis_aligned_nominal",
+        "rotation_deviation_from_axis_aligned_deg": 0.0,
+        "rotation_difference_from_new_fit_deg": 10.366988941704463,
+        "best_translation_relative_tag_midpoint_m": [
+          0.1881254470489876,
+          -0.10276120257285473,
+          0.09304451656593023
+        ],
+        "rmse_m": 0.03906951399440753,
+        "median_m": 0.03395888571801654,
+        "p95_m": 0.06453944557688988
+      },
+      {
+        "name": "three_dynamic_runs_20260812",
+        "rotation_deviation_from_axis_aligned_deg": 6.112501208474447,
+        "rotation_difference_from_new_fit_deg": 6.784143756562221,
+        "best_translation_relative_tag_midpoint_m": [
+          0.19126503181620466,
+          -0.04317816409422697,
+          0.09037364948719927
+        ],
+        "rmse_m": 0.03350831140365353,
+        "median_m": 0.028486524691661266,
+        "p95_m": 0.05644450620515903
+      },
+      {
+        "name": "earlier_raw_tag_recalculation",
+        "rotation_deviation_from_axis_aligned_deg": 7.105763286390753,
+        "rotation_difference_from_new_fit_deg": 8.047543262925869,
+        "best_translation_relative_tag_midpoint_m": [
+          0.19390862235585668,
+          -0.07690633462426288,
+          0.03329484004567076
+        ],
+        "rmse_m": 0.03430388741026286,
+        "median_m": 0.028794543990745554,
+        "p95_m": 0.056847394089659505
+      },
+      {
+        "name": "new_rigid_target_fit",
+        "rotation_deviation_from_axis_aligned_deg": 10.366988941704463,
+        "rotation_difference_from_new_fit_deg": 0.0,
+        "best_translation_relative_tag_midpoint_m": [
+          0.19815279295724675,
+          -0.024888442258074992,
+          0.036989195382298036
+        ],
+        "rmse_m": 0.029228331508372903,
+        "median_m": 0.024013052128640612,
+        "p95_m": 0.050455766176205896
+      }
+    ]
+  },
+  "excluded_capture_diagnostics": [
+    {
+      "label": "left_initial_occluded",
+      "paired_samples": 92,
+      "rmse_m": 0.05632405630748993,
+      "median_m": 0.031677423421473894,
+      "p95_m": 0.10692785014934855,
+      "used_for_fit": false,
+      "used_for_acceptance": false
+    },
+    {
+      "label": "right_initial_occluded",
+      "paired_samples": 36,
+      "rmse_m": 0.2856789274868007,
+      "median_m": 0.10566810986684627,
+      "p95_m": 0.5997648536040991,
+      "used_for_fit": false,
+      "used_for_acceptance": false
+    },
+    {
+      "label": "up_initial_occluded",
+      "paired_samples": 56,
+      "rmse_m": 0.07197466148013931,
+      "median_m": 0.0763134658477618,
+      "p95_m": 0.09268845352899927,
+      "used_for_fit": false,
+      "used_for_acceptance": false
+    },
+    {
+      "label": "up_second_occluded",
+      "paired_samples": 48,
+      "rmse_m": 0.06013237313136484,
+      "median_m": 0.05900837565102234,
+      "p95_m": 0.07774210957259621,
+      "used_for_fit": false,
+      "used_for_acceptance": false
+    },
+    {
+      "label": "down_operator_rejected",
+      "paired_samples": 77,
+      "rmse_m": 0.09508500999288882,
+      "median_m": 0.03476934817987949,
+      "p95_m": 0.19768535724237193,
+      "used_for_fit": false,
+      "used_for_acceptance": false
+    }
+  ],
+  "body_origin_translation_cross_check": {
+    "tag_midpoint_in_body_frd_candidate_m": [
+      0.0,
+      0.0,
+      -0.15
+    ],
+    "tag_midpoint_source": "operator estimate on 2026-08-13: approximately 0.15 m directly above the body control origin, with approximately zero horizontal offset",
+    "camera_origin_from_new_fit_candidate_frd_m": [
+      0.20031531627601007,
+      -0.0316729453569613,
+      -0.1249220873849367
+    ],
+    "cad_camera_origin_candidate_frd_m": [
+      0.2609931,
+      0.0077881,
+      -0.1236508
+    ],
+    "new_minus_cad_frd_m": [
+      -0.06067778372398991,
+      -0.0394610453569613,
+      -0.0012712873849366896
+    ],
+    "difference_norm_m": 0.07239187599402679
+  },
+  "control_acceptance": {
+    "gates": {
+      "rigid_rmse_at_most_0p03": false,
+      "rigid_p95_at_most_0p05": false,
+      "max_leave_one_run_rotation_at_most_3deg": false,
+      "agreement_with_prior_dynamic_candidate_at_most_3deg": false,
+      "camera_origin_difference_from_cad_at_most_0p03m": false
+    },
+    "all_gates_pass": false,
+    "enabled_for_control": false,
+    "auto_authorized": false,
+    "rotation_difference_from_prior_dynamic_candidate_deg": 7.036040975540954,
+    "maximum_leave_one_run_rotation_difference_deg": 3.5301691811078113,
+    "reason_disabled": "candidate disagreement, held-out stability, residual and/or body-origin cross-check gates remain unresolved; retain results as offline evidence only"
+  }
+}

@@ -15,15 +15,9 @@ from MPC_dual_model.finesub_transport import load_runtime_config
 
 
 CONFIG_PATH = Path(__file__).parents[1] / "finesub_v4pro1_mpc.json"
-PUBLIC_VISION_PATH = CONFIG_PATH.parent / "runtime" / "vision" / "pipeline_results.jsonl"
-requires_private_experiment_data = unittest.skipUnless(
-    PUBLIC_VISION_PATH.is_file(),
-    "requires private calibration evidence and a recorded/live vision stream",
-)
 
 
 class ExperimentalAutoTests(unittest.TestCase):
-    @requires_private_experiment_data
     def test_repository_experiment_uses_selected_translation_limit(self) -> None:
         source = load_runtime_config(CONFIG_PATH)
         runtime, report = evaluate_experimental_readiness(
@@ -132,7 +126,6 @@ class ExperimentalAutoTests(unittest.TestCase):
         self.assertFalse(report.ready)
         self.assertTrue(any("0.50" in item for item in report.blockers))
 
-    @requires_private_experiment_data
     def test_preflight_never_creates_transport(self) -> None:
         with patch(
             "MPC_dual_model.auto_only_runtime.make_transport",
@@ -157,7 +150,6 @@ class ExperimentalAutoTests(unittest.TestCase):
             0.50,
         )
 
-    @requires_private_experiment_data
     def test_rotation_experiment_enables_only_the_in_memory_yaw_wrapper(self) -> None:
         source = load_runtime_config(CONFIG_PATH)
         runtime, report = evaluate_experimental_readiness(

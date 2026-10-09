@@ -75,7 +75,7 @@ PID 没有 MPC 的未来视场约束和前瞻能力，因此无法严格保证�
 本项目使用 `uv` 管理独立虚拟环境：
 
 ```bash
-cd PID_controller
+cd /home/fins/Zhouyuheng_workspace/MPC/PID_controller
 uv sync --dev
 uv run pytest -q
 uv run python example_simulation.py
@@ -93,7 +93,7 @@ uv run python camera_pid_tuner.py --camera-index 3 --fx 600 --fy 600 --range-m 2
 
 ```bash
 uv run python dual_vision_pid_runtime.py \
-  --stereo-jsonl runtime/vision/<session>/pipeline_results.jsonl \
+  --stereo-jsonl /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/<session>/pipeline_results.jsonl \
   --camera-device /dev/video2
 ```
 
@@ -105,8 +105,8 @@ uv run python dual_vision_pid_runtime.py \
 
 ```bash
 uv run python dual_vision_pid_runtime.py \
-  --stereo-jsonl runtime/vision/<session>/pipeline_results.jsonl \
-  --runtime-config MPC_dual_model/finesub_v4pro1_mpc.json \
+  --stereo-jsonl /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/<session>/pipeline_results.jsonl \
+  --runtime-config /home/fins/Zhouyuheng_workspace/MPC/MPC_dual_model/finesub_v4pro1_mpc.json \
   --camera-device /dev/video2
 ```
 
@@ -128,7 +128,7 @@ TCP/UDP 连接用 `--runtime-config /path/to/runtime.json`。无论哪种方式�
 
 ```bash
 uv run python hardware_diagnostic.py --runtime-config \
-  MPC_dual_model/finesub_v4pro1_mpc.json \
+  /home/fins/Zhouyuheng_workspace/MPC/MPC_dual_model/finesub_v4pro1_mpc.json \
   --seconds 10
 ```
 

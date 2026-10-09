@@ -1,4 +1,6 @@
-# FinsROV 控制代码
+# FinsROV 实机控制代码
+
+本目录中的控制文件来自 `/home/fins/Zhouyuheng_workspace/MPC/`，复制时未修改文件内容。
 
 ## 目录
 
@@ -7,31 +9,34 @@
 - `MPC_model1/`：固定模型 1 MPC。
 - `MPC_model2/`：固定模型 2 MPC。
 - `PID_controller/`：三轴 PID 和 yaw PID。
-- `apps/`：实机命令行入口。
-- `legacy/`：保留的旧版 SMC 代码，不作为当前实机入口。
+- `finesub_experimental_auto.py`：融合/旋转 MPC 实机入口。
+- `finesub_smc_control.py`：SMC 实机入口。
+- `finesub_auto_control.py`：正式 AUTO 预检入口。
 
 主要运行配置：`MPC_dual_model/finesub_v4pro1_mpc.json`。
 
 ## 安装与测试
 
 ```bash
+cd MPC_dual_model
 uv sync --dev
 uv run pytest -q
+cd ..
+uv run --project MPC_dual_model pytest -q MPC_dual_model_yaw/tests MPC_model1/tests MPC_model2/tests
 ```
 
 只检查配置、不连接硬件：
 
 ```bash
-uv run finsrov-auto-preflight
+uv run --project MPC_dual_model python finesub_auto_control.py
 ```
 
 其他入口：
 
 ```bash
-uv run finsrov-experimental-auto --help
-uv run finsrov-smc --help
-uv run finsrov-hardware-diagnostic --help
+uv run --project MPC_dual_model python finesub_experimental_auto.py --help
+uv run --project MPC_dual_model python finesub_smc_control.py --help
+uv run --project PID_controller python -m PID_controller.hardware_diagnostic --help
 ```
 
 没有明确添加 `--execute` 时，不会开始实机控制。
-

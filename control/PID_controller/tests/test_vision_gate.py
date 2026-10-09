@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from PID_controller.vision_gate import PIDVisionGate, VisionGateConfig
+from vision_gate import PIDVisionGate, VisionGateConfig
 
 
 def test_gate_requires_stable_startup_samples() -> None:

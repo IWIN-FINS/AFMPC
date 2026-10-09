@@ -1,0 +1,202 @@
+{
+  "method": {
+    "pairing": "linear interpolation of overhead truth at onboard frame timestamps",
+    "lag_convention": "truth_time = onboard_frame_time + lag; negative means onboard is delayed relative to overhead",
+    "fit": "Kabsch rigid transform with iterative median/MAD outlier rejection",
+    "overhead_output_axis_correction_diag": [
+      -1.0,
+      -1.0,
+      1.0
+    ],
+    "axis_correction_reason": "raw fitted motion showed x/y sign inversion (approximately 180 deg about optical z) between the existing overhead-derived left-camera topic and the onboard OpenCV output; correction is applied only in this MPC-side analysis"
+  },
+  "sources": {
+    "front_jsonl": "calibration_logs/onboard_vision_three_runs_20260812.jsonl",
+    "front_jsonl_sha256": "d69d4d78f6a9ce64fe4f1b7e4d9904d18c06dc966e8e3c6024a92e5c2a8935bb",
+    "front_snapshot_records": 887,
+    "front_external_source": "/home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/finesub_v4pro1_camera_cal_20260812_run02/pipeline_results.jsonl",
+    "runs": [
+      {
+        "overhead_csv": "calibration_logs/onboard_overhead_fish_dynamic_20260812_run01.csv",
+        "overhead_csv_sha256": "1b59fe6128c3ed6d782da0ab314b30521e41aa0ff1e3e32a46429a199c705342",
+        "csv_rows": 600,
+        "overhead_unique_samples": 417,
+        "onboard_detected_samples": 296,
+        "fit_inliers": 202,
+        "fit_rmse_m": 0.02627487669226643,
+        "fit_median_m": 0.02372161561524771,
+        "fit_p95_m": 0.04738630581104334,
+        "overhead_motion_range_xyz_m": [
+          0.14874573877517216,
+          0.14837509922355063,
+          0.21813464069762822
+        ],
+        "onboard_motion_range_xyz_m": [
+          0.30326196178793907,
+          0.24703245982527733,
+          0.23670673370361328
+        ]
+      },
+      {
+        "overhead_csv": "calibration_logs/onboard_overhead_fish_dynamic_20260812_run02.csv",
+        "overhead_csv_sha256": "eac95391de2cc2b308801505470917d9921edf4032d1344737218fab46e383b4",
+        "csv_rows": 600,
+        "overhead_unique_samples": 583,
+        "onboard_detected_samples": 252,
+        "fit_inliers": 184,
+        "fit_rmse_m": 0.023666609518441288,
+        "fit_median_m": 0.019280748513564445,
+        "fit_p95_m": 0.042479725148727956,
+        "overhead_motion_range_xyz_m": [
+          1.062207234801069,
+          1.0729093542877668,
+          0.4616991955698514
+        ],
+        "onboard_motion_range_xyz_m": [
+          0.3132801279425621,
+          0.2665265128016472,
+          0.4097866415977478
+        ]
+      },
+      {
+        "overhead_csv": "calibration_logs/onboard_overhead_fish_dynamic_20260812_run03.csv",
+        "overhead_csv_sha256": "0ed43c4eeeec5bc0e9497814ef84a506476e22273f8dc8d2079b7d9a4690a14b",
+        "csv_rows": 600,
+        "overhead_unique_samples": 599,
+        "onboard_detected_samples": 296,
+        "fit_inliers": 246,
+        "fit_rmse_m": 0.029741279722300003,
+        "fit_median_m": 0.02547480716991117,
+        "fit_p95_m": 0.04990732119054746,
+        "overhead_motion_range_xyz_m": [
+          0.2583336279173457,
+          0.48588264421224103,
+          0.1780177498263999
+        ],
+        "onboard_motion_range_xyz_m": [
+          0.702241487801075,
+          0.4532441273331642,
+          1.5167264342308044
+        ]
+      }
+    ]
+  },
+  "fit": {
+    "paired_samples": 752,
+    "inlier_samples": 632,
+    "inlier_fraction": 0.8404255319148937,
+    "onboard_effective_delay_vs_overhead_s": 0.09999999999999976,
+    "best_lag_s": -0.09999999999999976,
+    "rmse_m": 0.026981952156446606,
+    "median_m": 0.02292556154699662,
+    "p95_m": 0.04758030605269534,
+    "singular_values": [
+      59.22796804061826,
+      1.5875101334633894,
+      0.4073551623206473
+    ],
+    "raw_rotation_onboard_from_overhead_topic": [
+      [
+        -0.9943294966919286,
+        -0.01349269931630013,
+        0.10548364363036247
+      ],
+      [
+        0.01291853335666999,
+        -0.9998977953711778,
+        -0.006124565925151846
+      ],
+      [
+        0.10555549964018916,
+        -0.004727142584990837,
+        0.9944021775009807
+      ]
+    ],
+    "raw_rotation_angle_deg": 179.2422906934699,
+    "raw_translation_onboard_from_overhead_topic_m": [
+      0.05313262165058679,
+      -0.12372470077463651,
+      0.09228154250918552
+    ],
+    "corrected_rotation_onboard_from_reference_optical": [
+      [
+        0.9943294966919286,
+        0.01349269931630013,
+        0.10548364363036247
+      ],
+      [
+        -0.01291853335666999,
+        0.9998977953711778,
+        -0.006124565925151846
+      ],
+      [
+        -0.10555549964018916,
+        0.004727142584990837,
+        0.9944021775009807
+      ]
+    ],
+    "corrected_rotation_angle_deg": 6.112501325753348
+  },
+  "mpc_camera_candidate": {
+    "coordinate_input": "OpenCV [right, down, forward] m",
+    "coordinate_output": "body FRD [forward, right, down] m",
+    "rotation_body_from_camera": [
+      [
+        0.10548364363036247,
+        -0.006124565925151846,
+        0.9944021775009807
+      ],
+      [
+        0.9943294966919286,
+        -0.01291853335666999,
+        -0.10555549964018916
+      ],
+      [
+        0.01349269931630013,
+        0.9998977953711778,
+        0.004727142584990837
+      ]
+    ],
+    "rotation_deviation_from_axis_aligned_deg": 6.112501325753348,
+    "camera_origin_in_body_frd_m": [
+      0.2609931,
+      0.0077881,
+      -0.1236508
+    ],
+    "camera_origin_source": "CAD candidate with independent two-distance forward-origin cross-check; not refit here because overhead target-center offset is approximate",
+    "enabled_for_control": false,
+    "reason_disabled": "rotation is a useful candidate, but the overhead-derived reference topic required an inferred x/y axis correction and the run-specific transform is not yet an independent as-built absolute reference"
+  },
+  "mpc_input_gate_evidence": {
+    "finite_depth_nis_samples": 752,
+    "depth_nis_over_25_samples": 2,
+    "max_depth_nis": 1859.5807550443103,
+    "observed_false_depth_excursion_m": [
+      1.8408148,
+      1.8528523
+    ],
+    "normal_depth_cluster_near_excursion_m": [
+      0.336,
+      0.483
+    ],
+    "recommended_max_depth_nis": 25.0,
+    "recommended_reacquire_samples": 5,
+    "frozen_log_replay": {
+      "records": 887,
+      "control_ready_records": 793,
+      "rejected_or_pending_records": 94,
+      "decision_reasons": {
+        "low_confidence": 12,
+        "low_depth_confidence": 9,
+        "no_target": 43,
+        "reacquire_pending": 28,
+        "reacquired": 6,
+        "startup_confirmed": 1,
+        "startup_pending": 2,
+        "tracking": 786
+      },
+      "false_depth_excursion_records": 4,
+      "false_depth_excursion_control_ready_records": 0
+    }
+  }
+}

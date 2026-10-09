@@ -372,9 +372,9 @@ horizon、Qv、R/S。
 2. 用只读 `calibration_tool link` 确认 `telemetry_fresh=1`、
    `execution_feedback_valid=1`、`telemetry_mpc_direct=1`，以及遥控模式与
    本次模型一致（平移模型要求 `telemetry_yaw_direct=0`/`LOCAL_HOLD`）。
-3. UDP 实验实际使用 `transport.remote_host`（当前为 `192.0.2.2`）和
+3. UDP 实验实际使用 `transport.remote_host`（当前为 `192.168.0.2`）和
    `remote_port`；不要用配置中仅供旧 TCP 的 `transport.host`
-   (`127.0.0.1`) 判断 UDP 是否可达。
+   (`192.168.138.2`) 判断 UDP 是否可达。
 4. 只有视觉路径和下位机模式都确认后，才重新启动
    `finesub_experimental_auto.py --execute`；这些握手/时效故障不能靠调 Q/R
    或提高限幅解决。
@@ -399,7 +399,7 @@ horizon、Qv、R/S。
 uv run --project MPC_dual_model python -m MPC_dual_model.offline_tuning_audit \
   --config MPC_dual_model/finesub_v4pro1_mpc.json \
   --trace-glob 'calibration_logs/mpc_weight_tuning*.jsonl' \
-  --vision-jsonl runtime/vision/pipeline_results.jsonl \
+  --vision-jsonl /home/fins/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/output/mpc_visual_track_gate75_20260813_214147/pipeline_results.jsonl \
   --output calibration_logs/offline_tuning_audit_fixed_base_20260814.analysis.json
 ```
 

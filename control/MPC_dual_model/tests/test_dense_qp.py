@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from MPC_dual_model.dense_qp import DenseADMMQPSolver, QPSolverSettings
+from dense_qp import DenseADMMQPSolver, QPSolverSettings
 
 
 class DenseQPTest(unittest.TestCase):

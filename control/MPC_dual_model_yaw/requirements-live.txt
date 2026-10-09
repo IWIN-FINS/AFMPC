@@ -1,0 +1,4 @@
+-r requirements.txt
+opencv-contrib-python>=4.8
+pygame>=2.5
+pyserial>=3.5

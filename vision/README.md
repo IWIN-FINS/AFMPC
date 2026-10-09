@@ -2,6 +2,8 @@
 
 本目录包含实机双目视觉流程：鱼目标检测、双目深度估计、目标跟踪、时序滤波、相机标定和带时间戳的数据输出。
 
+运行核心来自 `/data/Zhouyuheng_workspace/tracking_depth/depth-estimation-dev/`，复制时未修改代码和配置内容。
+
 不包含仿真和 Unity 相机服务代码。
 
 ## 坐标系
@@ -12,21 +14,12 @@
 
 ```bash
 uv sync --dev
-uv run pytest -q
+uv run --with pytest pytest -q
 ```
 
 ## 模型文件
 
-模型路径在 `src/depth_estimation/config.yaml` 中配置：
-
-```text
-models/yolo/best.pt
-models/refiner/best.pt
-models/corrector_smoother/best.pt
-third_party/Fast-FoundationStereo/weights/model_best_bp2_serialize.pth
-```
-
-Fast-FoundationStereo 源码已经放在 `third_party/Fast-FoundationStereo/`，模型权重需要单独放置。
+模型路径以原始 `src/depth_estimation/config.yaml` 为准。Fast-FoundationStereo 运行源码已归类到 `third_party/Fast-FoundationStereo/`，模型权重、训练数据和实验录像不在本仓库重复保存。
 
 ## 实机运行
 
@@ -57,4 +50,3 @@ uv run stereo-preview-udp --help
 ```
 
 更换相机、镜头、分辨率、焦距、水下壳体或双目基线后，需要重新标定。
-

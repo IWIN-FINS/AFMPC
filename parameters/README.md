@@ -12,7 +12,5 @@
 修改实际参数后重新生成：
 
 ```bash
-cd control
-uv run python ../tools/export_parameters.py
+uv run --project control/PID_controller python tools/export_parameters.py
 ```
-
