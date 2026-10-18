@@ -42,20 +42,7 @@ dependencies = [
 ]
 
 [project.scripts]
-depth-estimation = "depth_estimation.main:main"
-depth-demo-image = "depth_estimation.demo_image:main"
 depth-demo-video = "depth_estimation.demo_video:main"
-depth-demo-sim-video = "depth_estimation.demo_sim_video:main"
-depth-debug-replay = "depth_estimation.depth_debug.replay_depth_debug:main"
-depth-grpc-server = "depth_estimation.grpc_camera_server:main"
-depth-sim-replay = "depth_estimation.sim_dataset_replay:main"
-depth-build-yolo-rotation-dataset = "depth_estimation.build_yolo_rotation_dataset:main"
-depth-train-ultralytics-yolo = "depth_estimation.train_ultralytics_yolo:main"
-depth-eval-yolo-sim = "depth_estimation.eval_yolo_sim_sequences:main"
-depth-build-refiner-dataset = "depth_estimation.refiner.build_refiner_dataset:main"
-depth-build-post-refiner-dataset = "depth_estimation.refiner.build_post_refiner_dataset:main"
-depth-train-temporal-bbox-refiner = "depth_estimation.refiner.train_temporal_bbox_refiner:main"
-depth-train-temporal-bbox-corrector-smoother = "depth_estimation.corrector_smoother.train_temporal_bbox_corrector_smoother:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/depth_estimation"]
