@@ -59,11 +59,14 @@ def _tracker() -> YOLOOnlyFishTracker:
 def test_yolo_only_carries_alpha_beta_center_state_between_frames():
     tracker = _tracker()
     first = tracker.update([_detection(100.0)], dt_s=0.1)[0]
+    first_velocity = first.camera_velocity(first.pos_3d)
     second = tracker.update([_detection(110.0)], dt_s=0.1)[0]
 
     assert first.filtered_center_uv == (100.0, 120.0)
+    assert first_velocity is None
     np.testing.assert_allclose(second.filtered_center_uv, (103.2, 120.0), atol=1e-9)
     assert second.center_ab_velocity_uv[0] > 0.0
+    assert second.camera_velocity(second.pos_3d) is not None
     assert second.output_bbox == _detection(110.0)["bbox"]
 
 

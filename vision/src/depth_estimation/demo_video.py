@@ -262,6 +262,7 @@ def print_fish_positions(frame_idx: int, fish_list: list[dict],
     print(f"{prefix} | fish {len(fish_list)}")
     for f in fish_list:
         px, py, pz = f["position"]
+        velocity = f.get("velocity")
         filter_mode = str(f.get("depth_filter_mode", ""))
         gain = f.get("depth_gain")
         quality = f.get("depth_quality")
@@ -272,6 +273,9 @@ def print_fish_positions(frame_idx: int, fish_list: list[dict],
             extra += f"  K={float(gain):.2f}"
         if quality is not None:
             extra += f"  q={float(quality):.2f}"
+        if velocity is not None:
+            vx, vy, vz = velocity
+            extra += f"  V=({vx:+.3f},{vy:+.3f},{vz:+.3f}) m/s"
         print(
             f"  ID {f['id']:02d} | "
             f"X={px:+.3f} m  Y={py:+.3f} m  Z={pz:+.3f} m  "
@@ -292,6 +296,10 @@ def _serialize_result_payload(*,
         tracks.append({
             "id": int(item["id"]),
             "position": [float(v) for v in item["position"]],
+            "velocity": (
+                None if item.get("velocity") is None
+                else [float(v) for v in item["velocity"]]
+            ),
             "confidence": float(item["confidence"]),
             "source": str(item.get("source", "yolo")),
             "raw_center_uv": [

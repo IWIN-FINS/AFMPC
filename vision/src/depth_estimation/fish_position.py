@@ -737,6 +737,41 @@ class FishTrack:
         y = (v - cy) * z_filtered / fy
         return np.array([x, y, float(z_filtered)], dtype=np.float32)
 
+    def camera_velocity(self, position: np.ndarray) -> np.ndarray | None:
+        """Back-project the filtered (u, v, Z) rates into camera-frame m/s."""
+        # The first alpha-beta update only initializes the center state; it
+        # does not yet provide an observed image-plane velocity.
+        if (
+            not self.center_ab_enabled
+            or not self.center_ema_initialized
+            or self.center_ab_prior_uv is None
+            or self.filtered_center_uv is None
+        ):
+            return None
+
+        xyz = np.asarray(position, dtype=np.float64).reshape(-1)
+        if xyz.shape != (3,):
+            return None
+        u, v = self.filtered_center_uv
+        u_dot, v_dot = self.center_ab_velocity_uv
+        z = float(xyz[2])
+        z_dot = float(self.z_dot)
+        fx = float(self.camera_params.get("fx", np.nan))
+        fy = float(self.camera_params.get("fy", np.nan))
+        cx = float(self.camera_params.get("cx", np.nan))
+        cy = float(self.camera_params.get("cy", np.nan))
+        if not all(np.isfinite(value) for value in (
+            *xyz, u, v, u_dot, v_dot, z_dot, fx, fy, cx, cy,
+        )) or z <= 0.0 or fx <= 0.0 or fy <= 0.0:
+            return None
+
+        velocity = np.array([
+            z * u_dot / fx + (u - cx) * z_dot / fx,
+            z * v_dot / fy + (v - cy) * z_dot / fy,
+            z_dot,
+        ], dtype=np.float64)
+        return velocity if np.all(np.isfinite(velocity)) else None
+
     def _resolve_center_ema_alpha(self, dt_s: float | None) -> float:
         tau = float(self.center_ema_tau_s)
         if np.isfinite(tau) and tau > 1e-9:
@@ -2511,6 +2546,7 @@ class FishPositionEstimator:
                     "id":         int,              # track ID (persistent across frames)
                     "bbox":       [x1, y1, x2, y2],# pixel bounding box in left image
                     "position":   [x,  y,  z],     # metres in camera frame
+                    "velocity":   [vx, vy, vz],   # m/s in camera frame; None until available
                     "confidence": float,            # YOLO detection confidence
                 }
 
@@ -6024,10 +6060,12 @@ class FishPositionEstimator:
         tracker_state = self.tracker_state
         for t in tracks:
             position = self._resolve_track_output_position(t)
+            velocity = t.camera_velocity(position)
             out.append({
                 "id": t.id,
                 "bbox": getattr(t, "output_bbox", t.bbox),
                 "position": position.tolist(),
+                "velocity": None if velocity is None else velocity.tolist(),
                 "confidence": t.confidence,
                 "raw_depth": t.raw_depth,
                 "raw_center_uv": list(getattr(t, "raw_center_uv", (np.nan, np.nan))),
